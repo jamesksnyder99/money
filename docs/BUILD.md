@@ -21,7 +21,9 @@ Budgets in the data contract are **not** hard stops. If a Build session is runni
 
 ## Concurrency
 
-Default Theta pulls serial. Parallelize CPU work and parquet writes. Document flags in `--help`.
+Parallelism is mandatory whenever work items are independent: ingest, validation, tape replay from parquet, feature jobs, tests, subprocesses. Default `workers=min(8, cpu_count)` and `theta_concurrency=8` (Pro documented slot count). Back off Theta concurrency on 429. Document flags in `--help`.
+
+Do not ship a `for symbol in symbols:` that blocks the next symbol on disk I/O if a pool can run them.
 
 ## Progress
 

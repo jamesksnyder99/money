@@ -41,7 +41,7 @@ No hard cap on name count. The filters *are* the universe.
 Prefer the official Python SDK over launching Theta Terminal.
 
 | Job | Endpoint / method | Notes |
-|---|---|---|
+|---|---|
 | Symbol directory | `stock_list_symbols` | filter listing type client-side |
 | Daily eligibility | `stock_history_eod` | also used for ADV and close |
 | Splits | stock splits (Standard/Pro) | daily file only; do not adjust 1m prints |
@@ -53,8 +53,7 @@ Theta limits that the ingest must respect:
 - Multi-day history requests max **one month**. Split May / June / July / August (May is warmup-only).
 - Default API window is 09:30–16:00; **always** pass our start/end times.
 - Do not request `interval=tick` or sub-minute in v1.
-
-Pulls default to **serial** (one in-flight Theta history request). Concurrent Theta requests are a later opt-in (`--theta-concurrency`, default `1`). Pro docs advertise several concurrent slots; we do not assume they are free to use until measured.
+- Stocks Professional documents **8 concurrent requests**. Use them. See Parallelism.
 
 ## Tables
 
@@ -135,13 +134,27 @@ Resume-safe: skip partitions whose parquet already exists and whose manifest lin
 - Split on `D` must not rewrite unadjusted 1m prices.
 - Manifest row_count matches written rows for that request.
 
-## Parallelism
+## Parallelism (default everywhere)
 
-- **Theta HTTP/gRPC pulls:** serial by default (`theta_concurrency=1`).
-- **After a frame is in memory:** parse/normalize/write with a process or thread pool (`write_workers` default `min(8, cpu_count)`).
-- Eligibility computation over symbols/dates is CPU-local — parallelize.
-- Validation scans — parallelize by partition.
-- Never interleave two Theta history calls unless the user sets concurrency &gt; 1.
+**Rule:** if two pieces of work do not have to wait on each other, run them at the same time. Serial is the exception that must be justified.
+
+Applies to ingest *and* later lab work: CLI entrypoints, fixture tests, validation, feature builds, tape replay from repo/parquet files, report generation, subprocesses.
+
+| Work | How |
+|---|---|
+| Independent symbols, dates, partitions, files | worker pool |
+| Parquet read/write, eligibility joins, validation scans | process pool (release the GIL) |
+| Tape replay / bar walk over many names | partition by symbol (or by date) across cores |
+| Separate program/script calls with no shared mutable state | concurrent subprocesses |
+| Theta history HTTP/gRPC | concurrent up to vendor cap |
+
+**Theta cap (the only hard limiter we did not invent):** Stocks Professional documents 8 concurrent requests. Default `--theta-concurrency=8`. On 429 / “too many concurrent” / timeout: exponential backoff, drop concurrency by half for that run, keep going. Never exceed 8 unless the user raises the flag after we measure headroom.
+
+**Pipeline overlap:** while worker *n* writes partition *k*, worker *n+1* may already be pulling *k+1*. Pull and write are a pool, not a single file queue.
+
+**Do not parallelize:** in-place append to the same parquet file, or two writers on one manifest without a lock. One append-only manifest with a mutex is fine.
+
+Defaults: `workers=min(8, cpu_count)`, `theta_concurrency=8`. Print both in the start banner.
 
 ## Progress UX
 
@@ -150,7 +163,7 @@ Any run expected to exceed 15 minutes:
 - Print a heartbeat **at least every 15 minutes** and also at each completed month/symbol-batch.
 - Line format: `iso_time elapsed job_done/job_total last_item rows_written eta`.
 - ETA = moving average of recent jobs; label it estimate, not promise.
-- Start-of-run banner: calendar span, endpoint, concurrency, output path.
+- Start-of-run banner: calendar span, endpoint, workers, theta_concurrency, output path.
 - End-of-run banner: ok/fail counts, output paths, duration.
 
 Short runs (&lt;15 min) still print start, each major step, and finish — no heartbeat required.
