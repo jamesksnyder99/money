@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import threading
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -63,3 +64,17 @@ def get_client() -> ThetaClient:
         email, password = pair
         return ThetaClient(email=email, password=password, dataframe_type="polars")
     raise RuntimeError(f"Missing Theta Data credentials in .env. Expected {_EXPECTED}.")
+
+
+_CLIENT: ThetaClient | None = None
+_CLIENT_LOCK = threading.Lock()
+
+
+def get_shared_client() -> ThetaClient:
+    """One authenticated client for the process (gRPC stub is thread-safe)."""
+    global _CLIENT
+    with _CLIENT_LOCK:
+        if _CLIENT is None:
+            _CLIENT = get_client()
+        return _CLIENT
+
