@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from ingest.paths import ensure_dirs  # noqa: E402
-from ingest.run import run_warmup, write_calendar  # noqa: E402
+from ingest.run import run_arrow2, run_study, run_universe, run_warmup, write_calendar  # noqa: E402
 from ingest.validate import validate_warmup  # noqa: E402
 
 
@@ -29,9 +29,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.add_argument(
         "--mode",
-        choices=("warmup", "calendar", "eligibility", "bars", "validate"),
+        choices=("warmup", "calendar", "eligibility", "bars", "validate", "universe", "study", "arrow2"),
         default="warmup",
-        help="warmup = calendar + EOD eligibility + 1m OHLC for the 10 May sessions only",
+        help="universe=A+B filters; study=Jun-Aug 1m after universe; arrow2=universe then study",
     )
     p.add_argument(
         "--workers",
@@ -61,16 +61,24 @@ def main(argv: list[str] | None = None) -> int:
             print(item)
         print("ok" if not issues else "FAIL")
         return 0 if not issues else 1
+    kwargs = dict(
+        workers=args.workers,
+        theta_concurrency=args.theta_concurrency,
+        force=args.force,
+    )
+    if args.mode == "universe":
+        code, _ = run_universe(**kwargs)
+        return code
+    if args.mode == "study":
+        return run_study(**kwargs)
+    if args.mode == "arrow2":
+        return run_arrow2(**kwargs)
     if args.mode in {"eligibility", "bars"}:
         print(
             f"{args.mode} is included in --mode warmup; run warmup (resumable)",
             flush=True,
         )
-    return run_warmup(
-        workers=args.workers,
-        theta_concurrency=args.theta_concurrency,
-        force=args.force,
-    )
+    return run_warmup(**kwargs)
 
 
 if __name__ == "__main__":

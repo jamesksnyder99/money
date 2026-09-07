@@ -38,9 +38,14 @@ def validate_warmup() -> list[str]:
     # We check no eligibility row has session_date < first warmup (sanity) and
     # that ineligible/eligible rows exist only for warmup sessions in this arrow.
     elig_dates = set(elig["session_date"].to_list())
-    if not elig_dates.issubset(set(WARMUP_SESSIONS)):
-        extra = elig_dates - set(WARMUP_SESSIONS)
-        issues.append(f"eligibility has non-warmup sessions: {sorted(extra)[:5]}")
+    allowed = set(WARMUP_SESSIONS) | set(study_sessions())
+    if not elig_dates.issubset(allowed):
+        extra = elig_dates - allowed
+        issues.append(f"eligibility has unknown sessions: {sorted(extra)[:5]}")
+    if date(2026, 7, 3) in elig_dates:
+        issues.append("eligibility includes 2026-07-03 (full close)")
+    if date(2026, 6, 19) in elig_dates:
+        issues.append("eligibility includes 2026-06-19 (full close)")
 
     dup_keys: list[str] = []
     bar_issues = _validate_bars()

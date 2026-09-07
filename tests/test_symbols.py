@@ -1,5 +1,5 @@
-from ingest.paths import safe_symbol_filename
-from ingest.symbols import filter_common, is_common_stock_ticker
+from ingest.paths import eod_path, safe_symbol_filename
+from ingest.symbols import filter_candidates, filter_common, is_common_stock_ticker, is_etp_ticker
 
 
 def test_keeps_common_and_class_shares() -> None:
@@ -28,3 +28,20 @@ def test_windows_reserved_filenames() -> None:
     assert safe_symbol_filename("AAPL") == "AAPL"
     assert safe_symbol_filename("CON") == "_CON"
     assert safe_symbol_filename("PRN") == "_PRN"
+    assert eod_path("CON").name != "CON.parquet"
+    assert eod_path("CON").name == "_CON.parquet"
+    assert eod_path("PRN").name != "PRN.parquet"
+    for stem in ("CON", "PRN", "AUX", "NUL", "COM1", "LPT1"):
+        assert eod_path(stem).name != f"{stem}.parquet"
+
+
+def test_etp_denylist_drops_levered_and_index_etfs() -> None:
+    assert is_etp_ticker("SPY")
+    assert is_etp_ticker("SOXL")
+    assert is_etp_ticker("TQQQ")
+    assert not is_etp_ticker("AAPL")
+    cands, funnel = filter_candidates(["AAPL", "SPY", "SOXL", "TQQQ", "BAC.PR"])
+    assert "AAPL" in cands
+    assert "SPY" not in cands
+    assert funnel["etp_dropped"] >= 3
+    assert funnel["regex_kept"] == 4  # BAC.PR dropped by regex

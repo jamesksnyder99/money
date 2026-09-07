@@ -27,6 +27,9 @@ def write_reports(
     sessions_ok: int,
     sessions_fail: int,
     extra_notes: list[str],
+    title: str = "Arrow 1 — warmup pull timing",
+    report_path=None,
+    sessions_attempted: int | None = None,
 ) -> None:
     wall_s = (ended - started).total_seconds()
     wall_h = wall_s / 3600.0
@@ -49,8 +52,10 @@ def write_reports(
     start_et = started.astimezone(ET).isoformat(timespec="seconds")
     end_et = ended.astimezone(ET).isoformat(timespec="seconds")
 
+    n_sess = sessions_attempted if sessions_attempted is not None else len(WARMUP_SESSIONS)
+    dest = report_path or ARROW01_REPORT
     lines = [
-        "Arrow 1 — warmup pull timing",
+        title,
         f"start_utc: {start_utc}",
         f"end_utc:   {end_utc}",
         f"start_et:  {start_et}",
@@ -61,7 +66,7 @@ def write_reports(
         f"workers: {workers}",
         f"theta_concurrency_start: {theta_concurrency_start}",
         f"theta_concurrency_end: {theta_concurrency_end}",
-        f"sessions_attempted: {len(WARMUP_SESSIONS)}",
+        f"sessions_attempted: {n_sess}",
         f"sessions_ok: {sessions_ok}",
         f"sessions_fail: {sessions_fail}",
         f"eligible_mean: {mean_n:.1f}",
@@ -113,7 +118,7 @@ def write_reports(
     lines.extend(f"  - {n}" for n in extra_notes)
 
     text = "\n".join(lines) + "\n"
-    ARROW01_REPORT.parent.mkdir(parents=True, exist_ok=True)
-    ARROW01_REPORT.write_text(text, encoding="utf-8")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_text(text, encoding="utf-8")
     INGEST_REPORT.write_text(text, encoding="utf-8")
     print(text, flush=True)

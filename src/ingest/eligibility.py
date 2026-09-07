@@ -67,23 +67,21 @@ def evaluate_session(
     )
 
 
-def build_warmup_eligibility(
-    eod: pl.DataFrame, symbols: list[str] | None = None
+def build_eligibility(
+    eod: pl.DataFrame,
+    symbols: list[str],
+    sessions: list[date],
+    *,
+    is_warmup: bool,
 ) -> pl.DataFrame:
-    if symbols is None:
-        symbols = (
-            eod["symbol"].unique().to_list()
-            if eod.height and "symbol" in eod.columns
-            else []
-        )
     frames = []
     universe = pl.DataFrame({"symbol": symbols})
-    for session in WARMUP_SESSIONS:
-        day = evaluate_session(eod, session, is_warmup=True)
+    for session in sessions:
+        day = evaluate_session(eod, session, is_warmup=is_warmup)
         base = universe.with_columns(pl.lit(session).alias("session_date"))
         merged = base.join(day, on=["symbol", "session_date"], how="left")
         merged = merged.with_columns(
-            pl.col("is_warmup").fill_null(True),
+            pl.col("is_warmup").fill_null(is_warmup),
             pl.when(pl.col("exclude_reason").is_null() & pl.col("eligible").is_null())
             .then(pl.lit("no_prior_eod"))
             .otherwise(pl.col("exclude_reason"))
@@ -93,6 +91,18 @@ def build_warmup_eligibility(
     if not frames:
         return pl.DataFrame()
     return pl.concat(frames, how="vertical_relaxed")
+
+
+def build_warmup_eligibility(
+    eod: pl.DataFrame, symbols: list[str] | None = None
+) -> pl.DataFrame:
+    if symbols is None:
+        symbols = (
+            eod["symbol"].unique().to_list()
+            if eod.height and "symbol" in eod.columns
+            else []
+        )
+    return build_eligibility(eod, symbols, list(WARMUP_SESSIONS), is_warmup=True)
 
 
 def eligible_pairs(elig: pl.DataFrame) -> list[tuple[str, date]]:

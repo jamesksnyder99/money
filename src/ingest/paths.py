@@ -9,11 +9,16 @@ CALENDAR = DATA / "calendar" / "sessions.parquet"
 ELIGIBILITY = DATA / "universe" / "eligibility.parquet"
 SPLITS = DATA / "ref" / "splits.parquet"
 SYMBOLS = DATA / "ref" / "symbols_common.parquet"
-EOD_DIR = DATA / "eod" / "warmup"
+SYMBOLS_RAW = DATA / "ref" / "stock_list_symbols.parquet"
+EOD_ROOT = DATA / "eod"
+EOD_DIR = EOD_ROOT / "warmup"
 BARS_DIR = DATA / "bars" / "ohlc_1m"
 MANIFEST = DATA / "manifests" / "pulls.jsonl"
 INGEST_REPORT = REPORTS / "ingest_latest.txt"
 ARROW01_REPORT = REPORTS / "arrow01_timing.txt"
+ARROW02_UNIVERSE = REPORTS / "arrow02_universe.txt"
+ARROW02_REPORT = REPORTS / "arrow02_timing.txt"
+ETP_TICKERS = Path(__file__).with_name("etp_tickers.txt")
 
 
 def ensure_dirs() -> None:
@@ -22,6 +27,7 @@ def ensure_dirs() -> None:
         ELIGIBILITY.parent,
         SPLITS.parent,
         EOD_DIR,
+        EOD_ROOT,
         BARS_DIR,
         MANIFEST.parent,
         REPORTS,
@@ -52,5 +58,5 @@ def bar_path(session_date, symbol: str) -> Path:
     return BARS_DIR / f"session_date={session_date.isoformat()}" / f"{safe_symbol_filename(symbol)}.parquet"
 
 
-def eod_path(symbol: str) -> Path:
-    return EOD_DIR / f"{safe_symbol_filename(symbol)}.parquet"
+def eod_path(symbol: str, chunk: str = "warmup") -> Path:
+    return EOD_ROOT / chunk / f"{safe_symbol_filename(symbol)}.parquet"
