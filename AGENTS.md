@@ -1,6 +1,10 @@
 # Agent rules
 
 - Never print, log, commit, or echo `.env` or credential values.
-- Stocks Professional only unless the user says otherwise. No options, no bulk pulls, no flat files, no streaming unless asked.
+- Stocks Professional only unless the user says otherwise. No options, no bulk/flat files, no streaming, no tick or sub-minute bars unless asked.
 - Prefer the official `thetadata` Python SDK (HTTPS/gRPC). Do not launch Theta Terminal unless asked.
-- Keep data pulls small: one symbol, short date windows, snapshots — unless the user explicitly requests more.
+- Follow `docs/DATA_CONTRACT.md`. Universe is the eligibility rules (prior close $1–$30, prior-day dollar volume ≥ $1M, common stock), not an arbitrary 50-name cap.
+- Keep live pulls resumable. Pilot (5 symbols × 5 days) before full Jun–Aug + warmup ingest.
+- Theta history requests default to serial. Parallelize local compute and parquet writes.
+- Long jobs: stdout heartbeat at least every 15 minutes with an ETA estimate. Soft time budgets are hints, not kill switches — checkpoint and resume.
+- Do not commit `data/`, parquet, or secrets. Manifests and reports may be committed if they contain no credentials.
