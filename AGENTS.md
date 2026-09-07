@@ -8,3 +8,4 @@
 - Parallelize by default: multi-core workers for local compute, parquet, tape replay, validation, and independent subprocesses. Theta pulls use up to 8 concurrent requests (Pro cap) with backoff on 429. Serial loops need a reason.
 - Long jobs: stdout heartbeat at least every 15 minutes with an ETA estimate. Soft time budgets are hints, not kill switches — checkpoint and resume.
 - Do not commit `data/`, parquet, or secrets. Manifests and reports may be committed if they contain no credentials.
+- Every new or changed file Build commits is audited by Grok before the next arrow is written. Prefer small, reviewable commits over one opaque dump.
