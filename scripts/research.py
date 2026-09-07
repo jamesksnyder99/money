@@ -1,0 +1,28 @@
+"""Research CLI. See docs/BUILD_ARROW_03.md."""
+
+from __future__ import annotations
+
+import argparse
+import os
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from research.arrow3 import run_arrow3  # noqa: E402
+
+
+def main(argv: list[str] | None = None) -> int:
+    cpu = os.cpu_count() or 1
+    p = argparse.ArgumentParser(description="Lab A research replay")
+    p.add_argument("--mode", choices=("arrow3",), default="arrow3")
+    p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
+    args = p.parse_args(argv)
+    if args.mode == "arrow3":
+        return run_arrow3(workers=args.workers)
+    raise SystemExit(f"unknown mode {args.mode}")
+
+
+if __name__ == "__main__":
+    sys.exit(main())
