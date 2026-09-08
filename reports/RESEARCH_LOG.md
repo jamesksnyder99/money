@@ -193,3 +193,39 @@ What died (holdout < $200, or holdout green with red develop):
 - Track B short_hot_or15|ema_hhhl|2R (short): holdout $0.37/day develop $-3.29/day trades_holdout=2 avgR=0.020. Do not retry this exact (track, id) without a new costed reason.
 - Track B short_q5_orbr5|ema (short): holdout $-103.77/day develop $35.73/day trades_holdout=132 avgR=-0.205. Do not retry this exact (track, id) without a new costed reason.
 
+## 2026-09-08T10:03:55-04:00 — Arrow 11
+
+VERDICT: FAIL — no Arrow 11 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass.
+
+Kernel: Arrow 10 B/short_hot_or15|ema (develop +$5.58, holdout +$21.53, 58/16 trades). Short only. Did not mirror into longs. Did not rerun 5-min ORBR. Did not stack HH/HL. Six rings: control on both tracks; gap>=1%; OR>2.5%; dv>=0.60; two-close below OR low; first close below RTH VWAP. Flatten 11:59.
+
+Rings that diluted the kernel (develop red and/or holdout red): A/short_hot|gap1, A/short_hot|or25, A/short_hot|dv60, A/short_hot|two_close, A/short_hot|vwap, B/short_hot|dv60, B/short_hot|two_close.
+
+n_vs_control:
+  A/short_hot|control: develop n=92 vs control 92 (1.00x) holdout n=28 vs control 28 (1.00x)
+  A/short_hot|gap1: develop n=116 vs control 92 (1.26x) holdout n=40 vs control 28 (1.43x)
+  A/short_hot|or25: develop n=131 vs control 92 (1.42x) holdout n=43 vs control 28 (1.54x)
+  A/short_hot|dv60: develop n=114 vs control 92 (1.24x) holdout n=48 vs control 28 (1.71x)
+  A/short_hot|two_close: develop n=202 vs control 92 (2.20x) holdout n=97 vs control 28 (3.46x)
+  A/short_hot|vwap: develop n=220 vs control 92 (2.39x) holdout n=108 vs control 28 (3.86x)
+  B/short_hot|control: develop n=58 vs control 58 (1.00x) holdout n=16 vs control 16 (1.00x)
+  B/short_hot|gap1: develop n=72 vs control 58 (1.24x) holdout n=25 vs control 16 (1.56x)
+  B/short_hot|or25: develop n=97 vs control 58 (1.67x) holdout n=37 vs control 16 (2.31x)
+  B/short_hot|dv60: develop n=85 vs control 58 (1.47x) holdout n=27 vs control 16 (1.69x)
+  B/short_hot|two_close: develop n=161 vs control 58 (2.78x) holdout n=85 vs control 16 (5.31x)
+  B/short_hot|vwap: develop n=191 vs control 58 (3.29x) holdout n=98 vs control 16 (6.12x)
+
+What died (holdout < $200, or holdout green with red develop):
+- Track A short_hot|control: holdout $-21.16/day develop $-20.48/day trades_holdout=28 avgR=-0.083. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_hot|gap1: holdout $-18.37/day develop $-14.28/day trades_holdout=40 avgR=-0.051. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_hot|or25: holdout $29.10/day develop $-24.57/day trades_holdout=43 avgR=0.075. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_hot|dv60: holdout $-28.73/day develop $-3.64/day trades_holdout=48 avgR=-0.066. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_hot|two_close: holdout $-25.89/day develop $-40.80/day trades_holdout=97 avgR=-0.061. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_hot|vwap: holdout $-41.56/day develop $-25.79/day trades_holdout=108 avgR=-0.089. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_hot|control: holdout $21.53/day develop $5.58/day trades_holdout=16 avgR=0.149. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_hot|gap1: holdout $3.43/day develop $0.15/day trades_holdout=25 avgR=0.015. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_hot|or25: holdout $81.56/day develop $19.36/day trades_holdout=37 avgR=0.243. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_hot|dv60: holdout $-6.62/day develop $-3.32/day trades_holdout=27 avgR=-0.027. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_hot|two_close: holdout $-19.51/day develop $23.84/day trades_holdout=85 avgR=-0.075. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_hot|vwap: holdout $61.62/day develop $69.71/day trades_holdout=98 avgR=-0.084. Do not retry this exact (track, id) without a new costed reason.
+

@@ -18,6 +18,7 @@ from research.arrow7 import run_arrow7  # noqa: E402
 from research.arrow8 import run_arrow8  # noqa: E402
 from research.arrow9 import run_arrow9  # noqa: E402
 from research.arrow10 import run_arrow10  # noqa: E402
+from research.arrow11 import run_arrow11  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -25,9 +26,9 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Lab A research replay")
     p.add_argument(
         "--mode",
-        choices=("arrow3", "arrow4", "arrow5", "arrow6", "arrow7", "arrow8", "arrow9", "arrow10"),
-        default="arrow10",
-        help="arrow10 is hot-cell 15m EMA asymmetric books; earlier modes remain valid",
+        choices=("arrow3", "arrow4", "arrow5", "arrow6", "arrow7", "arrow8", "arrow9", "arrow10", "arrow11"),
+        default="arrow11",
+        help="arrow11 expands the short hot-cell kernel; earlier modes remain valid",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -47,6 +48,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow9(workers=args.workers)
     if args.mode == "arrow10":
         return run_arrow10(workers=args.workers)
+    if args.mode == "arrow11":
+        return run_arrow11(workers=args.workers)
     raise SystemExit(f"unknown mode {args.mode}")
 
 
