@@ -165,3 +165,31 @@ What died (holdout < $200, or holdout green with red develop):
 - Track B three_day_q5|2R: holdout $6.54/day develop $-67.94/day trades_holdout=110 avgR=0.016. Do not retry this exact (track, id) without a new costed reason.
 - Track B orb_q5|flat1100: holdout $-195.09/day develop $-142.44/day trades_holdout=125 avgR=-0.191. Do not retry this exact (track, id) without a new costed reason.
 
+## 2026-09-08T09:46:41-04:00 — Arrow 10
+
+VERDICT: FAIL — no Arrow 10 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass.
+
+Same Tracks A and B. No new hours. Six asymmetric books: long hot-cell gap-up 15m break + ema stack; long same + rising lows + 2R; long Q5 5-min high-retest + ema stack; short hot-cell gap-down 15m break + ema stack; short same + falling highs + 2R; short Q5 5-min low-retest + ema stack. Long ids emit only longs. Short ids emit only shorts. eod10 is a report tag. Did not rerun Arrow 9 Q5+1-4% books. No 7th. No Arrow 11.
+
+ema15 vs eod10 on develop:
+  Track A: n=27393 agree=15680 (57.2%) ema_long=13829 ema_short=13564 eod_up=12200 eod_down=10839 eod_flat=4354
+  Track B: n=16281 agree=9158 (56.2%) ema_long=8140 ema_short=8141 eod_up=7209 eod_down=6478 eod_flat=2594
+
+hot cell:
+  Track A: hot=870 gap_up=415 gap_down=455
+  Track B: hot=511 gap_up=258 gap_down=253
+
+What died (holdout < $200, or holdout green with red develop):
+- Track A long_hot_or15|ema (long): holdout $-78.39/day develop $-5.17/day trades_holdout=53 avgR=-0.163. Do not retry this exact (track, id) without a new costed reason.
+- Track A long_hot_or15|ema_hhhl|2R (long): holdout $8.46/day develop $-10.10/day trades_holdout=14 avgR=0.068. Do not retry this exact (track, id) without a new costed reason.
+- Track A long_q5_orbr5|ema (long): holdout $-196.33/day develop $-179.48/day trades_holdout=137 avgR=-0.303. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_hot_or15|ema (short): holdout $-21.16/day develop $-20.48/day trades_holdout=28 avgR=-0.083. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_hot_or15|ema_hhhl|2R (short): holdout $-18.24/day develop $-0.07/day trades_holdout=8 avgR=-0.252. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_q5_orbr5|ema (short): holdout $-153.50/day develop $-48.03/day trades_holdout=132 avgR=-0.204. Do not retry this exact (track, id) without a new costed reason.
+- Track B long_hot_or15|ema (long): holdout $-17.23/day develop $20.42/day trades_holdout=26 avgR=-0.073. Do not retry this exact (track, id) without a new costed reason.
+- Track B long_hot_or15|ema_hhhl|2R (long): holdout $4.01/day develop $-8.22/day trades_holdout=8 avgR=0.055. Do not retry this exact (track, id) without a new costed reason.
+- Track B long_q5_orbr5|ema (long): holdout $-117.72/day develop $-70.99/day trades_holdout=129 avgR=-0.178. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_hot_or15|ema (short): holdout $21.53/day develop $5.58/day trades_holdout=16 avgR=0.149. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_hot_or15|ema_hhhl|2R (short): holdout $0.37/day develop $-3.29/day trades_holdout=2 avgR=0.020. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_q5_orbr5|ema (short): holdout $-103.77/day develop $35.73/day trades_holdout=132 avgR=-0.205. Do not retry this exact (track, id) without a new costed reason.
+
