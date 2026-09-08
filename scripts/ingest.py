@@ -12,6 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from ingest.paths import ensure_dirs  # noqa: E402
+from ingest.full import run_arrow17  # noqa: E402
 from ingest.run import run_arrow2, run_study, run_universe, run_warmup, write_calendar  # noqa: E402
 from ingest.validate import validate_warmup  # noqa: E402
 
@@ -29,9 +30,19 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.add_argument(
         "--mode",
-        choices=("warmup", "calendar", "eligibility", "bars", "validate", "universe", "study", "arrow2"),
+        choices=(
+            "warmup",
+            "calendar",
+            "eligibility",
+            "bars",
+            "validate",
+            "universe",
+            "study",
+            "arrow2",
+            "arrow17",
+        ),
         default="warmup",
-        help="universe=A+B filters; study=Jun-Aug 1m after universe; arrow2=universe then study",
+        help="arrow17=04:00-16:00 full tape under data/full (does not touch data/bars)",
     )
     p.add_argument(
         "--workers",
@@ -73,6 +84,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_study(**kwargs)
     if args.mode == "arrow2":
         return run_arrow2(**kwargs)
+    if args.mode == "arrow17":
+        return run_arrow17(**kwargs)
     if args.mode in {"eligibility", "bars"}:
         print(
             f"{args.mode} is included in --mode warmup; run warmup (resumable)",

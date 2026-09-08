@@ -13,6 +13,10 @@ SYMBOLS_RAW = DATA / "ref" / "stock_list_symbols.parquet"
 EOD_ROOT = DATA / "eod"
 EOD_DIR = EOD_ROOT / "warmup"
 BARS_DIR = DATA / "bars" / "ohlc_1m"
+FULL_ROOT = DATA / "full"
+FULL_BARS = FULL_ROOT / "bars"
+FULL_ELIGIBILITY = FULL_ROOT / "eligibility.parquet"
+FULL_MANIFEST = FULL_ROOT / "manifest.parquet"
 MANIFEST = DATA / "manifests" / "pulls.jsonl"
 INGEST_REPORT = REPORTS / "ingest_latest.txt"
 ARROW01_REPORT = REPORTS / "arrow01_timing.txt"
@@ -29,6 +33,8 @@ def ensure_dirs() -> None:
         EOD_DIR,
         EOD_ROOT,
         BARS_DIR,
+        FULL_BARS,
+        FULL_ELIGIBILITY.parent,
         MANIFEST.parent,
         REPORTS,
         DATA / "tmp",
@@ -56,6 +62,11 @@ def safe_symbol_filename(symbol: str) -> str:
 
 def bar_path(session_date, symbol: str) -> Path:
     return BARS_DIR / f"session_date={session_date.isoformat()}" / f"{safe_symbol_filename(symbol)}.parquet"
+
+
+def full_bar_path(session_date, symbol: str) -> Path:
+    iso = session_date.isoformat() if hasattr(session_date, "isoformat") else str(session_date)
+    return FULL_BARS / iso / f"{safe_symbol_filename(symbol)}.parquet"
 
 
 def eod_path(symbol: str, chunk: str = "warmup") -> Path:

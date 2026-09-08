@@ -8,6 +8,7 @@ from ingest.calendar import WARMUP_SESSIONS, prior_session
 
 MIN_CLOSE = 1.00
 MAX_CLOSE = 30.00
+MAX_CLOSE_FULL = 50.00
 MIN_DOLLAR_VOLUME = 1_000_000.0
 
 
@@ -31,6 +32,9 @@ def evaluate_session(
     *,
     is_warmup: bool,
     prior: date | None = None,
+    min_close: float = MIN_CLOSE,
+    max_close: float = MAX_CLOSE,
+    min_dv: float = MIN_DOLLAR_VOLUME,
 ) -> pl.DataFrame:
     """Point-in-time eligibility for session D using official EOD of D-1."""
     prior = prior or prior_session(session)
@@ -55,9 +59,9 @@ def evaluate_session(
     reason = (
         pl.when(pl.col("prior_close").is_null() | pl.col("prior_volume").is_null())
         .then(pl.lit("no_prior_eod"))
-        .when((pl.col("prior_close") < MIN_CLOSE) | (pl.col("prior_close") > MAX_CLOSE))
+        .when((pl.col("prior_close") < min_close) | (pl.col("prior_close") > max_close))
         .then(pl.lit("prior_close_out_of_range"))
-        .when(pl.col("prior_dollar_volume") < MIN_DOLLAR_VOLUME)
+        .when(pl.col("prior_dollar_volume") < min_dv)
         .then(pl.lit("prior_dollar_volume_low"))
         .otherwise(pl.lit(""))
     )
@@ -73,11 +77,12 @@ def build_eligibility(
     sessions: list[date],
     *,
     is_warmup: bool,
+    max_close: float = MAX_CLOSE,
 ) -> pl.DataFrame:
     frames = []
     universe = pl.DataFrame({"symbol": symbols})
     for session in sessions:
-        day = evaluate_session(eod, session, is_warmup=is_warmup)
+        day = evaluate_session(eod, session, is_warmup=is_warmup, max_close=max_close)
         base = universe.with_columns(pl.lit(session).alias("session_date"))
         merged = base.join(day, on=["symbol", "session_date"], how="left")
         merged = merged.with_columns(
