@@ -17,6 +17,8 @@ FULL_ROOT = DATA / "full"
 FULL_BARS = FULL_ROOT / "bars"
 FULL_ELIGIBILITY = FULL_ROOT / "eligibility.parquet"
 FULL_MANIFEST = FULL_ROOT / "manifest.parquet"
+FULL_BENCH = FULL_ROOT / "bench"
+FULL_IWM = FULL_BENCH / "IWM"
 MANIFEST = DATA / "manifests" / "pulls.jsonl"
 INGEST_REPORT = REPORTS / "ingest_latest.txt"
 ARROW01_REPORT = REPORTS / "arrow01_timing.txt"
@@ -35,6 +37,7 @@ def ensure_dirs() -> None:
         BARS_DIR,
         FULL_BARS,
         FULL_ELIGIBILITY.parent,
+        FULL_IWM,
         MANIFEST.parent,
         REPORTS,
         DATA / "tmp",

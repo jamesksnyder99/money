@@ -454,3 +454,21 @@ What died (holdout < $200, or holdout green with red develop):
 - Track B c5_ema9|expand (short): holdout $42.81/day develop $93.06/day trades_holdout=33 avgR=0.087. Do not retry this exact (track, id) without a new costed reason.
 - Track B c5_ema9|mem_avwap (short): holdout $121.32/day develop $113.75/day trades_holdout=45 avgR=0.298. Do not retry this exact (track, id) without a new costed reason.
 
+## 2026-09-08T19:58:14-04:00 — Arrow 18
+
+Repairs then kernel-only rescore. Flatten leak fixed (zero-volume 11:59 no longer orphans).
+SSR proxy (last close <= 0.90 * prior close) and crude borrow proxy (gap<=-5% and prior DV < 10M).
+Dispersion: std/se/t/bootstrap CI on $/day. IWM same-window alpha. Holdout is contaminated; not EV.
+Four rows: B no-filter, B SSR+borrow, A no-filter, A SSR+borrow. Did not rerun Arrow 3-16 grids.
+
+HONESTY:
+Holdout has been used to pick rings (or25 -> c5_ema9 -> cap8). +179/day is not an expected value. It is a contaminated holdout print.
+Arithmetic: 200 risk x avgR x trades/day. Develop avgR ~0.05 and ~5 fills/day ~ 50/day. Holdout avgR ~0.23 x ~3.5 ~ 160/day.
+300/day on this cell needs more R, more fills, or more dollars at risk — not another 5-min pattern.
+SSR/borrow were unmodelled before this arrow. Flatten leak: a zero-volume 11:59 bar no longer orphans a live position.
+
+- Track B kernel|nofilter: develop $68.05/day holdout $178.85/day trades_holdout=76 avgR=0.233 t=1.39 IWM_alpha_hold $127.30/day.
+- Track B kernel|ssr_borrow: develop $59.13/day holdout $79.27/day trades_holdout=67 avgR=0.117 t=0.66 IWM_alpha_hold $31.51/day.
+- Track A kernel|nofilter: develop $-40.34/day holdout $-93.60/day trades_holdout=120 avgR=-0.149 t=-0.67 IWM_alpha_hold $-129.23/day.
+- Track A kernel|ssr_borrow: develop $-48.36/day holdout $-118.89/day trades_holdout=109 avgR=-0.176 t=-0.96 IWM_alpha_hold $-153.08/day.
+

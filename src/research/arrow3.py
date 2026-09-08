@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import os
+import random
 import statistics
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime, time, timezone
@@ -170,6 +171,23 @@ def _replay_one_session(args: tuple) -> list[dict]:
     return out
 
 
+def bootstrap_ci(daily: list[float], *, n_boot: int = 1000, seed: int = 17) -> tuple[float, float]:
+    n = len(daily)
+    if n == 0:
+        return 0.0, 0.0
+    rng = random.Random(seed)
+    boots: list[float] = []
+    for _ in range(n_boot):
+        s = 0.0
+        for _i in range(n):
+            s += daily[rng.randrange(n)]
+        boots.append(s / n)
+    boots.sort()
+    lo = boots[int(0.025 * (n_boot - 1))]
+    hi = boots[int(0.975 * (n_boot - 1))]
+    return lo, hi
+
+
 def _summarize(daily: list[float], trades: list[dict], n_sessions: int) -> dict:
     total = sum(daily)
     per_day = total / n_sessions if n_sessions else 0.0
@@ -185,6 +203,16 @@ def _summarize(daily: list[float], trades: list[dict], n_sessions: int) -> dict:
         eq += x
         peak = max(peak, eq)
         max_dd = min(max_dd, eq - peak)
+    n = len(daily)
+    if n >= 2:
+        std_day = float(statistics.stdev(daily))
+        se_day = std_day / math.sqrt(n)
+        t_stat = per_day / se_day if se_day > 1e-15 else 0.0
+    else:
+        std_day = 0.0
+        se_day = 0.0
+        t_stat = 0.0
+    ci_lo, ci_hi = bootstrap_ci(daily)
     return {
         "pnl_total": total,
         "per_day": per_day,
@@ -193,6 +221,11 @@ def _summarize(daily: list[float], trades: list[dict], n_sessions: int) -> dict:
         "avg_r": avg_r,
         "max_dd": max_dd,
         "clears_200": per_day >= FAILURE_LINE,
+        "std_day": std_day,
+        "se_day": se_day,
+        "t_stat": t_stat,
+        "ci_lo": ci_lo,
+        "ci_hi": ci_hi,
     }
 
 
@@ -273,9 +306,13 @@ def _fmt(sm: dict, *, holdout: bool) -> str:
         if holdout
         else ""
     )
+    disp = (
+        f"  std={sm.get('std_day', 0.0):.2f}  se={sm.get('se_day', 0.0):.2f}  "
+        f"t={sm.get('t_stat', 0.0):.2f}  ci95=[{sm.get('ci_lo', 0.0):.2f},{sm.get('ci_hi', 0.0):.2f}]"
+    )
     return (
         f"$/day={sm['per_day']:.2f}  trades={sm['n_trades']}  hit={sm['hit_rate']:.3f}  "
-        f"avgR={sm['avg_r']:.3f}  maxDD$={sm['max_dd']:.2f}{extra}"
+        f"avgR={sm['avg_r']:.3f}  maxDD$={sm['max_dd']:.2f}{disp}{extra}"
     )
 
 

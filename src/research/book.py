@@ -17,6 +17,9 @@ from research.fills import is_tradeable
 from research.signals import Signal, bar_time, MINUTE_1159
 
 RTH_OPEN = time(9, 30)
+SSR_FRAC = 0.90
+BORROW_GAP = -0.05
+BORROW_DV = 10_000_000.0
 
 
 @dataclass
@@ -84,6 +87,87 @@ def _next_tradeable(arr: _Arrays, i: int) -> int | None:
     return None
 
 
+def ssr_blocks_short(last_close: float | None, prior_close: float | None) -> bool:
+    """Reg SHO 201 proxy: last close ≤ 90% of prior close. Crude; no uptick model."""
+    if last_close is None or prior_close is None or prior_close <= 0:
+        return False
+    return float(last_close) <= SSR_FRAC * float(prior_close) + 1e-12
+
+
+def borrow_blocks_short(gap: float | None, prior_dv: float | None) -> bool:
+    """Crude HTB proxy: gap ≤ −5% and prior dollar volume < $10M. Not a fee table."""
+    if gap is None or prior_dv is None:
+        return False
+    return float(gap) <= BORROW_GAP + 1e-12 and float(prior_dv) < BORROW_DV - 1e-9
+
+
+def _last_close_at_or_before(arr: _Arrays, ts: datetime) -> float | None:
+    last = None
+    for i, t in enumerate(arr.ts):
+        if t > ts:
+            break
+        if _tradeable(arr, i):
+            last = float(arr.close[i])
+    return last
+
+
+def _gap_from_arr(arr: _Arrays, prior_close: float | None) -> float | None:
+    if prior_close is None or prior_close <= 0:
+        return None
+    for i, t in enumerate(arr.ts):
+        if bar_time(t) < RTH_OPEN:
+            continue
+        if not _tradeable(arr, i):
+            continue
+        o = float(arr.open[i])
+        if o <= 0:
+            return None
+        return o / float(prior_close) - 1.0
+    return None
+
+
+def _last_tradeable_at_or_before(arr: _Arrays, ts: datetime, after_ts: datetime) -> int | None:
+    best = None
+    for i, t in enumerate(arr.ts):
+        if t < after_ts:
+            continue
+        if t > ts:
+            break
+        if _tradeable(arr, i):
+            best = i
+    return best
+
+
+def _last_tradeable_after(arr: _Arrays, after_ts: datetime) -> int | None:
+    best = None
+    for i, t in enumerate(arr.ts):
+        if t < after_ts:
+            continue
+        if _tradeable(arr, i):
+            best = i
+    return best
+
+
+def _short_blocked(
+    sig: Signal,
+    arr: _Arrays | None,
+    prior_close: float | None,
+    prior_dv: float,
+    *,
+    ssr_filter: bool,
+    borrow_filter: bool,
+) -> bool:
+    if sig.side != -1:
+        return False
+    if arr is None:
+        return False
+    if ssr_filter and ssr_blocks_short(_last_close_at_or_before(arr, sig.signal_ts), prior_close):
+        return True
+    if borrow_filter and borrow_blocks_short(_gap_from_arr(arr, prior_close), prior_dv):
+        return True
+    return False
+
+
 @dataclass
 class Book:
     prior_dv: dict[str, float]
@@ -128,6 +212,9 @@ def replay_session(
     max_positions: int | None = None,
     max_entries: int | None = None,
     max_risk_outstanding: float | None = None,
+    prior_close: dict[str, float] | None = None,
+    ssr_filter: bool = False,
+    borrow_filter: bool = False,
 ) -> list[Trade]:
     packed = {sym: _pack(df) for sym, df in bars_by_symbol.items()}
     book = Book(
@@ -150,10 +237,20 @@ def replay_session(
     if rth_open_entries:
         ranked = sorted(rth_open_entries, key=lambda s: -abs(s.score))
         for sig in ranked:
-            if not book.can_enter(sig.symbol):
-                continue
             arr = packed.get(sig.symbol)
             if arr is None:
+                continue
+            pc = (prior_close or {}).get(sig.symbol)
+            if _short_blocked(
+                sig,
+                arr,
+                pc,
+                book.prior_dv.get(sig.symbol, 0.0),
+                ssr_filter=ssr_filter,
+                borrow_filter=borrow_filter,
+            ):
+                continue
+            if not book.can_enter(sig.symbol):
                 continue
             idx = None
             for i, t in enumerate(arr.ts):
@@ -195,9 +292,19 @@ def replay_session(
         batch = sigs_at.get(ts, [])
         batch = sorted(batch, key=lambda s: -abs(s.score))
         for sig in batch:
+            arr = packed.get(sig.symbol)
+            pc = (prior_close or {}).get(sig.symbol)
+            if _short_blocked(
+                sig,
+                arr,
+                pc,
+                book.prior_dv.get(sig.symbol, 0.0),
+                ssr_filter=ssr_filter,
+                borrow_filter=borrow_filter,
+            ):
+                continue
             if not book.can_enter(sig.symbol):
                 continue
-            arr = packed.get(sig.symbol)
             if arr is None:
                 continue
             i = arr.by_ts.get(ts)
@@ -209,6 +316,7 @@ def replay_session(
             if bar_time(arr.ts[nxt]) >= book.flatten_at:
                 continue
             book.pending_entry[sig.symbol] = (nxt, sig)
+    _flatten_leftovers(book, packed, times)
     return book.trades
 
 
@@ -375,13 +483,48 @@ def concurrent_stats(trades: list[Trade]) -> tuple[int, float]:
     return peak, mean
 
 
+def _flatten_one(book: Book, packed: dict[str, _Arrays], pos: Position, flatten_ts: datetime | None) -> None:
+    """Close at flatten open if tradeable; else last tradeable at or before flatten after entry."""
+    arr = packed.get(pos.symbol)
+    if arr is None:
+        _close_position(book, pos, pos.entry_px, pos.entry_ts, "orphan_flat")
+        return
+    if flatten_ts is not None:
+        i = arr.by_ts.get(flatten_ts)
+        if i is not None and _tradeable(arr, i):
+            _close_position(book, pos, float(arr.open[i]), flatten_ts, "time")
+            return
+        j = _last_tradeable_at_or_before(arr, flatten_ts, pos.entry_ts)
+        if j is not None:
+            _close_position(book, pos, float(arr.open[j]), arr.ts[j], "time")
+            return
+    k = _last_tradeable_after(arr, pos.entry_ts)
+    if k is not None:
+        _close_position(book, pos, float(arr.open[k]), arr.ts[k], "time")
+        return
+    _close_position(book, pos, pos.entry_px, pos.entry_ts, "orphan_flat")
+
+
 def _flatten_open(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:
     for pos in list(book.positions.values()):
-        arr = packed.get(pos.symbol)
-        if arr is None:
-            continue
-        i = arr.by_ts.get(ts)
-        if i is None or not _tradeable(arr, i):
-            continue
-        _close_position(book, pos, float(arr.open[i]), ts, "time")
+        _flatten_one(book, packed, pos, ts)
     book.pending_entry.clear()
+    book.pending_exit.clear()
+
+
+def _flatten_leftovers(book: Book, packed: dict[str, _Arrays], times: list) -> None:
+    flatten_ts = None
+    for t in times:
+        if bar_time(t) >= book.flatten_at:
+            flatten_ts = t
+            break
+    if flatten_ts is None and times:
+        flatten_ts = times[-1]
+    if book.positions:
+        for pos in list(book.positions.values()):
+            _flatten_one(book, packed, pos, flatten_ts)
+        book.pending_entry.clear()
+        book.pending_exit.clear()
+    if book.positions:
+        for pos in list(book.positions.values()):
+            _close_position(book, pos, pos.entry_px, pos.entry_ts, "orphan_flat")

@@ -25,6 +25,7 @@ from research.arrow14 import run_arrow14  # noqa: E402
 from research.arrow15 import run_arrow15  # noqa: E402
 from ingest.full import run_arrow17  # noqa: E402
 from research.arrow16 import run_arrow16  # noqa: E402
+from research.arrow18 import run_arrow18  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
 
@@ -49,10 +50,11 @@ def main(argv: list[str] | None = None) -> int:
             "arrow15",
             "arrow16",
             "arrow17",
+            "arrow18",
             "rockets",
         ),
-        default="arrow17",
-        help="arrow17 pulls 04:00-16:00 under data/full; does not touch data/bars",
+        default="arrow18",
+        help="arrow18 repairs flatten/SSR/borrow then rescores the kernel only",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -86,6 +88,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow16(workers=args.workers)
     if args.mode == "arrow17":
         return run_arrow17(workers=args.workers)
+    if args.mode == "arrow18":
+        return run_arrow18(workers=args.workers)
     if args.mode == "rockets":
         return run_rockets(workers=args.workers)
     raise SystemExit(f"unknown mode {args.mode}")
