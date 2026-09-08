@@ -328,3 +328,57 @@ What died (holdout < $200, or holdout green with red develop):
 - Track B c5_ema9|cap8|trail: holdout $61.75/day develop $55.58/day trades_holdout=77 avgR=0.090. Do not retry this exact (track, id) without a new costed reason.
 - Track B c5_ema9|cap8|union: holdout $173.25/day develop $72.65/day trades_holdout=76 avgR=0.225. Do not retry this exact (track, id) without a new costed reason.
 
+## 2026-09-08T16:38:27-04:00 — Arrow 15
+
+VERDICT: FAIL — no Arrow 15 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass.
+
+Preserved Arrow 14 B/c5_ema9|cap8 as id 1 (cap8, RISK_PER_IDEA=200). Shorts 2-4: memory, weak close, 5-min AVWAP (no 9/21). Shorts 5-6: 1-min close below ema9 after 09:45; 1-min close below ema9 from 09:31 with running OR width > 2.5%. Longs 7-12: washout hammer, hold-the-open, grind-up, AVWAP reclaim, prior-day morning high, 1-min hammer. Did not rerun Arrow 13 longs, union, cap10-as-idea, Q4, or 11:30 flatten.
+
+1-min doors that beat the 5-min control on BOTH slices: none
+
+n vs id 1 on shorts:
+  A/c5_ema9|cap8: develop n=277 vs id1 277 (1.00x) holdout n=117 vs id1 117 (1.00x)
+  A/c5_ema9|mem: develop n=214 vs id1 277 (0.77x) holdout n=95 vs id1 117 (0.81x)
+  A/c5_ema9|weak: develop n=163 vs id1 277 (0.59x) holdout n=61 vs id1 117 (0.52x)
+  A/c5_avwap|weak: develop n=318 vs id1 277 (1.15x) holdout n=150 vs id1 117 (1.28x)
+  A/c1_ema9: develop n=276 vs id1 277 (1.00x) holdout n=116 vs id1 117 (0.99x)
+  A/c1_ema9|early: develop n=387 vs id1 277 (1.40x) holdout n=170 vs id1 117 (1.45x)
+  B/c5_ema9|cap8: develop n=203 vs id1 203 (1.00x) holdout n=76 vs id1 76 (1.00x)
+  B/c5_ema9|mem: develop n=159 vs id1 203 (0.78x) holdout n=56 vs id1 76 (0.74x)
+  B/c5_ema9|weak: develop n=113 vs id1 203 (0.56x) holdout n=42 vs id1 76 (0.55x)
+  B/c5_avwap|weak: develop n=249 vs id1 203 (1.23x) holdout n=103 vs id1 76 (1.36x)
+  B/c1_ema9: develop n=206 vs id1 203 (1.01x) holdout n=79 vs id1 76 (1.04x)
+  B/c1_ema9|early: develop n=282 vs id1 203 (1.39x) holdout n=111 vs id1 76 (1.46x)
+
+1-min tape vs 5-min control:
+  A/c1_ema9: develop $-64.23 vs control $-50.73 (no); holdout $-88.14 vs control $-99.65 (BEATS); both_slices=NO
+  A/c1_ema9|early: develop $-233.21 vs control $-50.73 (no); holdout $-446.88 vs control $-99.65 (no); both_slices=NO
+  B/c1_ema9: develop $80.51 vs control $59.06 (BEATS); holdout $138.20 vs control $178.85 (no); both_slices=NO
+  B/c1_ema9|early: develop $-31.47 vs control $59.06 (no); holdout $-33.21 vs control $178.85 (no); both_slices=NO
+
+What died (holdout < $200, or holdout green with red develop):
+- Track A c5_ema9|cap8 (short): holdout $-99.65/day develop $-50.73/day trades_holdout=117 avgR=-0.159. Do not retry this exact (track, id) without a new costed reason.
+- Track A c5_ema9|mem (short): holdout $-43.20/day develop $-45.27/day trades_holdout=95 avgR=-0.073. Do not retry this exact (track, id) without a new costed reason.
+- Track A c5_ema9|weak (short): holdout $-82.70/day develop $41.61/day trades_holdout=61 avgR=-0.180. Do not retry this exact (track, id) without a new costed reason.
+- Track A c5_avwap|weak (short): holdout $-163.03/day develop $-1.63/day trades_holdout=150 avgR=-0.143. Do not retry this exact (track, id) without a new costed reason.
+- Track A c1_ema9 (short): holdout $-88.14/day develop $-64.23/day trades_holdout=116 avgR=-0.136. Do not retry this exact (track, id) without a new costed reason.
+- Track A c1_ema9|early (short): holdout $-446.88/day develop $-233.21/day trades_holdout=170 avgR=-0.577. Do not retry this exact (track, id) without a new costed reason.
+- Track A long_wash_hammer (long): holdout $-82.55/day develop $-40.31/day trades_holdout=19 avgR=-1.157. Do not retry this exact (track, id) without a new costed reason.
+- Track A long_hold_open (long): holdout $-258.68/day develop $-151.87/day trades_holdout=144 avgR=-0.381. Do not retry this exact (track, id) without a new costed reason.
+- Track A long_grind (long): holdout $-263.41/day develop $-287.11/day trades_holdout=255 avgR=-0.338. Do not retry this exact (track, id) without a new costed reason.
+- Track A long_avwap_rc (long): holdout $-584.45/day develop $-441.14/day trades_holdout=297 avgR=-0.701. Do not retry this exact (track, id) without a new costed reason.
+- Track A long_pd_morn (long): holdout $-253.74/day develop $-189.57/day trades_holdout=270 avgR=-0.317. Do not retry this exact (track, id) without a new costed reason.
+- Track A long_c1_hammer (long): holdout $-287.50/day develop $-366.55/day trades_holdout=325 avgR=-1.615. Do not retry this exact (track, id) without a new costed reason.
+- Track B c5_ema9|cap8 (short): holdout $178.85/day develop $59.06/day trades_holdout=76 avgR=0.233. Do not retry this exact (track, id) without a new costed reason.
+- Track B c5_ema9|mem (short): holdout $139.90/day develop $103.32/day trades_holdout=56 avgR=0.316. Do not retry this exact (track, id) without a new costed reason.
+- Track B c5_ema9|weak (short): holdout $43.63/day develop $112.51/day trades_holdout=42 avgR=0.098. Do not retry this exact (track, id) without a new costed reason.
+- Track B c5_avwap|weak (short): holdout $84.09/day develop $107.22/day trades_holdout=103 avgR=0.078. Do not retry this exact (track, id) without a new costed reason.
+- Track B c1_ema9 (short): holdout $138.20/day develop $80.51/day trades_holdout=79 avgR=0.141. Do not retry this exact (track, id) without a new costed reason.
+- Track B c1_ema9|early (short): holdout $-33.21/day develop $-31.47/day trades_holdout=111 avgR=-0.217. Do not retry this exact (track, id) without a new costed reason.
+- Track B long_wash_hammer (long): holdout $-37.96/day develop $-75.92/day trades_holdout=12 avgR=-0.962. Do not retry this exact (track, id) without a new costed reason.
+- Track B long_hold_open (long): holdout $-151.86/day develop $-100.15/day trades_holdout=102 avgR=-0.302. Do not retry this exact (track, id) without a new costed reason.
+- Track B long_grind (long): holdout $-235.25/day develop $-469.50/day trades_holdout=258 avgR=-0.299. Do not retry this exact (track, id) without a new costed reason.
+- Track B long_avwap_rc (long): holdout $-273.60/day develop $-273.87/day trades_holdout=220 avgR=-0.532. Do not retry this exact (track, id) without a new costed reason.
+- Track B long_pd_morn (long): holdout $-522.96/day develop $-79.42/day trades_holdout=288 avgR=-0.446. Do not retry this exact (track, id) without a new costed reason.
+- Track B long_c1_hammer (long): holdout $-275.75/day develop $-242.28/day trades_holdout=253 avgR=-2.315. Do not retry this exact (track, id) without a new costed reason.
+

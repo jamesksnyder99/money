@@ -22,6 +22,7 @@ from research.arrow11 import run_arrow11  # noqa: E402
 from research.arrow12 import run_arrow12  # noqa: E402
 from research.arrow13 import run_arrow13  # noqa: E402
 from research.arrow14 import run_arrow14  # noqa: E402
+from research.arrow15 import run_arrow15  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -42,9 +43,10 @@ def main(argv: list[str] | None = None) -> int:
             "arrow12",
             "arrow13",
             "arrow14",
+            "arrow15",
         ),
-        default="arrow14",
-        help="arrow14 stretches seats on the B-short c5-ema9 kernel; earlier modes remain valid",
+        default="arrow15",
+        help="arrow15 keeps the paying short and tests 1-min tape plus non-mirror longs",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -72,6 +74,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow13(workers=args.workers)
     if args.mode == "arrow14":
         return run_arrow14(workers=args.workers)
+    if args.mode == "arrow15":
+        return run_arrow15(workers=args.workers)
     raise SystemExit(f"unknown mode {args.mode}")
 
 
