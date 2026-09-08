@@ -164,7 +164,7 @@ def _replay_one_session(args: tuple) -> list[dict]:
                     "name": name,
                     "param": param,
                     "pnl": sum(t.pnl for t in trades),
-                    "trades": [{"pnl": t.pnl, "win": t.pnl > 0} for t in trades],
+                    "trades": [{"pnl": t.pnl, "win": t.pnl > 0, "risk": t.risk} for t in trades],
                 }
             )
     return out
@@ -176,7 +176,8 @@ def _summarize(daily: list[float], trades: list[dict], n_sessions: int) -> dict:
     n_tr = len(trades)
     wins = sum(1 for t in trades if t["win"])
     hit = wins / n_tr if n_tr else 0.0
-    avg_r = (sum(t["pnl"] for t in trades) / n_tr / 200.0) if n_tr else 0.0
+    rs = [t["pnl"] / t["risk"] for t in trades if t.get("risk")]
+    avg_r = (sum(rs) / len(rs)) if rs else 0.0
     peak = 0.0
     eq = 0.0
     max_dd = 0.0

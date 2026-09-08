@@ -292,6 +292,163 @@ def channel_position_signals(
     return []
 
 
+def session_pullback_signals(bars: pl.DataFrame) -> list[Signal]:
+    """After 10:00, 1% pullback from today's RTH extreme; both directions, no 10d trend."""
+    df = _t(_tradeable(bars)).sort("bar_start")
+    rth = df.filter(pl.col("t") >= RTH_OPEN)
+    if rth.height == 0:
+        return []
+    highs = rth["high"].to_list()
+    lows = rth["low"].to_list()
+    closes = rth["close"].to_list()
+    times = rth["bar_start"].to_list()
+    clocks = rth["t"].to_list()
+    sym = str(rth["symbol"][0])
+    ext_hi = float("-inf")
+    ext_lo = float("inf")
+    for i in range(rth.height):
+        ext_hi = max(ext_hi, float(highs[i]))
+        ext_lo = min(ext_lo, float(lows[i]))
+        if clocks[i] < MINUTE_1000:
+            continue
+        close = float(closes[i])
+        off_hi = (ext_hi - close) / ext_hi if ext_hi > 0 else 0.0
+        off_lo = (close - ext_lo) / ext_lo if ext_lo > 0 else 0.0
+        if off_hi >= 0.01 and off_hi >= off_lo:
+            stop = float(lows[i])
+            if stop > 0 and close - stop >= 0.01:
+                return [Signal(times[i], sym, 1, stop, None, off_hi, "session_pullback")]
+        if off_lo >= 0.01:
+            stop = float(highs[i])
+            if stop - close >= 0.01:
+                return [Signal(times[i], sym, -1, stop, None, off_lo, "session_pullback")]
+    return []
+
+
+def yday_level_break_free_signals(
+    bars: pl.DataFrame, prior_high: float | None, prior_low: float | None
+) -> list[Signal]:
+    if prior_high is None or prior_low is None:
+        return []
+    df = _t(_tradeable(bars)).sort("bar_start")
+    rth = df.filter(pl.col("t") >= RTH_OPEN)
+    for rec in rth.iter_rows(named=True):
+        close = float(rec["close"])
+        ts = rec["bar_start"]
+        sym = str(rec["symbol"])
+        if close > prior_high:
+            return [Signal(ts, sym, 1, prior_high, None, close - prior_high, "yday_level_break")]
+        if close < prior_low:
+            return [Signal(ts, sym, -1, prior_low, None, prior_low - close, "yday_level_break")]
+    return []
+
+
+def compression_expansion_free_signals(
+    bars: pl.DataFrame,
+    median_range: float | None,
+    prior_range: float | None,
+) -> list[Signal]:
+    """Direction = 15-min expansion (09:44 close vs opening range), not EOD trend."""
+    if median_range is None or prior_range is None or median_range <= 0:
+        return []
+    if prior_range > 0.7 * median_range:
+        return []
+    df = _t(_tradeable(bars))
+    first15 = df.filter((pl.col("t") >= RTH_OPEN) & (pl.col("t") <= MINUTE_0944))
+    last = first15.filter(pl.col("t") == MINUTE_0944)
+    if last.height != 1 or first15.height < 2:
+        return []
+    hi = float(first15["high"].max())
+    lo = float(first15["low"].min())
+    rng = hi - lo
+    if rng < 1.2 * median_range:
+        return []
+    rec = last.row(0, named=True)
+    close = float(rec["close"])
+    third = rng / 3.0
+    if close >= hi - third:
+        sd, stop = 1, lo
+    elif close <= lo + third:
+        sd, stop = -1, hi
+    else:
+        return []
+    return [
+        Signal(rec["bar_start"], str(rec["symbol"]), sd, stop, None, rng / median_range, "compression_expansion")
+    ]
+
+
+def rs_vs_book_free_signals(
+    bars: pl.DataFrame,
+    name_ret: float | None,
+    p70: float | None,
+    p30: float | None,
+) -> list[Signal]:
+    if name_ret is None:
+        return []
+    sd = None
+    if p70 is not None and name_ret >= p70:
+        sd = 1
+    elif p30 is not None and name_ret <= p30:
+        sd = -1
+    if sd is None:
+        return []
+    df = _t(_tradeable(bars))
+    b = _bar_at(df, MINUTE_1015)
+    if b is None:
+        return []
+    return [
+        Signal(
+            b["bar_start"],
+            str(b["symbol"]),
+            sd,
+            0.0,
+            None,
+            abs(name_ret),
+            "rs_vs_book",
+            stop_from_entry=True,
+        )
+    ]
+
+
+def adv_expanding_free_signals(bars: pl.DataFrame, adv_ok: bool) -> list[Signal]:
+    """Direction = 09:30→10:00 session direction, not 10d trend."""
+    if not adv_ok:
+        return []
+    df = _t(_tradeable(bars)).sort("bar_start")
+    b930 = _bar_at(df, RTH_OPEN)
+    b1000 = _bar_at(df, MINUTE_1000)
+    if b930 is None or b1000 is None:
+        return []
+    open_930 = float(b930["open"])
+    if open_930 <= 0:
+        return []
+    ret0 = float(b1000["close"]) / open_930 - 1.0
+    if ret0 > 0:
+        sd = 1
+    elif ret0 < 0:
+        sd = -1
+    else:
+        return []
+    later = df.filter(pl.col("t") >= MINUTE_1000)
+    for rec in later.iter_rows(named=True):
+        close = float(rec["close"])
+        still = (sd > 0 and close > open_930) or (sd < 0 and close < open_930)
+        if still:
+            return [
+                Signal(
+                    rec["bar_start"],
+                    str(rec["symbol"]),
+                    sd,
+                    0.0,
+                    None,
+                    abs(close / open_930 - 1.0),
+                    "adv_expanding",
+                    stop_from_entry=True,
+                )
+            ]
+    return []
+
+
 def rth_return_at(bars: pl.DataFrame, t: time) -> float | None:
     df = _t(_tradeable(bars))
     b930 = _bar_at(df, RTH_OPEN)

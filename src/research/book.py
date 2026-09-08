@@ -43,6 +43,7 @@ class Trade:
     exit_px: float
     pnl: float
     tag: str
+    risk: float
 
 
 @dataclass
@@ -120,7 +121,10 @@ def replay_session(
         sigs_at.setdefault(sig.signal_ts, []).append(sig)
 
     if rth_open_entries:
-        for sig in rth_open_entries:
+        ranked = sorted(rth_open_entries, key=lambda s: -abs(s.score))
+        for sig in ranked:
+            if not book.can_enter(sig.symbol):
+                continue
             arr = packed.get(sig.symbol)
             if arr is None:
                 continue
@@ -180,7 +184,11 @@ def replay_session(
 
 
 def _fills_at(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:
-    for sym, (idx, sig) in list(book.pending_entry.items()):
+    pending = sorted(
+        list(book.pending_entry.items()),
+        key=lambda kv: -abs(kv[1][1].score),
+    )
+    for sym, (idx, sig) in pending:
         arr = packed.get(sym)
         if arr is None or arr.ts[idx] != ts:
             continue
@@ -262,6 +270,7 @@ def _close_position(book: Book, pos: Position, px: float, ts: datetime, tag: str
             exit_px=px,
             pnl=signed_pnl(held.side, held.shares, held.entry_px, px),
             tag=tag,
+            risk=held.risk,
         )
     )
 

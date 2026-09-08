@@ -29,6 +29,40 @@ def tradeable_mask(df: pl.DataFrame) -> pl.Expr:
     )
 
 
+def rth_session_vwap(df: pl.DataFrame) -> list[float]:
+    """Cumulative VWAP from RTH tradeable bars only (09:30+). Premarket is ignored."""
+    n = df.height
+    out = [float("nan")] * n
+    if n == 0:
+        return out
+    times = df["bar_start"].to_list()
+    highs = df["high"].to_list()
+    lows = df["low"].to_list()
+    closes = df["close"].to_list()
+    vols = df["volume"].to_list()
+    opens = df["open"].to_list()
+    cpv = 0.0
+    cv = 0.0
+    last = float("nan")
+    for i in range(n):
+        ts = times[i]
+        clock = ts.timetz().replace(tzinfo=None) if getattr(ts, "tzinfo", None) else ts.time()
+        if clock < RTH_OPEN:
+            out[i] = last
+            continue
+        if not is_tradeable(opens[i], closes[i], vols[i]):
+            out[i] = last
+            continue
+        typical = (float(highs[i]) + float(lows[i]) + float(closes[i])) / 3.0
+        v = float(vols[i])
+        cpv += typical * v
+        cv += v
+        if cv > 0:
+            last = cpv / cv
+        out[i] = last
+    return out
+
+
 def next_tradeable_row(df: pl.DataFrame, after_idx: int) -> int | None:
     """Index of the next tradeable bar strictly after after_idx, or None."""
     n = df.height

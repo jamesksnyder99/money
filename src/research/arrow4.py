@@ -220,7 +220,7 @@ def _replay_track_session(args: tuple) -> list[dict]:
                 "name": name,
                 "param": param,
                 "pnl": sum(t.pnl for t in trades),
-                "trades": [{"pnl": t.pnl, "win": t.pnl > 0} for t in trades],
+                "trades": [{"pnl": t.pnl, "win": t.pnl > 0, "risk": t.risk} for t in trades],
             }
         )
     return out
@@ -270,7 +270,7 @@ def _swing_fill_session(args: tuple) -> dict:
         "name": "swing",
         "param": None,
         "pnl": sum(t.pnl for t in trades),
-        "trades": [{"pnl": t.pnl, "win": t.pnl > 0} for t in trades],
+        "trades": [{"pnl": t.pnl, "win": t.pnl > 0, "risk": t.risk} for t in trades],
     }
 
 
