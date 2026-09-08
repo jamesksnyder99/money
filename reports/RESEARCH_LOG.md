@@ -229,3 +229,40 @@ What died (holdout < $200, or holdout green with red develop):
 - Track B short_hot|two_close: holdout $-19.51/day develop $23.84/day trades_holdout=85 avgR=-0.075. Do not retry this exact (track, id) without a new costed reason.
 - Track B short_hot|vwap: holdout $61.62/day develop $69.71/day trades_holdout=98 avgR=-0.084. Do not retry this exact (track, id) without a new costed reason.
 
+## 2026-09-08T10:20:06-04:00 — Arrow 12
+
+VERDICT: FAIL — no Arrow 12 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass.
+
+Kernel: Arrow 11 B/short_hot|or25 (develop +$19.36, holdout +$81.56, 97/37 trades). Short only. Did not mirror into longs. Did not rerun Q4, two-close, 5-min ORBR, or VWAP entry. Six ids: control; 2R; trail after 1R; flatten 11:30; bearish OR (09:44 close in lower half); gap-down >= 1.5% with OR > 2.5% still.
+
+B two-sided green preserved: short_or25|control (dev $19.36 hold $81.56 vs control $19.36/$81.56); short_or25|2R (dev $28.28 hold $80.45 vs control $19.36/$81.56); short_or25|trail (dev $31.27 hold $71.33 vs control $19.36/$81.56); short_or25|flat1130 (dev $8.90 hold $46.97 vs control $19.36/$81.56); short_or25|bearish_or (dev $2.09 hold $64.66 vs control $19.36/$81.56); short_or25|gap15 (dev $39.87 hold $73.44 vs control $19.36/$81.56).
+Approach to $200 on B green books: short_or25|control hold $81.56/day (vs $200), short_or25|2R hold $80.45/day (vs $200), short_or25|trail hold $71.33/day (vs $200), short_or25|flat1130 hold $46.97/day (vs $200), short_or25|bearish_or hold $64.66/day (vs $200), short_or25|gap15 hold $73.44/day (vs $200).
+
+n_vs_control:
+  A/short_or25|control: develop n=131 vs control 131 (1.00x) holdout n=43 vs control 43 (1.00x)
+  A/short_or25|2R: develop n=132 vs control 131 (1.01x) holdout n=43 vs control 43 (1.00x)
+  A/short_or25|trail: develop n=139 vs control 131 (1.06x) holdout n=44 vs control 43 (1.02x)
+  A/short_or25|flat1130: develop n=127 vs control 131 (0.97x) holdout n=43 vs control 43 (1.00x)
+  A/short_or25|bearish_or: develop n=109 vs control 131 (0.83x) holdout n=32 vs control 43 (0.74x)
+  A/short_or25|gap15: develop n=149 vs control 131 (1.14x) holdout n=52 vs control 43 (1.21x)
+  B/short_or25|control: develop n=97 vs control 97 (1.00x) holdout n=37 vs control 37 (1.00x)
+  B/short_or25|2R: develop n=98 vs control 97 (1.01x) holdout n=37 vs control 37 (1.00x)
+  B/short_or25|trail: develop n=102 vs control 97 (1.05x) holdout n=38 vs control 37 (1.03x)
+  B/short_or25|flat1130: develop n=95 vs control 97 (0.98x) holdout n=35 vs control 37 (0.95x)
+  B/short_or25|bearish_or: develop n=78 vs control 97 (0.80x) holdout n=27 vs control 37 (0.73x)
+  B/short_or25|gap15: develop n=112 vs control 97 (1.15x) holdout n=41 vs control 37 (1.11x)
+
+What died (holdout < $200, or holdout green with red develop):
+- Track A short_or25|control: holdout $29.10/day develop $-24.57/day trades_holdout=43 avgR=0.075. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_or25|2R: holdout $27.98/day develop $-19.92/day trades_holdout=43 avgR=0.072. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_or25|trail: holdout $26.59/day develop $-16.65/day trades_holdout=44 avgR=0.067. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_or25|flat1130: holdout $-3.94/day develop $-29.90/day trades_holdout=43 avgR=-0.010. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_or25|bearish_or: holdout $29.05/day develop $-48.03/day trades_holdout=32 avgR=0.100. Do not retry this exact (track, id) without a new costed reason.
+- Track A short_or25|gap15: holdout $22.54/day develop $-31.01/day trades_holdout=52 avgR=0.048. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_or25|control: holdout $81.56/day develop $19.36/day trades_holdout=37 avgR=0.243. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_or25|2R: holdout $80.45/day develop $28.28/day trades_holdout=37 avgR=0.240. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_or25|trail: holdout $71.33/day develop $31.27/day trades_holdout=38 avgR=0.207. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_or25|flat1130: holdout $46.97/day develop $8.90/day trades_holdout=35 avgR=0.148. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_or25|bearish_or: holdout $64.66/day develop $2.09/day trades_holdout=27 avgR=0.264. Do not retry this exact (track, id) without a new costed reason.
+- Track B short_or25|gap15: holdout $73.44/day develop $39.87/day trades_holdout=41 avgR=0.198. Do not retry this exact (track, id) without a new costed reason.
+
