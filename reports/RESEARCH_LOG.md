@@ -95,3 +95,25 @@ What died (holdout < $200, or holdout green with red develop):
 - Track B rs_vs_book (free): holdout $-182.30/day develop $-148.74/day trades_holdout=110 avgR=-0.340. Do not retry this exact (track, rule, stance) without a new costed reason.
 - Track B adv_expanding (free): holdout $-144.26/day develop $-105.15/day trades_holdout=110 avgR=-0.249. Do not retry this exact (track, rule, stance) without a new costed reason.
 
+## 2026-09-08T08:20:11-04:00 — Arrow 7
+
+VERDICT: FAIL — no Arrow 7 experiment has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass.
+
+Same Tracks A and B. No new hours. Six experiments only: failed_yday_break with baseline / 2R / time-box 10:45; channel_position with 2R / trail-after-1R; yday_level_break with tight book (2 positions, 4 entries) + 2R. Did not retry exact dead Arrow 6 (track, rule, stance) pairs. Did not promote develop-red / holdout-green. Pass = holdout >= $200/day and develop not red.
+
+Engine: 2R target = entry +/- 2 x stop distance; trail after close >= +1R (stop to entry, then 0.5% from favorable extreme). Stops/targets trigger on bar H/L, fill next open. Time-box flattens at first tradeable open >= 10:45.
+
+What died (holdout < $200, or holdout green with red develop):
+- Track A failed_yday_break|baseline: holdout $-111.86/day develop $-335.28/day trades_holdout=155 avgR=-0.184. Do not retry this exact (track, id) without a new costed reason.
+- Track A failed_yday_break|2R: holdout $-49.81/day develop $-312.60/day trades_holdout=181 avgR=-0.142. Do not retry this exact (track, id) without a new costed reason.
+- Track A failed_yday_break|time_box: holdout $-56.46/day develop $-233.27/day trades_holdout=171 avgR=-0.091. Do not retry this exact (track, id) without a new costed reason.
+- Track A channel_position|2R: holdout $11.36/day develop $14.34/day trades_holdout=98 avgR=0.013. Do not retry this exact (track, id) without a new costed reason.
+- Track A channel_position|trail: holdout $11.36/day develop $14.34/day trades_holdout=98 avgR=0.013. Do not retry this exact (track, id) without a new costed reason.
+- Track A yday_level_break|tight_2R: holdout $-60.98/day develop $-31.63/day trades_holdout=50 avgR=-0.373. Do not retry this exact (track, id) without a new costed reason.
+- Track B failed_yday_break|baseline: holdout $-59.57/day develop $-154.40/day trades_holdout=156 avgR=-0.181. Do not retry this exact (track, id) without a new costed reason.
+- Track B failed_yday_break|2R: holdout $-62.95/day develop $-215.57/day trades_holdout=174 avgR=-0.224. Do not retry this exact (track, id) without a new costed reason.
+- Track B failed_yday_break|time_box: holdout $-57.66/day develop $-151.30/day trades_holdout=158 avgR=-0.203. Do not retry this exact (track, id) without a new costed reason.
+- Track B channel_position|2R: holdout $-14.64/day develop $36.51/day trades_holdout=104 avgR=-0.016. Do not retry this exact (track, id) without a new costed reason.
+- Track B channel_position|trail: holdout $-14.64/day develop $34.11/day trades_holdout=104 avgR=-0.016. Do not retry this exact (track, id) without a new costed reason.
+- Track B yday_level_break|tight_2R: holdout $-70.50/day develop $-6.20/day trades_holdout=48 avgR=-0.311. Do not retry this exact (track, id) without a new costed reason.
+

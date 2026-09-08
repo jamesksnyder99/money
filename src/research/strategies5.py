@@ -325,6 +325,59 @@ def session_pullback_signals(bars: pl.DataFrame) -> list[Signal]:
     return []
 
 
+def failed_yday_break_signals(
+    bars: pl.DataFrame, prior_high: float | None, prior_low: float | None
+) -> list[Signal]:
+    """Fade a failed prior-session break: first RTH close beyond yday high/low, then
+    a later RTH close back inside that level before 11:00. Stop = failed extreme.
+    No 10d-trend tether. Clean (un-failed) breaks do not fire.
+    """
+    if prior_high is None or prior_low is None:
+        return []
+    df = _t(_tradeable(bars)).sort("bar_start")
+    rth = df.filter((pl.col("t") >= RTH_OPEN) & (pl.col("t") < MINUTE_1100))
+    if rth.height == 0:
+        return []
+    highs = rth["high"].to_list()
+    lows = rth["low"].to_list()
+    closes = rth["close"].to_list()
+    times = rth["bar_start"].to_list()
+    sym = str(rth["symbol"][0])
+    broke: str | None = None
+    ext: float | None = None
+    for i in range(rth.height):
+        close = float(closes[i])
+        hi = float(highs[i])
+        lo = float(lows[i])
+        if broke is None:
+            if close > prior_high:
+                broke = "high"
+                ext = hi
+            elif close < prior_low:
+                broke = "low"
+                ext = lo
+            continue
+        if broke == "high":
+            ext = max(float(ext), hi)
+            if close <= prior_high:
+                stop = float(ext)
+                if stop - close < 0.01:
+                    continue
+                return [
+                    Signal(times[i], sym, -1, stop, None, stop - prior_high, "failed_yday_break")
+                ]
+        else:
+            ext = min(float(ext), lo)
+            if close >= prior_low:
+                stop = float(ext)
+                if close - stop < 0.01:
+                    continue
+                return [
+                    Signal(times[i], sym, 1, stop, None, prior_low - stop, "failed_yday_break")
+                ]
+    return []
+
+
 def yday_level_break_free_signals(
     bars: pl.DataFrame, prior_high: float | None, prior_low: float | None
 ) -> list[Signal]:

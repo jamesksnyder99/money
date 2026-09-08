@@ -30,6 +30,9 @@ class Position:
     entry_ts: datetime
     risk: float
     tag: str
+    initial_r: float = 0.0
+    trail_armed: bool = False
+    favorable_extreme: float = 0.0
 
 
 @dataclass
@@ -90,6 +93,12 @@ class Book:
     trades: list[Trade] = field(default_factory=list)
     entries: int = 0
     risk_out: float = 0.0
+    max_positions: int = MAX_POSITIONS
+    max_entries: int = MAX_ENTRIES
+    take_2r: bool = False
+    trail_after_1r: bool = False
+    flatten_at: time = MINUTE_1159
+    peak_positions: int = 0
 
     def n_pending_entry(self) -> int:
         return len(self.pending_entry)
@@ -97,9 +106,9 @@ class Book:
     def can_enter(self, symbol: str) -> bool:
         if symbol in self.positions or symbol in self.pending_entry:
             return False
-        if len(self.positions) + self.n_pending_entry() >= MAX_POSITIONS:
+        if len(self.positions) + self.n_pending_entry() >= self.max_positions:
             return False
-        if self.entries >= MAX_ENTRIES:
+        if self.entries >= self.max_entries:
             return False
         if self.risk_out + RISK_PER_IDEA > MAX_RISK_OUTSTANDING + 1e-9:
             return False
@@ -111,9 +120,22 @@ def replay_session(
     signals: list[Signal],
     prior_dv: dict[str, float],
     rth_open_entries: list[Signal] | None = None,
+    *,
+    take_2r: bool = False,
+    trail_after_1r: bool = False,
+    flatten_at: time | None = None,
+    max_positions: int | None = None,
+    max_entries: int | None = None,
 ) -> list[Trade]:
     packed = {sym: _pack(df) for sym, df in bars_by_symbol.items()}
-    book = Book(prior_dv=prior_dv)
+    book = Book(
+        prior_dv=prior_dv,
+        take_2r=take_2r,
+        trail_after_1r=trail_after_1r,
+        flatten_at=flatten_at or MINUTE_1159,
+        max_positions=max_positions if max_positions is not None else MAX_POSITIONS,
+        max_entries=max_entries if max_entries is not None else MAX_ENTRIES,
+    )
     sigs_at: dict = {}
     for sig in signals:
         if sig.overnight:
@@ -141,12 +163,12 @@ def replay_session(
         tclock = bar_time(ts)
         # 1) fills at this open
         _fills_at(book, packed, ts)
-        if tclock == MINUTE_1159:
+        if tclock >= book.flatten_at:
             _flatten_open(book, packed, ts)
             continue
         if tclock < RTH_OPEN:
             continue
-        # 2) stop/target on this bar (decision at close → next open)
+        # 2) stop/target on this bar H/L → next open; trail at close after +1R
         for pos in list(book.positions.values()):
             arr = packed.get(pos.symbol)
             if arr is None:
@@ -157,11 +179,13 @@ def replay_session(
             if pos.symbol in book.pending_exit:
                 continue
             hit, tag = _hit_stop_target(pos, arr.high[i], arr.low[i])
-            if not hit:
+            if hit:
+                nxt = _next_tradeable(arr, i)
+                if nxt is not None:
+                    book.pending_exit[pos.symbol] = (nxt, tag)
                 continue
-            nxt = _next_tradeable(arr, i)
-            if nxt is not None:
-                book.pending_exit[pos.symbol] = (nxt, tag)
+            if book.trail_after_1r:
+                _update_trail(pos, arr.high[i], arr.low[i], arr.close[i])
         # 3) new entries from signals at this close
         batch = sigs_at.get(ts, [])
         batch = sorted(batch, key=lambda s: -abs(s.score))
@@ -177,7 +201,7 @@ def replay_session(
             nxt = _next_tradeable(arr, i)
             if nxt is None:
                 continue
-            if bar_time(arr.ts[nxt]) >= MINUTE_1159:
+            if bar_time(arr.ts[nxt]) >= book.flatten_at:
                 continue
             book.pending_entry[sig.symbol] = (nxt, sig)
     return book.trades
@@ -195,7 +219,7 @@ def _fills_at(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:
         del book.pending_entry[sym]
         if not _tradeable(arr, idx):
             nxt = _next_tradeable(arr, idx)
-            if nxt is not None and bar_time(arr.ts[nxt]) < MINUTE_1159:
+            if nxt is not None and bar_time(arr.ts[nxt]) < book.flatten_at:
                 book.pending_entry[sym] = (nxt, sig)
             continue
         _open_position(book, sig, float(arr.open[idx]), ts)
@@ -239,19 +263,26 @@ def _open_position(book: Book, sig: Signal, px: float, ts: datetime) -> None:
     if shares < 1:
         return
     risk = min(RISK_PER_IDEA, shares * stop_dist)
+    target = sig.target
+    if book.take_2r:
+        target = px + sig.side * 2.0 * stop_dist
     book.positions[sig.symbol] = Position(
         symbol=sig.symbol,
         side=sig.side,
         shares=shares,
         entry_px=px,
         stop=sig.stop,
-        target=sig.target,
+        target=target,
         entry_ts=ts,
         risk=risk,
         tag=sig.tag,
+        initial_r=stop_dist,
+        trail_armed=False,
+        favorable_extreme=px,
     )
     book.entries += 1
     book.risk_out += risk
+    book.peak_positions = max(book.peak_positions, len(book.positions))
 
 
 def _close_position(book: Book, pos: Position, px: float, ts: datetime, tag: str) -> None:
@@ -273,6 +304,27 @@ def _close_position(book: Book, pos: Position, px: float, ts: datetime, tag: str
             risk=held.risk,
         )
     )
+
+
+def _update_trail(pos: Position, high: float, low: float, close: float) -> None:
+    """After close ≥ +1R, stop to entry; then trail 0.5% from favorable extreme."""
+    r = pos.initial_r
+    if r <= 0:
+        return
+    if pos.side > 0:
+        pos.favorable_extreme = max(pos.favorable_extreme, high)
+        if not pos.trail_armed and close >= pos.entry_px + r - 1e-12:
+            pos.trail_armed = True
+            pos.stop = pos.entry_px
+        if pos.trail_armed:
+            pos.stop = max(pos.stop, pos.favorable_extreme * (1.0 - 0.005))
+    else:
+        pos.favorable_extreme = min(pos.favorable_extreme, low)
+        if not pos.trail_armed and close <= pos.entry_px - r + 1e-12:
+            pos.trail_armed = True
+            pos.stop = pos.entry_px
+        if pos.trail_armed:
+            pos.stop = min(pos.stop, pos.favorable_extreme * (1.0 + 0.005))
 
 
 def _hit_stop_target(pos: Position, high: float, low: float) -> tuple[bool, str]:
