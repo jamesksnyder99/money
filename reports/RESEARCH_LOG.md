@@ -141,3 +141,27 @@ What died (holdout < $200, or holdout green with red develop):
 - Track B orb_wide|cost_gate: holdout $-126.85/day develop $-87.28/day trades_holdout=134 avgR=-0.114. Do not retry this exact (track, id) without a new costed reason.
 - Track B three_day_hl|2R: holdout $-3.90/day develop $-25.60/day trades_holdout=109 avgR=-0.007. Do not retry this exact (track, id) without a new costed reason.
 
+## 2026-09-08T09:15:14-04:00 — Arrow 9
+
+VERDICT: FAIL — no Arrow 9 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass.
+
+Phase 1 (develop only): mean post-09:44 range by DV quintile, |gap|, OR-width, 10d trend, and clock hour of the session extreme. Holdout was not used to choose buckets or the paragraph.
+
+Where movement lives: On develop, leftover range after 09:44 concentrates where the tables are tallest: liquid names (Q5) that already printed a real opening range and/or a real gap. Track A: post-09:44 range is larger in Q5 (3.28% n=6548) than Q1 (2.92% n=6433). Highest |gap| bucket is >=2% (4.65% n=5107); highest OR-width bucket is >4% (6.16% n=4259). Q5 intersection with the most leftover range: Q5 × |gap| >=2% × OR >4% (mean 7.34% n=576). Session extremes by clock: 9h 7487 (23%), 10h 10179 (31%), 11h 14836 (46%). Track B: post-09:44 range is larger in Q5 (3.47% n=3341) than Q1 (2.81% n=3341). Highest |gap| bucket is >=2% (4.60% n=3221); highest OR-width bucket is >4% (6.31% n=2235). Q5 intersection with the most leftover range: Q5 × |gap| >=2% × OR >4% (mean 7.82% n=367). Session extremes by clock: 9h 3779 (23%), 10h 5179 (31%), 11h 7753 (46%).
+
+Phase 2 six frozen books on that intended population (Q5 DV, wide OR and/or |gap|>=2%). orb_wide / gap-continuation / three_day_hl; manage baseline, 2R, trail, or 11:00 flatten. No 7th. No ML. No Arrow 8 cost_gate rerun.
+
+What died (holdout < $200, or holdout green with red develop):
+- Track A orb_q5|baseline: holdout $-125.12/day develop $-44.75/day trades_holdout=139 avgR=-0.122. Do not retry this exact (track, id) without a new costed reason.
+- Track A orb_q5|2R: holdout $-128.31/day develop $-53.39/day trades_holdout=142 avgR=-0.121. Do not retry this exact (track, id) without a new costed reason.
+- Track A gap_q5|2R: holdout $-301.55/day develop $-99.62/day trades_holdout=110 avgR=-0.228. Do not retry this exact (track, id) without a new costed reason.
+- Track A orb_q5_gapsign|trail: holdout $-68.74/day develop $-67.03/day trades_holdout=132 avgR=-0.065. Do not retry this exact (track, id) without a new costed reason.
+- Track A three_day_q5|2R: holdout $-99.34/day develop $-87.88/day trades_holdout=109 avgR=-0.201. Do not retry this exact (track, id) without a new costed reason.
+- Track A orb_q5|flat1100: holdout $-151.47/day develop $-119.44/day trades_holdout=135 avgR=-0.142. Do not retry this exact (track, id) without a new costed reason.
+- Track B orb_q5|baseline: holdout $-159.98/day develop $-120.90/day trades_holdout=131 avgR=-0.154. Do not retry this exact (track, id) without a new costed reason.
+- Track B orb_q5|2R: holdout $-182.27/day develop $-121.45/day trades_holdout=132 avgR=-0.172. Do not retry this exact (track, id) without a new costed reason.
+- Track B gap_q5|2R: holdout $-329.31/day develop $-77.34/day trades_holdout=109 avgR=-0.519. Do not retry this exact (track, id) without a new costed reason.
+- Track B orb_q5_gapsign|trail: holdout $-107.88/day develop $-46.97/day trades_holdout=124 avgR=-0.125. Do not retry this exact (track, id) without a new costed reason.
+- Track B three_day_q5|2R: holdout $6.54/day develop $-67.94/day trades_holdout=110 avgR=0.016. Do not retry this exact (track, id) without a new costed reason.
+- Track B orb_q5|flat1100: holdout $-195.09/day develop $-142.44/day trades_holdout=125 avgR=-0.191. Do not retry this exact (track, id) without a new costed reason.
+
