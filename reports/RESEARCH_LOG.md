@@ -117,3 +117,27 @@ What died (holdout < $200, or holdout green with red develop):
 - Track B channel_position|trail: holdout $-14.64/day develop $34.11/day trades_holdout=104 avgR=-0.016. Do not retry this exact (track, id) without a new costed reason.
 - Track B yday_level_break|tight_2R: holdout $-70.50/day develop $-6.20/day trades_holdout=48 avgR=-0.311. Do not retry this exact (track, id) without a new costed reason.
 
+## 2026-09-08T08:44:39-04:00 — Arrow 8
+
+VERDICT: FAIL — no Arrow 8 experiment has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass.
+
+Same Tracks A and B. No new hours. Six experiments only: orb_wide baseline / 2R / trail / breadth-vs-book-median / cost gate (skip if round-trip cost > 0.25R); three_day_hl with 2R. Did not retry exact dead Arrow 6/7 pairs. Did not rerun channel|2R or channel|trail. Pass = holdout >= $200/day and develop not red.
+
+orb_wide width band:
+  Track A: or_names=49187 width_fail=16714 width_ok=32473 fired=29476
+  Track B: or_names=25578 width_fail=8259 width_ok=17319 fired=15685
+
+What died (holdout < $200, or holdout green with red develop):
+- Track A orb_wide|baseline: holdout $-150.24/day develop $-188.48/day trades_holdout=108 avgR=-0.231. Do not retry this exact (track, id) without a new costed reason.
+- Track A orb_wide|2R: holdout $-147.65/day develop $-164.49/day trades_holdout=110 avgR=-0.224. Do not retry this exact (track, id) without a new costed reason.
+- Track A orb_wide|trail: holdout $-111.02/day develop $-189.67/day trades_holdout=129 avgR=-0.145. Do not retry this exact (track, id) without a new costed reason.
+- Track A orb_wide|breadth: holdout $-104.75/day develop $-254.18/day trades_holdout=102 avgR=-0.228. Do not retry this exact (track, id) without a new costed reason.
+- Track A orb_wide|cost_gate: holdout $-150.24/day develop $-188.48/day trades_holdout=108 avgR=-0.231. Do not retry this exact (track, id) without a new costed reason.
+- Track A three_day_hl|2R: holdout $-150.18/day develop $-128.56/day trades_holdout=106 avgR=-0.312. Do not retry this exact (track, id) without a new costed reason.
+- Track B orb_wide|baseline: holdout $-126.85/day develop $-87.28/day trades_holdout=134 avgR=-0.114. Do not retry this exact (track, id) without a new costed reason.
+- Track B orb_wide|2R: holdout $-136.38/day develop $-81.02/day trades_holdout=138 avgR=-0.119. Do not retry this exact (track, id) without a new costed reason.
+- Track B orb_wide|trail: holdout $-152.86/day develop $-122.08/day trades_holdout=157 avgR=-0.122. Do not retry this exact (track, id) without a new costed reason.
+- Track B orb_wide|breadth: holdout $9.27/day develop $-154.99/day trades_holdout=121 avgR=0.009. Do not retry this exact (track, id) without a new costed reason.
+- Track B orb_wide|cost_gate: holdout $-126.85/day develop $-87.28/day trades_holdout=134 avgR=-0.114. Do not retry this exact (track, id) without a new costed reason.
+- Track B three_day_hl|2R: holdout $-3.90/day develop $-25.60/day trades_holdout=109 avgR=-0.007. Do not retry this exact (track, id) without a new costed reason.
+

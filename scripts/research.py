@@ -15,6 +15,7 @@ from research.arrow4 import run_arrow4  # noqa: E402
 from research.arrow5 import run_arrow5  # noqa: E402
 from research.arrow6 import run_arrow6  # noqa: E402
 from research.arrow7 import run_arrow7  # noqa: E402
+from research.arrow8 import run_arrow8  # noqa: E402
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -22,9 +23,9 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="Lab A research replay")
     p.add_argument(
         "--mode",
-        choices=("arrow3", "arrow4", "arrow5", "arrow6", "arrow7"),
-        default="arrow7",
-        help="arrow7 is manage/exit lab on repaired engine; earlier modes remain valid",
+        choices=("arrow3", "arrow4", "arrow5", "arrow6", "arrow7", "arrow8"),
+        default="arrow8",
+        help="arrow8 is wide-stop OR plus selection; earlier modes remain valid",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -38,6 +39,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow6(workers=args.workers)
     if args.mode == "arrow7":
         return run_arrow7(workers=args.workers)
+    if args.mode == "arrow8":
+        return run_arrow8(workers=args.workers)
     raise SystemExit(f"unknown mode {args.mode}")
 
 
