@@ -1,56 +1,52 @@
-# Build Arrow 10 — hot cell from Arrow 9 + 5-min ORBR + two trend defs
+# Build Arrow 10 — hot cell, 15m EMA trend, asymmetric long vs short
 
 Read `docs/SUCCESS.md`, `reports/arrow09_character.txt`, `reports/arrow09_results.txt`, `reports/RESEARCH_LOG.md` first.
 
-Pass = holdout ≥ $200/day **and** develop not red. Same Tracks A/B, repaired engine, 42/22. No 12:00–16:00. Do not rerun Arrow 9's Q5+1–4% books or gap-fade.
+Pass = holdout ≥ $200/day **and** develop not red. Same Tracks A/B, repaired engine, 42/22. No 12:00–16:00. Do not rerun Arrow 9's Q5+1–4% books.
 
-## Answers already known (do not rediscover)
+James's correction: prior arrows used **one** 10-day EOD recipe and a **symmetric** `side = ±1` engine. That is not good enough. Long and short are different trades. Trend can be finer than C10 vs C1.
 
-- **5-min ORBR + retest + trend:** not tested. We broke a **15-minute** range (09:30–09:44) without a retest. Different animal.
-- **Trend:** one definition only, in `trend.py`: 10 prior official EOD closes; up = `C10 > C1` and `C10 > mean(C1..C10)`; down = inverse; else flat. Never 5-day, never 20-day, never SMA-only, never higher-high structure as the trend flag.
+## Data constraint (do not invent afternoon 15m bars)
 
-Arrow 9 character (develop): leftover range lives in **Q5 × |gap| ≥ 2% × OR width > 4%**. Session extremes cluster in the **11:00 hour**. Arrow 8/9 **excluded** OR > 4%. This arrow trades that cell and does not flatten at 11:00.
+On disk: 07:30–11:59 1m only. Build a 15-minute series by resampling those bars (07:30, 07:45, … 11:45) and **stitch prior sessions** (warmup + earlier study days) so a 21-period EMA exists by 2026-06-01. Never use holdout sessions as history for a develop day; never use same-session 15m bars that have not closed.
 
-## Trend flags (compute both; do not invent a third)
+## Trend flags (compute these; do not add a fourth)
 
-- `eod10` — existing helper.
-- `eod5` — same recipe on the **5** prior official EOD closes: up = `C5 > C1` and `C5 > mean(C1..C5)`.
+1. **`ema15`** — on the stitched 15-min close: `ema9` and `ema21` (standard EMA, span 9 and 21). At a decision bar, use the last **completed** 15-min close **before** that bar.
+   - Long-stack: `ema9 > ema21`
+   - Short-stack: `ema9 < ema21`
+2. **`hhhl3`** — last 3 **prior** sessions' morning high/low (07:30–12:00 extremes already in stats).
+   - Long-structure: `L1 < L2 < L3` (rising lows)
+   - Short-structure: `H1 > H2 > H3` (falling highs)
+3. **`eod10`** — keep the existing helper as a **tag only** in the report (how often it agrees with ema15). Do not use it as the entry filter except where the table says so.
 
-If fewer than 5 priors, that name-day is flat for `eod5`.
+## Hot cell (unchanged from character)
 
-## Hot cell (point-in-time, each session)
+`dv_rank ≥ 0.80` and `|gap| ≥ 0.02` and 15-min OR width (09:30–09:44)/mid `> 0.04`.
 
-- `dv_rank ≥ 0.80` among that session's eligible names
-- `|09:30 open / prior_close − 1| ≥ 0.02`
-- 09:30–09:44 range / mid **> 0.04**
+## 5-min ORBR + retest
 
-Small n (Arrow 9 develop ~576 A / 367 B name-days). That is intended.
+Range = 09:30–09:34. Range/mid ≥ 0.004. Break = first close beyond the range after 09:35. Retest = later bar touches the broken level from the outside and does not close back through the far side. Signal on retest close. Stop = far side of the 5-min range. No retest by 11:00 → no trade.
 
-## 5-min ORBR + retest (classic)
+## Six experiments — long books and short books are **not** mirrors
 
-- Range = 09:30–09:34 high/low. Require range / mid ≥ 0.004 so it is not a flat print.
-- **Break:** after 09:35, first tradeable close beyond the range.
-- **Retest:** after that break, a later tradeable bar whose **low** comes back to the range high (long) or **high** comes back to the range low (short), without closing back through the far side of the range. Signal on that retest bar's close. Stop = far side of the 5-min range.
-- If no retest by 11:00, no trade.
-- Not a 15-min OR. Not a failed-break fade.
+A long id may only open `side = +1`. A short id may only open `side = -1`. Do not generate the opposite side from the same predicate.
 
-## Six experiments only
+| id | side | population | entry | required stance | manage |
+|---|---|---|---|---|---|
+| 1 | **long** | hot cell **and** gap **up** | 15-min OR **upside** break after 09:45 | `ema15` long-stack | flatten 11:59 |
+| 2 | **long** | hot cell and gap up | 15-min OR upside break | `ema15` long-stack **and** `hhhl3` rising lows | 2R, else 11:59 |
+| 3 | **long** | dv_rank ≥ 0.80 | 5-min ORBR + retest **of the high** | `ema15` long-stack | flatten 11:59 |
+| 4 | **short** | hot cell **and** gap **down** | 15-min OR **downside** break after 09:45 | `ema15` short-stack | flatten 11:59 |
+| 5 | **short** | hot cell and gap down | 15-min OR downside break | `ema15` short-stack **and** `hhhl3` falling highs | 2R, else 11:59 |
+| 6 | **short** | dv_rank ≥ 0.80 | 5-min ORBR + retest **of the low** | `ema15` short-stack | flatten 11:59 |
 
-| id | population | entry | trend filter | manage |
-|---|---|---|---|---|
-| 1 | hot cell | 15-min OR break (09:45+ close beyond 09:30–09:44), stop other side | none | flatten 11:59 |
-| 2 | hot cell | same 15-min break | none | 2R, else 11:59 |
-| 3 | hot cell | same 15-min break | **eod10 with the break** (skip flat / against) | flatten 11:59 |
-| 4 | dv_rank ≥ 0.80 | 5-min ORBR + retest | **eod10 with the break** | flatten 11:59 |
-| 5 | dv_rank ≥ 0.80 | 5-min ORBR + retest | **eod5 with the break** | flatten 11:59 |
-| 6 | hot cell | 5-min ORBR + retest | eod10 with the break | 2R, else 11:59 |
-
-No 11:00 flatten. No 7th id. No ML.
+Why they differ: longs require a **gap up** into the hot cell (or a high-retest) plus a rising 15m stack. Shorts require a **gap down** plus a falling stack. Shorts do **not** use rising-low logic. Longs do **not** use falling-high logic. No 11:00 flatten. No 7th id.
 
 ## Outputs
 
-- `reports/arrow10_results.txt` — two-sided pass; table track × id; counts of hot-cell name-days develop vs holdout.
-- Append `reports/RESEARCH_LOG.md` noting 5-min ORBR and eod5 are first looks.
-- Tests: 5-min ORBR silent with no retest; silent if range is a flat print; eod5 up/down/flat on a 5-close fixture; hot-cell rejects OR width 3%.
+- `reports/arrow10_results.txt` — two-sided pass; table **by id and side**; hot-cell counts; how often `ema15` agrees with `eod10` on develop (descriptive, not a filter except as tabled).
+- Append `reports/RESEARCH_LOG.md`.
+- Tests: 15m EMA uses only completed bars; long id emits no shorts; 5-min ORBR silent with no retest; hot-cell rejects 3% OR; hhhl3 rising lows do not arm a short id.
 
 Commit code + reports. No parquet. No Arrow 11.
