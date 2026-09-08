@@ -99,6 +99,7 @@ class Book:
     trail_after_1r: bool = False
     flatten_at: time = MINUTE_1159
     peak_positions: int = 0
+    max_risk_outstanding: float = MAX_RISK_OUTSTANDING
 
     def n_pending_entry(self) -> int:
         return len(self.pending_entry)
@@ -110,7 +111,7 @@ class Book:
             return False
         if self.entries >= self.max_entries:
             return False
-        if self.risk_out + RISK_PER_IDEA > MAX_RISK_OUTSTANDING + 1e-9:
+        if self.risk_out + RISK_PER_IDEA > self.max_risk_outstanding + 1e-9:
             return False
         return True
 
@@ -126,6 +127,7 @@ def replay_session(
     flatten_at: time | None = None,
     max_positions: int | None = None,
     max_entries: int | None = None,
+    max_risk_outstanding: float | None = None,
 ) -> list[Trade]:
     packed = {sym: _pack(df) for sym, df in bars_by_symbol.items()}
     book = Book(
@@ -135,6 +137,9 @@ def replay_session(
         flatten_at=flatten_at or MINUTE_1159,
         max_positions=max_positions if max_positions is not None else MAX_POSITIONS,
         max_entries=max_entries if max_entries is not None else MAX_ENTRIES,
+        max_risk_outstanding=(
+            max_risk_outstanding if max_risk_outstanding is not None else MAX_RISK_OUTSTANDING
+        ),
     )
     sigs_at: dict = {}
     for sig in signals:
@@ -339,6 +344,35 @@ def _hit_stop_target(pos: Position, high: float, low: float) -> tuple[bool, str]
         if pos.target is not None and low <= pos.target:
             return True, "target"
     return False, ""
+
+
+def concurrent_stats(trades: list[Trade]) -> tuple[int, float]:
+    """Peak concurrent positions and time-weighted mean from trade entry/exit times."""
+    if not trades:
+        return 0, 0.0
+    ev: list[tuple] = []
+    for t in trades:
+        ev.append((t.entry_ts, 1))
+        ev.append((t.exit_ts, -1))
+    ev.sort(key=lambda x: (x[0], x[1]))
+    n = 0
+    peak = 0
+    weighted = 0.0
+    dur = 0.0
+    prev = None
+    prev_n = 0
+    for ts, d in ev:
+        if prev is not None:
+            dt = (ts - prev).total_seconds()
+            if dt > 0:
+                weighted += prev_n * dt
+                dur += dt
+        n += d
+        peak = max(peak, n)
+        prev = ts
+        prev_n = n
+    mean = weighted / dur if dur else float(peak)
+    return peak, mean
 
 
 def _flatten_open(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:

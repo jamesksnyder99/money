@@ -294,3 +294,37 @@ What died (holdout < $200, or holdout green with red develop):
 - Track B long_vwap_reclaim (long): holdout $-151.58/day develop $-131.24/day trades_holdout=132 avgR=-1.986. Do not retry this exact (track, id) without a new costed reason.
 - Track B long_quiet_or15 (long): holdout $-141.04/day develop $-87.83/day trades_holdout=84 avgR=-0.215. Do not retry this exact (track, id) without a new costed reason.
 
+## 2026-09-08T15:53:03-04:00 — Arrow 14
+
+VERDICT: FAIL — no Arrow 14 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass.
+
+Kernel: Arrow 13 B/short_gap15|c5_ema9 (develop +$57, holdout +$164). Short only. RISK_PER_IDEA stayed 200. Caps: cap5=5/10/1000, cap8=8/16/1600, cap10=10/20/2000. Ids: cap5 control; cap8; cap10; cap8+2R; cap8+trail; cap8 union (5-min close < ema9 OR 1-min close < OR low). Did not rerun Arrow 13 longs, Q4, 5-min ORBR, or 11:30 flatten.
+
+n and mean concurrent vs cap5:
+  A/c5_ema9|cap5: develop n=196 vs cap5 196 (1.00x) holdout n=89 vs cap5 89 (1.00x); mean_conc dev=3.54 hold=3.09 (cap5 3.54/3.09); mean_peak dev=4.07 hold=3.82
+  A/c5_ema9|cap8: develop n=277 vs cap5 196 (1.41x) holdout n=117 vs cap5 89 (1.31x); mean_conc dev=4.80 hold=3.79 (cap5 3.54/3.09); mean_peak dev=5.74 hold=4.86
+  A/c5_ema9|cap10: develop n=317 vs cap5 196 (1.62x) holdout n=128 vs cap5 89 (1.44x); mean_conc dev=5.52 hold=4.11 (cap5 3.54/3.09); mean_peak dev=6.64 hold=5.32
+  A/c5_ema9|cap8|2R: develop n=283 vs cap5 196 (1.44x) holdout n=117 vs cap5 89 (1.31x); mean_conc dev=4.49 hold=3.56 (cap5 3.54/3.09); mean_peak dev=5.76 hold=4.86
+  A/c5_ema9|cap8|trail: develop n=286 vs cap5 196 (1.46x) holdout n=118 vs cap5 89 (1.33x); mean_conc dev=4.02 hold=3.16 (cap5 3.54/3.09); mean_peak dev=5.69 hold=4.91
+  A/c5_ema9|cap8|union: develop n=277 vs cap5 196 (1.41x) holdout n=118 vs cap5 89 (1.33x); mean_conc dev=4.82 hold=3.82 (cap5 3.54/3.09); mean_peak dev=5.76 hold=4.91
+  B/c5_ema9|cap5: develop n=158 vs cap5 158 (1.00x) holdout n=63 vs cap5 63 (1.00x); mean_conc dev=2.98 hold=2.47 (cap5 2.98/2.47); mean_peak dev=3.43 hold=2.77
+  B/c5_ema9|cap8: develop n=203 vs cap5 158 (1.28x) holdout n=76 vs cap5 63 (1.21x); mean_conc dev=3.81 hold=2.90 (cap5 2.98/2.47); mean_peak dev=4.45 hold=3.36
+  B/c5_ema9|cap10: develop n=229 vs cap5 158 (1.45x) holdout n=82 vs cap5 63 (1.30x); mean_conc dev=4.25 hold=3.04 (cap5 2.98/2.47); mean_peak dev=5.05 hold=3.59
+  B/c5_ema9|cap8|2R: develop n=206 vs cap5 158 (1.30x) holdout n=77 vs cap5 63 (1.22x); mean_conc dev=3.58 hold=2.78 (cap5 2.98/2.47); mean_peak dev=4.48 hold=3.32
+  B/c5_ema9|cap8|trail: develop n=209 vs cap5 158 (1.32x) holdout n=77 vs cap5 63 (1.22x); mean_conc dev=3.16 hold=2.51 (cap5 2.98/2.47); mean_peak dev=4.43 hold=3.18
+  B/c5_ema9|cap8|union: develop n=203 vs cap5 158 (1.28x) holdout n=76 vs cap5 63 (1.21x); mean_conc dev=3.77 hold=2.89 (cap5 2.98/2.47); mean_peak dev=4.45 hold=3.36
+
+What died (holdout < $200, or holdout green with red develop):
+- Track A c5_ema9|cap5: holdout $-37.72/day develop $-47.22/day trades_holdout=89 avgR=-0.073. Do not retry this exact (track, id) without a new costed reason.
+- Track A c5_ema9|cap8: holdout $-99.65/day develop $-50.73/day trades_holdout=117 avgR=-0.159. Do not retry this exact (track, id) without a new costed reason.
+- Track A c5_ema9|cap10: holdout $-95.70/day develop $-54.71/day trades_holdout=128 avgR=-0.153. Do not retry this exact (track, id) without a new costed reason.
+- Track A c5_ema9|cap8|2R: holdout $-143.36/day develop $-23.29/day trades_holdout=117 avgR=-0.207. Do not retry this exact (track, id) without a new costed reason.
+- Track A c5_ema9|cap8|trail: holdout $-121.73/day develop $-64.89/day trades_holdout=118 avgR=-0.164. Do not retry this exact (track, id) without a new costed reason.
+- Track A c5_ema9|cap8|union: holdout $-84.62/day develop $-42.99/day trades_holdout=118 avgR=-0.143. Do not retry this exact (track, id) without a new costed reason.
+- Track B c5_ema9|cap5: holdout $164.18/day develop $57.16/day trades_holdout=63 avgR=0.267. Do not retry this exact (track, id) without a new costed reason.
+- Track B c5_ema9|cap8: holdout $178.85/day develop $59.06/day trades_holdout=76 avgR=0.233. Do not retry this exact (track, id) without a new costed reason.
+- Track B c5_ema9|cap10: holdout $161.58/day develop $69.35/day trades_holdout=82 avgR=0.182. Do not retry this exact (track, id) without a new costed reason.
+- Track B c5_ema9|cap8|2R: holdout $122.55/day develop $49.21/day trades_holdout=77 avgR=0.168. Do not retry this exact (track, id) without a new costed reason.
+- Track B c5_ema9|cap8|trail: holdout $61.75/day develop $55.58/day trades_holdout=77 avgR=0.090. Do not retry this exact (track, id) without a new costed reason.
+- Track B c5_ema9|cap8|union: holdout $173.25/day develop $72.65/day trades_holdout=76 avgR=0.225. Do not retry this exact (track, id) without a new costed reason.
+
