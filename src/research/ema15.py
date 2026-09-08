@@ -79,6 +79,14 @@ def ema_last(closes: list[float], span: int) -> float | None:
     return prev
 
 
+def ema9_at(
+    stitched: list[tuple[datetime, float]], decision_ts: datetime
+) -> float | None:
+    """Last completed-bar ema9 before decision_ts, or None if the stack is not ready."""
+    closes = completed_15m_closes(stitched, decision_ts)
+    return ema_last(closes, SPAN_FAST)
+
+
 def ema_stack(
     stitched: list[tuple[datetime, float]], decision_ts: datetime
 ) -> str | None:
