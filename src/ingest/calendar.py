@@ -74,6 +74,14 @@ def prior_session(session: date, sessions: list[date] | None = None) -> date:
     return prev[-1]
 
 
+def prior_n_sessions(session: date, n: int = 10, sessions: list[date] | None = None) -> list[date] | None:
+    seq = sessions or all_2026_sessions()
+    prev = [d for d in seq if d < session]
+    if len(prev) < n:
+        return None
+    return prev[-n:]
+
+
 def study_sessions() -> list[date]:
     return nyse_sessions(STUDY_START, STUDY_END)
 
