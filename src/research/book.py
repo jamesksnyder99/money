@@ -109,12 +109,28 @@ def replay_session(
     bars_by_symbol: dict[str, pl.DataFrame],
     signals: list[Signal],
     prior_dv: dict[str, float],
+    rth_open_entries: list[Signal] | None = None,
 ) -> list[Trade]:
     packed = {sym: _pack(df) for sym, df in bars_by_symbol.items()}
     book = Book(prior_dv=prior_dv)
     sigs_at: dict = {}
     for sig in signals:
+        if sig.overnight:
+            continue
         sigs_at.setdefault(sig.signal_ts, []).append(sig)
+
+    if rth_open_entries:
+        for sig in rth_open_entries:
+            arr = packed.get(sig.symbol)
+            if arr is None:
+                continue
+            idx = None
+            for i, t in enumerate(arr.ts):
+                if bar_time(t) >= RTH_OPEN and _tradeable(arr, i):
+                    idx = i
+                    break
+            if idx is not None:
+                book.pending_entry[sig.symbol] = (idx, sig)
 
     times = sorted({t for arr in packed.values() for t in arr.ts})
     for ts in times:
@@ -194,7 +210,23 @@ def _fills_at(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:
 def _open_position(book: Book, sig: Signal, px: float, ts: datetime) -> None:
     if not book.can_enter(sig.symbol):
         return
-    stop_dist = abs(px - sig.stop)
+    if sig.stop_from_entry:
+        dist = max(0.10, 0.01 * px)
+        stop = px - sig.side * dist
+        stop_dist = abs(px - stop)
+        sig = Signal(
+            signal_ts=sig.signal_ts,
+            symbol=sig.symbol,
+            side=sig.side,
+            stop=stop,
+            target=sig.target,
+            score=sig.score,
+            tag=sig.tag,
+            stop_from_entry=True,
+            overnight=sig.overnight,
+        )
+    else:
+        stop_dist = abs(px - sig.stop)
     shares = position_shares(stop_dist, px, book.prior_dv.get(sig.symbol, 0.0))
     if shares < 1:
         return

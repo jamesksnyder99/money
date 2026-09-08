@@ -7,7 +7,11 @@ import polars as pl
 from research.fills import tradeable_mask
 from research.signals import (
     MINUTE_0934,
+    MINUTE_0944,
+    MINUTE_0945,
     MINUTE_1000,
+    MINUTE_1130,
+    MINUTE_1150,
     Signal,
     bar_time,
 )
@@ -193,6 +197,81 @@ def vwap_reclaim_signals(bars: pl.DataFrame, min_price: float, prior_close: floa
             below = 0
             above = 0
     return out
+
+
+def or_break_signals(bars: pl.DataFrame) -> list[Signal]:
+    """First close beyond 09:30–09:44 range, only after 09:45."""
+    df = _t(_tradeable(bars)).sort("bar_start")
+    opening = df.filter((pl.col("t") >= RTH_OPEN) & (pl.col("t") <= MINUTE_0944))
+    if opening.height < 2:
+        return []
+    hi = float(opening["high"].max())
+    lo = float(opening["low"].min())
+    if hi - lo < 0.01:
+        return []
+    later = df.filter(pl.col("t") >= MINUTE_0945)
+    for rec in later.iter_rows(named=True):
+        t = rec["t"]
+        if t < MINUTE_0945:
+            continue
+        close = float(rec["close"])
+        ts = rec["bar_start"]
+        sym = str(rec["symbol"])
+        if close > hi:
+            return [Signal(ts, sym, 1, lo, None, close - hi, "or_break")]
+        if close < lo:
+            return [Signal(ts, sym, -1, hi, None, lo - close, "or_break")]
+    return []
+
+
+def swing_signals(bars: pl.DataFrame, session_vol_so_far: float, median_full_vol: float | None) -> list[Signal]:
+    """Signal 11:30–11:50 only. Fill is next session RTH open (overnight)."""
+    if median_full_vol is None or median_full_vol <= 0:
+        return []
+    df = _t(_tradeable(bars)).sort("bar_start")
+    b930 = df.filter(pl.col("t") == RTH_OPEN)
+    if b930.height != 1:
+        return []
+    open_930 = float(b930["open"][0])
+    if open_930 <= 0:
+        return []
+    window = df.filter((pl.col("t") >= MINUTE_1130) & (pl.col("t") <= MINUTE_1150))
+    if window.height == 0:
+        return []
+    last = window.tail(1)
+    close = float(last["close"][0])
+    ts = last["bar_start"][0]
+    t = last["t"][0]
+    if t < MINUTE_1130 or t > MINUTE_1150:
+        return []
+    if session_vol_so_far < median_full_vol:
+        return []
+    ret = (close - open_930) / open_930
+    sym = str(last["symbol"][0])
+    if ret >= 0.015:
+        return [
+            Signal(
+                ts, sym, 1, 0.0, None, abs(ret), "swing",
+                stop_from_entry=True, overnight=True,
+            )
+        ]
+    if ret <= -0.015:
+        return [
+            Signal(
+                ts, sym, -1, 0.0, None, abs(ret), "swing",
+                stop_from_entry=True, overnight=True,
+            )
+        ]
+    return []
+
+
+def session_volume(bars: pl.DataFrame, through: time | None = None) -> float:
+    df = _t(bars)
+    if through is not None:
+        df = df.filter(pl.col("t") <= through)
+    if df.height == 0:
+        return 0.0
+    return float(df["volume"].fill_null(0).sum())
 
 
 def first5_volume(bars: pl.DataFrame) -> float:
