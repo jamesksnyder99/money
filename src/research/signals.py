@@ -17,6 +17,7 @@ MINUTE_1150 = time(11, 50)
 MINUTE_1158 = time(11, 58)
 MINUTE_1159 = time(11, 59)
 MINUTE_1559 = time(15, 59)
+MINUTE_0929 = time(9, 29)
 
 
 @dataclass(frozen=True, slots=True)
