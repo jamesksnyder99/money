@@ -198,16 +198,32 @@ def _pf(trades: list[dict]) -> str:
 
 
 def _replay_b(args: tuple) -> dict:
-    (
-        session_iso,
-        names,
-        bars15,
-        sess_order,
-        lows,
-        pc_by,
-        dv9_now,
-        rel9,
-    ) = args
+    only_ids = None
+    if len(args) == 9:
+        (
+            session_iso,
+            names,
+            bars15,
+            sess_order,
+            lows,
+            pc_by,
+            dv9_now,
+            rel9,
+            only_ids,
+        ) = args
+    else:
+        (
+            session_iso,
+            names,
+            bars15,
+            sess_order,
+            lows,
+            pc_by,
+            dv9_now,
+            rel9,
+        ) = args
+    exp_list = tuple(e for e in EXPERIMENTS if only_ids is None or e[0] in only_ids)
+    id_list = tuple(e[0] for e in exp_list)
     session = date.fromisoformat(session_iso)
     empty_rows = [
         {
@@ -221,7 +237,7 @@ def _replay_b(args: tuple) -> dict:
             "n_short_signals": 0,
             "n_ssr_signals": 0,
         }
-        for n in IDS
+        for n in id_list
     ]
     empty = {"session": session_iso, "n_cand": len(names), "rows": empty_rows}
     if not names:
@@ -261,7 +277,7 @@ def _replay_b(args: tuple) -> dict:
             sigs.append(attach_atr(sig, sdf))
     by_name_trades = {}
     rows = []
-    for name, kw in EXPERIMENTS:
+    for name, kw in exp_list:
         st = {}
         trades = replay_session(
             bars,

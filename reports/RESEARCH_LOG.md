@@ -631,3 +631,19 @@ Honesty: combined develop is the combine_books number. Combined holdout is not E
 - B_reject|flat1159: develop $-43.56/day holdout $83.66/day n_hold=80 avgR=0.147 PF=1.367 t=0.60 peak_conc=8 mean_conc=3.22.
 - COMBINED B_uptick10|atr1559+flush|max6: develop $94.83/day holdout $349.97/day corr_dev=-0.258 (holdout not EV).
 
+## 2026-09-09T14:59:28-04:00 — Arrow 29
+
+VERDICT: FAIL — no Arrow 29 book has holdout >= $200/day AND non-red develop. Combined holdout is not EV.
+
+FLY cell as population; new rocket radii. No flush|max6 synonyms. No B-short rescore. No $500/idea. No virgin pull. Combined holdout is not EV. No Arrow 30.
+Forward from 09:44 close (not prior close), develop FLY $5-20 n=261: median ext_1159=0.0187. Gate requires median ext_1159>0 and frac reaching +1 ATR before OR-low >=0.35 (got 0.651). GATE=YES. FLY members still have leftover extension after 09:44 if median ext_1159>0 (median=0.0187); OR-low stop is tagged by 28% by 11:59.
+GATE=YES.
+
+- cell0945|flat1159: develop $-133.88/day holdout $-36.66/day n_hold=144 avgR=-0.029 t=-0.30 peak_conc=8 skipped=False shelve=False.
+- cell0945|hold05: develop $-120.10/day holdout $-152.37/day n_hold=144 avgR=-0.118 t=-1.57 peak_conc=8 skipped=False shelve=False.
+- cell0945|atr1559: develop $-141.29/day holdout $-4.81/day n_hold=144 avgR=-0.005 t=-0.05 peak_conc=8 skipped=False shelve=False.
+- flush_0944|flat1159: develop $7.55/day holdout $0.79/day n_hold=17 avgR=0.027 t=0.02 peak_conc=2 skipped=False shelve=False.
+- flush_orh|flat1159: develop $0.00/day holdout $0.00/day n_hold=0 avgR=0.000 t=0.00 peak_conc=0 skipped=False shelve=False.
+- launch_compat|flat1159: develop $-8.19/day holdout $-31.68/day n_hold=11 avgR=-0.315 t=-0.94 peak_conc=2 skipped=False shelve=True.
+- COMBINED B_uptick10|atr1559+flush_0944|flat1159: develop $90.20/day holdout $233.99/day (holdout not EV).
+
