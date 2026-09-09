@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import math
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import polars as pl
 
-from research.ema15 import ema9_at
+from research.ema15 import bar_end, ema9_at
 from research.fills import is_tradeable, rth_session_vwap, tradeable_mask
 from research.signals import MINUTE_0945, RTH_OPEN, Signal, bar_time
 from research.strategies8 import _t, _tradeable, opening_range
@@ -67,13 +67,15 @@ def resample_5m_ohlc(df: pl.DataFrame) -> list[dict]:
     )
     out: list[dict] = []
     for rec in g.iter_rows(named=True):
+        start = rec["b5"]
         out.append(
             {
-                "start": rec["b5"],
+                "start": start,
                 "high": float(rec["high"]),
                 "low": float(rec["low"]),
                 "close": float(rec["close"]),
                 "last_ts": rec["last_ts"],
+                "bar_end": bar_end(start, 5),
                 "symbol": str(rec["symbol"]),
             }
         )
@@ -85,20 +87,24 @@ def five_min_close_below_ema9(
     stitched: list[tuple[datetime, float]],
     or_high: float,
 ) -> list[Signal]:
-    """After 09:45, first completed 5-min close below ema9. Shorts only. Not an OR-low break."""
+    """After 09:45, first completed 5-min close below ema9. Shorts only. Not an OR-low break.
+
+    A2: EMA9-close uses bar_end (start+5m). A sparse 5-min bucket is not complete at
+    its last traded minute; signal_ts is bar_end so 9/21 regime can share that cut.
+    """
     bars5 = resample_5m_ohlc(bars)
-    delta = timedelta(minutes=5)
     for b in bars5:
         if bar_time(b["start"]) < MINUTE_0945:
             continue
-        ema9 = ema9_at(stitched, b["start"] + delta)
+        end = b.get("bar_end") or bar_end(b["start"], 5)
+        ema9 = ema9_at(stitched, end)
         if ema9 is None:
             continue
         if b["close"] < ema9:
             stop = max(or_high, b["high"])
             return [
                 Signal(
-                    b["last_ts"],
+                    end,
                     b["symbol"],
                     -1,
                     stop,

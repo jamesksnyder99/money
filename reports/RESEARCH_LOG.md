@@ -647,3 +647,18 @@ GATE=YES.
 - launch_compat|flat1159: develop $-8.19/day holdout $-31.68/day n_hold=11 avgR=-0.315 t=-0.94 peak_conc=2 skipped=False shelve=True.
 - COMBINED B_uptick10|atr1559+flush_0944|flat1159: develop $90.20/day holdout $233.99/day (holdout not EV).
 
+## 2026-09-09T19:43:52-04:00 — Arrow 31
+
+VERDICT: FAIL — no Arrow 31 book has holdout >= $200/day AND non-red develop. Combined holdout is not expected value (EV).
+
+Integrity repairs A1-A7 and C-R1-R7. Rescored flush|max6|repaired and B_uptick10 trail locked vs full. No new engine. No rocket rings. No $500/idea. No virgin pull. Combined holdout is not EV. No Arrow 32.
+Honesty: repaired flush and locked trail are both-green on the printed slices.
+A1 look-ahead rejected n=18 PnL$=1473.78.
+C-R3 stitch 04:00 flat n=214/94  07:30 flat n=223/92 vs A27 204/75. Neither champion.
+- flush|max6|repaired: develop $6.20/day holdout $79.10/day n_hold=19 MFE-capture=0.369
+- B|uptick10|flat1159|lock: develop $8.36/day holdout $160.35/day n_hold=94 MFE-capture=0.234 IWM skip=0
+- B|uptick10|atr1559|lock: develop $70.09/day holdout $169.55/day n_hold=94 MFE-capture=0.217 IWM skip=0
+- B|uptick10|atr1559|full: develop $70.09/day holdout $171.24/day n_hold=95 MFE-capture=0.218 IWM skip=0
+COMBINED lock develop $76.30 holdout $248.65 NOT EV
+FULL develop $76.30 holdout $250.35 NOT EV
+

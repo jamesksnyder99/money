@@ -5,7 +5,7 @@ from datetime import datetime, time
 
 import polars as pl
 
-from research.ema15 import ema9_at
+from research.ema15 import bar_end, ema9_at
 from research.fills import rth_session_vwap, tradeable_mask
 from research.signals import MINUTE_0944, MINUTE_0945, RTH_OPEN, Signal, bar_time
 from research.strategies8 import _bar_at, _t, _tradeable, opening_range
@@ -82,15 +82,17 @@ def resample_5m(df: pl.DataFrame) -> list[dict]:
     )
     out: list[dict] = []
     for rec in g.iter_rows(named=True):
+        start = rec["b5"]
         out.append(
             {
-                "start": rec["b5"],
+                "start": start,
                 "open": float(rec["open"]),
                 "high": float(rec["high"]),
                 "low": float(rec["low"]),
                 "close": float(rec["close"]),
                 "volume": float(rec["volume"]),
                 "last_ts": rec["last_ts"],
+                "bar_end": bar_end(start, 5),
                 "symbol": str(rec["symbol"]),
             }
         )
@@ -128,7 +130,10 @@ def c5_ema9_plus_memory(
         return []
     bars5 = resample_5m(bars)
     sig = sigs[0]
-    idx = next((i for i, b in enumerate(bars5) if b["last_ts"] == sig.signal_ts), None)
+    idx = next(
+        (i for i, b in enumerate(bars5) if b.get("bar_end") == sig.signal_ts or b["last_ts"] == sig.signal_ts),
+        None,
+    )
     if idx is None or idx < 1:
         return []
     if not (bars5[idx - 1]["high"] > bars5[idx]["high"] + 1e-12):
@@ -147,7 +152,10 @@ def c5_ema9_plus_weak(
         return []
     bars5 = resample_5m(bars)
     sig = sigs[0]
-    b = next((x for x in bars5 if x["last_ts"] == sig.signal_ts), None)
+    b = next(
+        (x for x in bars5 if x.get("bar_end") == sig.signal_ts or x["last_ts"] == sig.signal_ts),
+        None,
+    )
     if b is None or not is_weak_close(b["open"], b["high"], b["low"], b["close"]):
         return []
     return [Signal(sig.signal_ts, sig.symbol, -1, sig.stop, None, sig.score, "c5_ema9_weak")]

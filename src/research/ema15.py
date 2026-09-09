@@ -1,22 +1,41 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 
 import polars as pl
 
 from research.fills import tradeable_mask
+from research.signals import bar_time
 
 SPAN_FAST = 9
 SPAN_SLOW = 21
 
 
-def resample_15m(df: pl.DataFrame) -> list[tuple[datetime, float]]:
-    """OHLC session 1m → 15m closes (07:30, 07:45, … 11:45). Tradeable bars only."""
+def bar_end(ts: datetime, minutes: int) -> datetime:
+    """Availability cut: a bucket starting at `ts` is complete at ts+minutes."""
+    return ts + timedelta(minutes=minutes)
+
+
+def resample_15m(
+    df: pl.DataFrame, *, not_before: time | None = None
+) -> list[tuple[datetime, float]]:
+    """OHLC session 1m → 15m closes. Tradeable bars only.
+
+    `not_before` drops prints before that clock (C-R3: 04:00 vs 07:30 stitch).
+    A sparse bucket is not complete at its last traded minute; callers must
+    cut incomplete bars with completed_15m_closes (bar_end = ts+15m).
+    """
     if df.height == 0:
         return []
     ok = df.filter(tradeable_mask(df)).sort("bar_start")
     if ok.height == 0:
         return []
+    if not_before is not None:
+        times = ok["bar_start"].to_list()
+        keep = [bar_time(t) >= not_before for t in times]
+        ok = ok.filter(pl.Series("keep", keep))
+        if ok.height == 0:
+            return []
     ok = ok.with_columns(pl.col("bar_start").dt.truncate("15m").alias("b15"))
     g = (
         ok.group_by("b15")

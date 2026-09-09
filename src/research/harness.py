@@ -65,8 +65,48 @@ def _median_prior(prior_vols: list[float], *, min_n: int = 5, lookback: int = 10
     return med
 
 
+def calendar_prior_dvs(
+    values_by_iso: dict[str, float],
+    session_iso: str,
+    calendar: list[str],
+    *,
+    lookback: int = 10,
+) -> dict:
+    """A6: last `lookback` exchange sessions before session_iso.
+
+    Present name-days contribute their value (explicit zero stays zero).
+    Missing name-days are not silently dropped from the window; they are
+    counted as missing and excluded from the median.
+    """
+    prev = [s for s in calendar if s < session_iso][-lookback:]
+    values: list[float] = []
+    n_zero = 0
+    n_missing = 0
+    for iso in prev:
+        if iso in values_by_iso:
+            v = float(values_by_iso[iso])
+            values.append(v)
+            if v <= 1e-12:
+                n_zero += 1
+        else:
+            n_missing += 1
+    return {
+        "values": values,
+        "n_window": len(prev),
+        "n_present": len(values),
+        "n_zero": n_zero,
+        "n_missing": n_missing,
+        "calendar_enforced": True,
+    }
+
+
 def run_rel_vol(cum_dv_now: float | None, prior_window_dvs: list[float]) -> float | None:
-    """Today's 04:00→stamp dollar volume / median of prior 10 same windows."""
+    """Today's 04:00→stamp dollar volume / median of prior 10 same windows.
+
+    Pass calendar-assembled values (zeros included, missings omitted) from
+    calendar_prior_dvs so the window is last ten exchange sessions, not last
+    ten retained rows.
+    """
     if cum_dv_now is None:
         return None
     med = _median_prior(prior_window_dvs)

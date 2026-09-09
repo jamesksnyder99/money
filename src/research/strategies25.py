@@ -5,7 +5,7 @@ from datetime import time
 import polars as pl
 
 from research.harness import attach_atr
-from research.signals import RTH_OPEN, Signal, bar_time
+from research.signals import MINUTE_0945, RTH_OPEN, Signal, bar_time
 from research.strategies15 import candle_anatomy, resample_5m
 from research.strategies23 import _long_ok
 
@@ -13,6 +13,7 @@ FLUSH_UNDERCUT = 0.02
 FLY_ORW_MIN = 0.051
 FLY_DV0929_MIN = 98_000.0
 FLY_EXT0944_MIN = 0.034
+FLY_AVAILABLE_AT = MINUTE_0945
 PX5 = 5.0
 
 
@@ -96,9 +97,15 @@ def flush_ring_long(
     slow_wash_min: float | None = None,
     two_hls: bool = False,
     flush_low_after: time | None = None,
+    signal_after: time | None = None,
     tag: str = "flush_ring",
 ) -> list[Signal]:
-    """Flush then higher-low. Optional depth, reclaim, clock, and accel/decel cuts."""
+    """Flush then higher-low. Optional depth, reclaim, clock, and accel/decel cuts.
+
+    C-R1: an undercut before `flush_after` is ignored; do not return [].
+    A1: `signal_after` (FLY cell available_at=09:45) skips HLs whose last_ts is earlier
+    and waits for the next qualifying higher-low.
+    """
     if last_px_0800 is None or last_px_0800 <= 0:
         return []
     px = float(last_px_0800)
@@ -120,7 +127,8 @@ def flush_ring_long(
         if b["low"] <= thresh + 1e-12:
             if not flushed:
                 if flush_after is not None and bar_time(b["start"]) < flush_after:
-                    return []
+                    prev = b
+                    continue
                 flushed = True
                 flush_low = b["low"]
                 flush_low_bar = b
@@ -169,8 +177,12 @@ def flush_ring_long(
                 continue
             stop = float(flush_low)
             if _long_ok(b["close"], stop):
+                sig_ts = b["last_ts"]
+                if signal_after is not None and bar_time(sig_ts) < signal_after:
+                    prev = b
+                    continue
                 sig = Signal(
-                    b["last_ts"],
+                    sig_ts,
                     b["symbol"],
                     1,
                     stop,

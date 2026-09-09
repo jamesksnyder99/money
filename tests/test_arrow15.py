@@ -135,7 +135,7 @@ def test_id1_still_5min_and_ema_short() -> None:
     assert all(s.side == -1 for s in sigs)
     assert sigs[0].tag == "c5_ema9_short"
     assert ema_stack(stitched, sigs[0].signal_ts) == "short"
-    assert sigs[0].signal_ts.timetz().replace(tzinfo=None) == time(9, 49)
+    assert sigs[0].signal_ts.timetz().replace(tzinfo=None) == time(9, 50)
 
 
 def test_longs_emit_no_shorts() -> None:
