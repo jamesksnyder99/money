@@ -472,3 +472,19 @@ SSR/borrow were unmodelled before this arrow. Flatten leak: a zero-volume 11:59 
 - Track A kernel|nofilter: develop $-40.34/day holdout $-93.60/day trades_holdout=120 avgR=-0.149 t=-0.67 IWM_alpha_hold $-129.23/day.
 - Track A kernel|ssr_borrow: develop $-48.36/day holdout $-118.89/day trades_holdout=109 avgR=-0.176 t=-0.96 IWM_alpha_hold $-153.08/day.
 
+## 2026-09-08T21:01:27-04:00 — Arrow 20
+
+VERDICT: FAIL — no Arrow 20 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass. First swing, not EV.
+
+First long swing on data/full at the 09:29 hot gate (prior_close $1-20, pre_dv>=250k, pre_dv_rel>=3, ext in [3%, 15)). Six ids: 09:30 open flatten 11:59; flatten 15:59; strong 5-min hold; new high after 09:45; less-extended <10% open; open+2R. Did not rescore the B-short. Did not touch data/bars. First look, not EV.
+
+hot develop: n_sess=42 total=501 mean=11.93 median=10.0 max=55
+hot holdout: n_sess=22 total=473 mean=21.50 median=19.0 max=63
+
+- open|flat1159: develop $-46.90/day holdout $-238.29/day trades_holdout=171 avgR=-0.183 t=-1.70.
+- open|flat1559: develop $-42.70/day holdout $-256.88/day trades_holdout=171 avgR=-0.196 t=-1.51.
+- strong5: develop $-178.88/day holdout $-652.47/day trades_holdout=214 avgR=-0.506 t=-4.42.
+- newhigh: develop $-236.53/day holdout $-498.29/day trades_holdout=157 avgR=-0.432 t=-3.77.
+- open|lt10: develop $-30.39/day holdout $-334.41/day trades_holdout=166 avgR=-0.255 t=-2.60.
+- open|2R: develop $-62.55/day holdout $-220.09/day trades_holdout=171 avgR=-0.168 t=-1.57.
+

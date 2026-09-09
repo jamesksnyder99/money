@@ -184,6 +184,7 @@ class Book:
     flatten_at: time = MINUTE_1159
     peak_positions: int = 0
     max_risk_outstanding: float = MAX_RISK_OUTSTANDING
+    min_stop_frac: float = 0.0
 
     def n_pending_entry(self) -> int:
         return len(self.pending_entry)
@@ -215,6 +216,7 @@ def replay_session(
     prior_close: dict[str, float] | None = None,
     ssr_filter: bool = False,
     borrow_filter: bool = False,
+    min_stop_frac: float = 0.0,
 ) -> list[Trade]:
     packed = {sym: _pack(df) for sym, df in bars_by_symbol.items()}
     book = Book(
@@ -227,6 +229,7 @@ def replay_session(
         max_risk_outstanding=(
             max_risk_outstanding if max_risk_outstanding is not None else MAX_RISK_OUTSTANDING
         ),
+        min_stop_frac=float(min_stop_frac or 0.0),
     )
     sigs_at: dict = {}
     for sig in signals:
@@ -371,7 +374,13 @@ def _open_position(book: Book, sig: Signal, px: float, ts: datetime) -> None:
             overnight=sig.overnight,
         )
     else:
+        if sig.side > 0 and sig.stop >= px - 1e-12:
+            return
+        if sig.side < 0 and sig.stop <= px + 1e-12:
+            return
         stop_dist = abs(px - sig.stop)
+    if px > 0 and book.min_stop_frac > 0 and stop_dist / px < book.min_stop_frac - 1e-12:
+        return
     shares = position_shares(stop_dist, px, book.prior_dv.get(sig.symbol, 0.0))
     if shares < 1:
         return
