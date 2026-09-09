@@ -8,6 +8,8 @@ Account context: **$100,000**.
 
 R is a diagnostic, not the goal. Size so that a $200–$500 day is consistent with risk the account can live with (small R per idea). A 10R day is a tail event to study, not a plan.
 
-Evaluation is live-or-next-bar after costs, not in-sample curve-fit. Lab A is the $1–$30 / 07:30–12:00 common-stock tape. If that tape cannot clear the failure line, change the field before inventing features.
+Evaluation is live-or-next-bar after costs, not in-sample curve-fit. Lab A is the $1–$30 / 07:30–12:00 common-stock tape. Full tape is `data/full/` 04:00–16:00. If that tape cannot clear the failure line, change the field before inventing features.
 
-Holdout (2026-07-31 through 2026-08-31) was used to pick rings on the B-short cell. That slice is contaminated; do not treat any holdout dollar print as expected value. Develop is the honest in-sample check. SSR and borrow were unmodelled before Arrow 18.
+Holdout (2026-07-31 through 2026-08-31) was used to pick rings on the B-short cell. That slice is contaminated; do not treat any holdout dollar print as expected value. Develop is the honest in-sample check. SSR (Short Sale Restriction) and borrow were unmodelled before Arrow 18.
+
+**Granularity law:** use the finest tape we possess (one-minute now) for reading and acting. A higher timeframe needs a scored reason — anti-twitch gain versus one-minute — not habit. Sub-minute (1s / 10s) is a future tape, not a default until asked.
