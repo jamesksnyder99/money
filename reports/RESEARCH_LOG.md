@@ -598,3 +598,19 @@ Ten longs on flush|max6 accel/decel rings. Harness on. Did not rerun nocell, aft
 Beat control on both slices: none
 Both-green: flush|max6, flush|cap3, flush|decel, flush|slowwash, flush|skip0950, flush|hold05
 
+## 2026-09-09T12:11:47-04:00 — Arrow 27
+
+VERDICT: FAIL — no Arrow 27 book has holdout >= $200/day AND non-red develop. Combined holdout is not EV. Combined develop is the helper print, not '$200 minus one improvement'.
+
+Repairs R1-R5. combine_books. B-short SSR policy rows on Lab A. flush|max6 reprint on data/full. No rocket rings. No $500/idea. No virgin pull. R6 skipped beta-IWM. No Arrow 28.
+R3: launch-catch was under-sampled in A24 (cell vs launch gates almost disjoint), not refuted. Not rerun here.
+Honesty: do not write that the account is one improvement from $200. A18 SSR-on (~+$59) plus A26 flush (~+$11) was ~+$70 before this helper. combine_books this file: develop $80.37/day. Combined holdout is not EV.
+
+- B_reject: develop $30.96/day holdout $68.29/day n_hold=63 avgR=0.094 t=0.56 ssr_share=0.193 ssr_nofill=0 peak_conc=8.
+- B_nofilter: develop $68.19/day holdout $178.85/day n_hold=76 avgR=0.233 t=1.39 ssr_share=0.193 ssr_nofill=0 peak_conc=8.
+- B_uptick10: develop $58.59/day holdout $129.86/day n_hold=75 avgR=0.166 t=1.09 ssr_share=0.193 ssr_nofill=1 peak_conc=8.
+- B_uptick5: develop $50.95/day holdout $117.14/day n_hold=73 avgR=0.148 t=0.95 ssr_share=0.193 ssr_nofill=9 peak_conc=8.
+- B_uptick10_cap: develop $55.05/day holdout $132.75/day n_hold=73 avgR=0.175 t=1.12 ssr_share=0.193 ssr_nofill=4 peak_conc=8.
+- flush|max6: develop $12.18/day holdout $116.77/day n_hold=23 avgR=0.550 t=1.70 peak_conc=4.
+- COMBINED B_nofilter+flush|max6: develop $80.37/day holdout $295.62/day corr_dev=-0.190 corr_hold=-0.048 (holdout not EV).
+

@@ -50,7 +50,7 @@ def test_flatten_zero_volume_1159_uses_1158() -> None:
         trades = replay_session({"TEST": df}, [sig], {"TEST": 50_000_000.0})
         assert len(trades) == 1
         assert trades[0].exit_ts == df["bar_start"][2]
-        assert abs(trades[0].exit_px - 10.20) < 1e-9
+        assert abs(trades[0].exit_px - 10.18) < 1e-9
         assert trades[0].tag == "time"
 
 

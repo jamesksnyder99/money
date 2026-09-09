@@ -98,6 +98,41 @@ def ssr_blocks_short(last_close: float | None, prior_close: float | None) -> boo
     return float(last_close) <= SSR_FRAC * float(prior_close) + 1e-12
 
 
+def session_low_at_or_before(arr: _Arrays, ts: datetime) -> float | None:
+    lo = None
+    for i, t in enumerate(arr.ts):
+        if t > ts:
+            break
+        if _tradeable(arr, i):
+            lo = float(arr.low[i]) if lo is None else min(lo, float(arr.low[i]))
+    return lo
+
+
+def ssr_active(
+    session_low: float | None,
+    prior_close: float | None,
+    *,
+    prior_session_low: float | None = None,
+    prior_session_prior_close: float | None = None,
+) -> bool:
+    """R1: session low ≤ 0.90×prior_close, or the prior session tripped the same rule."""
+    if (
+        session_low is not None
+        and prior_close is not None
+        and float(prior_close) > 0
+        and float(session_low) <= SSR_FRAC * float(prior_close) + 1e-12
+    ):
+        return True
+    if (
+        prior_session_low is not None
+        and prior_session_prior_close is not None
+        and float(prior_session_prior_close) > 0
+        and float(prior_session_low) <= SSR_FRAC * float(prior_session_prior_close) + 1e-12
+    ):
+        return True
+    return False
+
+
 def borrow_blocks_short(gap: float | None, prior_dv: float | None) -> bool:
     """Crude HTB proxy: gap ≤ −5% and prior dollar volume < $10M. Not a fee table."""
     if gap is None or prior_dv is None:
@@ -152,6 +187,28 @@ def _last_tradeable_after(arr: _Arrays, after_ts: datetime) -> int | None:
     return best
 
 
+def _ssr_now(
+    sig: Signal,
+    arr: _Arrays | None,
+    prior_close: float | None,
+    prior_session_low: float | None,
+    prior_session_prior_close: float | None,
+) -> bool:
+    lo = session_low_at_or_before(arr, sig.signal_ts) if arr is not None else None
+    return ssr_active(
+        lo,
+        prior_close,
+        prior_session_low=prior_session_low,
+        prior_session_prior_close=prior_session_prior_close,
+    )
+
+
+def _effective_ssr_policy(ssr_policy: str, ssr_filter: bool) -> str:
+    if ssr_policy:
+        return ssr_policy
+    return "reject" if ssr_filter else "off"
+
+
 def _short_blocked(
     sig: Signal,
     arr: _Arrays | None,
@@ -160,13 +217,19 @@ def _short_blocked(
     *,
     ssr_filter: bool,
     borrow_filter: bool,
+    ssr_policy: str = "",
+    prior_session_low: float | None = None,
+    prior_session_prior_close: float | None = None,
 ) -> bool:
     if sig.side != -1:
         return False
+    policy = _effective_ssr_policy(ssr_policy, ssr_filter)
+    if policy == "reject" and _ssr_now(
+        sig, arr, prior_close, prior_session_low, prior_session_prior_close
+    ):
+        return True
     if arr is None:
         return False
-    if ssr_filter and ssr_blocks_short(_last_close_at_or_before(arr, sig.signal_ts), prior_close):
-        return True
     if borrow_filter and borrow_blocks_short(_gap_from_arr(arr, prior_close), prior_dv):
         return True
     return False
@@ -201,6 +264,16 @@ class Book:
     pending_scale: dict[str, tuple[int, int]] = field(default_factory=dict)
     hold_plus_r: float = 0.0
     late_flatten_at: time = MINUTE_1559
+    ssr_filter: bool = False
+    ssr_policy: str = ""
+    ssr_uptick_minutes: int = 10
+    ssr_fill_cap: float = 0.0
+    prior_session_low: dict[str, float] = field(default_factory=dict)
+    prior_session_prior_close: dict[str, float] = field(default_factory=dict)
+    ssr_at_signal: dict[str, bool] = field(default_factory=dict)
+    ssr_nofill: int = 0
+    n_short_signals: int = 0
+    n_ssr_signals: int = 0
 
     def n_pending_entry(self) -> int:
         return len(self.pending_entry)
@@ -243,6 +316,11 @@ def replay_session(
     use_structure_stop: bool = True,
     hold_plus_r: float = 0.0,
     late_flatten_at: time | None = None,
+    ssr_policy: str = "",
+    ssr_uptick_minutes: int = 10,
+    ssr_fill_cap: float = 0.0,
+    prior_session_low: dict[str, float] | None = None,
+    prior_session_prior_close: dict[str, float] | None = None,
     stats: dict | None = None,
 ) -> list[Trade]:
     packed = {sym: _pack(df) for sym, df in bars_by_symbol.items()}
@@ -267,6 +345,12 @@ def replay_session(
         use_structure_stop=bool(use_structure_stop),
         hold_plus_r=float(hold_plus_r or 0.0),
         late_flatten_at=late_flatten_at or MINUTE_1559,
+        ssr_filter=bool(ssr_filter),
+        ssr_policy=str(ssr_policy or ""),
+        ssr_uptick_minutes=int(ssr_uptick_minutes or 10),
+        ssr_fill_cap=float(ssr_fill_cap or 0.0),
+        prior_session_low=dict(prior_session_low or {}),
+        prior_session_prior_close=dict(prior_session_prior_close or {}),
     )
     sigs_at: dict = {}
     for sig in signals:
@@ -288,6 +372,9 @@ def replay_session(
                 book.prior_dv.get(sig.symbol, 0.0),
                 ssr_filter=ssr_filter,
                 borrow_filter=borrow_filter,
+                ssr_policy=book.ssr_policy,
+                prior_session_low=book.prior_session_low.get(sig.symbol),
+                prior_session_prior_close=book.prior_session_prior_close.get(sig.symbol),
             ):
                 continue
             if not book.can_enter(sig.symbol):
@@ -365,6 +452,18 @@ def replay_session(
         for sig in batch:
             arr = packed.get(sig.symbol)
             pc = (prior_close or {}).get(sig.symbol)
+            if sig.side == -1:
+                book.n_short_signals += 1
+                active = _ssr_now(
+                    sig,
+                    arr,
+                    pc,
+                    book.prior_session_low.get(sig.symbol),
+                    book.prior_session_prior_close.get(sig.symbol),
+                )
+                if active:
+                    book.n_ssr_signals += 1
+                book.ssr_at_signal[sig.symbol] = active
             if _short_blocked(
                 sig,
                 arr,
@@ -372,6 +471,9 @@ def replay_session(
                 book.prior_dv.get(sig.symbol, 0.0),
                 ssr_filter=ssr_filter,
                 borrow_filter=borrow_filter,
+                ssr_policy=book.ssr_policy,
+                prior_session_low=book.prior_session_low.get(sig.symbol),
+                prior_session_prior_close=book.prior_session_prior_close.get(sig.symbol),
             ):
                 continue
             if not book.can_enter(sig.symbol):
@@ -390,6 +492,9 @@ def replay_session(
     _flatten_leftovers(book, packed, times)
     if stats is not None:
         stats["cost_skips"] = book.cost_skips
+        stats["ssr_nofill"] = book.ssr_nofill
+        stats["n_short_signals"] = book.n_short_signals
+        stats["n_ssr_signals"] = book.n_ssr_signals
     return book.trades
 
 
@@ -407,6 +512,23 @@ def _fills_at(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:
             nxt = _next_tradeable(arr, idx)
             if nxt is not None and bar_time(arr.ts[nxt]) < book.flatten_at:
                 book.pending_entry[sym] = (nxt, sig)
+            continue
+        policy = _effective_ssr_policy(book.ssr_policy, book.ssr_filter)
+        if (
+            policy == "uptick"
+            and sig.side == -1
+            and book.ssr_at_signal.get(sym)
+            and not _uptick_ok(book, arr, idx, sig)
+        ):
+            nxt = _next_tradeable(arr, idx)
+            if (
+                nxt is not None
+                and bar_time(arr.ts[nxt]) < book.flatten_at
+                and _within_uptick_window(book, arr.ts[nxt], sig)
+            ):
+                book.pending_entry[sym] = (nxt, sig)
+            else:
+                book.ssr_nofill += 1
             continue
         _open_position(book, sig, float(arr.open[idx]), ts)
 
@@ -652,11 +774,11 @@ def _flatten_one(book: Book, packed: dict[str, _Arrays], pos: Position, flatten_
             return
         j = _last_tradeable_at_or_before(arr, flatten_ts, pos.entry_ts)
         if j is not None:
-            _close_position(book, pos, float(arr.open[j]), arr.ts[j], "time")
+            _close_position(book, pos, float(arr.close[j]), arr.ts[j], "time")
             return
     k = _last_tradeable_after(arr, pos.entry_ts)
     if k is not None:
-        _close_position(book, pos, float(arr.open[k]), arr.ts[k], "time")
+        _close_position(book, pos, float(arr.close[k]), arr.ts[k], "time")
         return
     _close_position(book, pos, pos.entry_px, pos.entry_ts, "orphan_flat")
 
@@ -667,6 +789,34 @@ def _flatten_open(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:
     book.pending_entry.clear()
     book.pending_exit.clear()
     book.pending_scale.clear()
+
+
+def _within_uptick_window(book: Book, fill_ts: datetime, sig: Signal) -> bool:
+    return (fill_ts - sig.signal_ts).total_seconds() <= book.ssr_uptick_minutes * 60.0 + 1e-9
+
+
+def _prior_bar_close(arr: _Arrays, i: int) -> float | None:
+    for j in range(i - 1, -1, -1):
+        if _tradeable(arr, j):
+            return float(arr.close[j])
+    return None
+
+
+def _uptick_ok(book: Book, arr: _Arrays, idx: int, sig: Signal) -> bool:
+    if not _within_uptick_window(book, arr.ts[idx], sig):
+        return False
+    prev_c = _prior_bar_close(arr, idx)
+    o = float(arr.open[idx])
+    if prev_c is None or o <= prev_c + 1e-12:
+        return False
+    if book.ssr_fill_cap > 0:
+        i_sig = arr.by_ts.get(sig.signal_ts)
+        if i_sig is None:
+            return False
+        sig_close = float(arr.close[i_sig])
+        if o > sig_close * (1.0 + book.ssr_fill_cap) + 1e-12:
+            return False
+    return True
 
 
 def _unrealized_r(pos: Position, px: float) -> float:
