@@ -559,3 +559,22 @@ Top 5 grid by holdout $/day:
 
 FLY vs FAIL named a develop-locked cell (wide 09:30-09:44 OR, pre_dv_0929 >= ~98k, ext_0944 >= 3.4%) with 76% FLY rate vs 46% baseline; it was applied to every long door and holdout was not used to pick it. Door families vs Arrows 20-22 (those were ~30% hit chasing an already-extended open): flush is a different shape — holdout hit ~60% and PF ~3.5 on the harness control and on flush|flat1159|*, but develop is still slightly red so not a pass (closest flush|flat1159|px5 -6/+146). volfirst|half1R_trail hits ~70% and often tags +1R, still sub-$200. launch is sparse after the cell cut. giveback is a wreck, and giveback|flat1159 is structurally zero (entry after 13:00 vs flatten 11:59). both-green=0 of 100. Holdout was not a tuner.
 
+## 2026-09-09T08:39:08-04:00 — Arrow 25
+
+VERDICT: FAIL — no Arrow 25 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass. +146 holdout on Arrow 24 flush|flat1159|px5 is not EV.
+
+Ten longs on flush + FLY cell. Harness on. Did not rerun the 100-grid, giveback, launch-catch, volfirst-as-hero, 08:00 open-buy, vs_iwm, climax. +146 is not EV. No Arrow 26.
+
+- flush|ctrl: develop $-9.14/day holdout $146.05/day n_hold=27 vs_id1=1.00x avgR=0.588 hit=0.630 PF=3.847 t=2.05.
+- flush|cap3: develop $-8.27/day holdout $154.57/day n_hold=26 vs_id1=0.96x avgR=0.647 hit=0.654 PF=4.613 t=2.15.
+- flush|flat1559: develop $-24.30/day holdout $74.36/day n_hold=29 vs_id1=1.07x avgR=0.277 hit=0.517 PF=1.753 t=1.41.
+- flush|half1R: develop $-18.75/day holdout $104.63/day n_hold=45 vs_id1=1.67x avgR=0.671 hit=0.778 PF=2.405 t=1.84.
+- flush|deep3: develop $-5.51/day holdout $121.32/day n_hold=23 vs_id1=0.85x avgR=0.578 hit=0.609 PF=3.906 t=1.71.
+- flush|max6: develop $11.29/day holdout $116.77/day n_hold=23 vs_id1=0.85x avgR=0.550 hit=0.609 PF=3.363 t=1.70.
+- flush|reclaim: develop $-18.20/day holdout $90.71/day n_hold=20 vs_id1=0.74x avgR=0.499 hit=0.500 PF=3.871 t=1.43.
+- flush|after10: develop $-1.99/day holdout $-6.63/day n_hold=3 vs_id1=0.11x avgR=-0.248 hit=0.333 PF=0.288 t=-0.85.
+- flush|rel5: develop $-8.91/day holdout $96.97/day n_hold=11 vs_id1=0.41x avgR=0.970 hit=0.727 PF=5.903 t=1.46.
+- flush|nocell: develop $-58.00/day holdout $124.00/day n_hold=90 vs_id1=3.33x avgR=0.141 hit=0.456 PF=1.391 t=1.15.
+
+Beat control on both slices: flush|cap3
+
