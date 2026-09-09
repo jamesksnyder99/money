@@ -9,21 +9,28 @@ from zoneinfo import ZoneInfo
 import polars as pl
 
 from ingest.calendar import WARMUP_SESSIONS, study_sessions
-from ingest.paths import FULL_BARS, FULL_ELIGIBILITY, REPORTS, ensure_dirs, full_bar_path
+from ingest.paths import FULL_BARS, FULL_ELIGIBILITY, REPORTS, ensure_dirs
 from ingest.progress import Progress
 from research.arrow3 import _fmt, _summarize
-from research.arrow19 import CLOCK_0929, _last_at_or_before, _pack
+from research.arrow20 import (
+    PRICE_HI,
+    PRICE_LO,
+    _iso,
+    _read_hot_bars,
+    _session_pre,
+)
 from research.book import replay_session
 from research.costs import FAILURE_LINE, TARGET_HI, TARGET_LO
 from research.rockets import median_prior_window
-from research.signals import MINUTE_1159, MINUTE_1559
+from research.signals import MINUTE_1159
 from research.split import develop_holdout
-from research.strategies20 import (
-    STOP_MIN_FRAC,
-    gap_and_go_long,
-    hot_gate,
-    new_high_long,
-    strong_hold_long,
+from research.strategies20 import STOP_MIN_FRAC, gap_and_go_long, hot_gate
+from research.strategies21 import (
+    EXT8_HI,
+    PRE_DV_1M,
+    fade_open_short,
+    gap1_open_long,
+    pullback_long,
 )
 
 ET = ZoneInfo("America/New_York")
@@ -34,79 +41,22 @@ CAP8 = {
     "max_risk_outstanding": 1600.0,
     "min_stop_frac": STOP_MIN_FRAC,
 }
-PRICE_LO = 1.0
-PRICE_HI = 20.0
+CAP3 = {
+    "max_positions": 3,
+    "max_entries": 16,
+    "max_risk_outstanding": 600.0,
+    "min_stop_frac": STOP_MIN_FRAC,
+}
 
 EXPERIMENTS = (
-    ("open|flat1159", "open", MINUTE_1159, False, False),
-    ("open|flat1559", "open", MINUTE_1559, False, False),
-    ("strong5", "strong5", MINUTE_1159, False, False),
-    ("newhigh", "newhigh", MINUTE_1159, False, False),
-    ("open|lt10", "open", MINUTE_1159, False, True),
-    ("open|2R", "open", MINUTE_1159, True, False),
+    ("pullback", "pullback", CAP8),
+    ("open|gap1", "gap1", CAP8),
+    ("open|ext8", "ext8", CAP8),
+    ("open|dv1m", "dv1m", CAP8),
+    ("pullback|max3", "pullback", CAP3),
+    ("fade|open", "fade", CAP8),
 )
 IDS = tuple(e[0] for e in EXPERIMENTS)
-
-
-def _iso(d) -> str:
-    return d.isoformat() if hasattr(d, "isoformat") else str(d)
-
-
-def _pre_stats(pack: dict) -> dict | None:
-    idx, dv = _last_at_or_before(pack, CLOCK_0929)
-    if idx is None:
-        return None
-    lows = pack["low"][: idx + 1]
-    highs = pack["high"][: idx + 1]
-    return {
-        "dv0929": dv,
-        "last_px": pack["close"][idx],
-        "last_ts": pack["ts"][idx],
-        "sess_low": min(lows) if lows else None,
-        "sess_high": max(highs) if highs else None,
-    }
-
-
-def _session_pre(args: tuple) -> tuple[str, dict[str, dict]]:
-    d, want = args
-    iso = d.isoformat()
-    folder = FULL_BARS / iso
-    out: dict[str, dict] = {}
-    if not folder.exists():
-        return iso, out
-    for path in folder.glob("*.parquet"):
-        try:
-            df = pl.read_parquet(path)
-        except Exception:  # noqa: BLE001
-            continue
-        if df.height == 0:
-            continue
-        sym = str(df["symbol"][0]) if "symbol" in df.columns else path.stem.lstrip("_")
-        if want is not None and sym not in want:
-            continue
-        pack = _pack(df)
-        if pack is None:
-            continue
-        st = _pre_stats(pack)
-        if st is None:
-            continue
-        out[sym] = st
-    return iso, out
-
-
-def _read_hot_bars(session: date, symbols: list[str]) -> dict[str, pl.DataFrame]:
-    out: dict[str, pl.DataFrame] = {}
-    for sym in symbols:
-        p = full_bar_path(session, sym)
-        if not p.exists():
-            continue
-        try:
-            df = pl.read_parquet(p)
-        except Exception:  # noqa: BLE001
-            continue
-        if df.height:
-            out[sym] = df
-    return out
 
 
 def _replay_one(args: tuple) -> dict:
@@ -122,56 +72,62 @@ def _replay_one(args: tuple) -> dict:
     if not hots:
         return empty
     bars = _read_hot_bars(session, [h["symbol"] for h in hots])
-    open_sigs = []
-    open_lt10 = []
-    strong_sigs = []
-    newhigh_sigs = []
+    pull_sigs: list = []
+    gap1_sigs: list = []
+    ext8_sigs: list = []
+    dv1m_sigs: list = []
+    fade_sigs: list = []
     for h in hots:
         sym = h["symbol"]
         sdf = bars.get(sym)
         if sdf is None:
             continue
         score = float(h["pre_dv_rel"])
-        for sig in gap_and_go_long(h["last_ts"], sym, h["sess_low"], h["last_px"], score):
-            if sig.side != 1:
-                continue
-            open_sigs.append(sig)
-            if h["ext_0929"] < 0.10 - 1e-12:
-                open_lt10.append(
-                    gap_and_go_long(
-                        h["last_ts"], sym, h["sess_low"], h["last_px"], score, tag="hot_open_lt10"
-                    )[0]
-                )
         if sdf.height:
-            for sig in strong_hold_long(sdf, h["last_px"]):
+            for sig in pullback_long(sdf, h["last_px"], score):
                 if sig.side == 1:
-                    strong_sigs.append(sig)
-            for sig in new_high_long(sdf):
+                    pull_sigs.append(sig)
+            for sig in gap1_open_long(
+                sdf, h["last_ts"], sym, h["sess_low"], h["last_px"], score
+            ):
                 if sig.side == 1:
-                    newhigh_sigs.append(sig)
+                    gap1_sigs.append(sig)
+        if h["ext_0929"] < EXT8_HI - 1e-12:
+            for sig in gap_and_go_long(h["last_ts"], sym, h["sess_low"], h["last_px"], score):
+                if sig.side == 1:
+                    ext8_sigs.append(sig)
+        if h["pre_dv"] >= PRE_DV_1M - 1e-9:
+            for sig in gap_and_go_long(h["last_ts"], sym, h["sess_low"], h["last_px"], score):
+                if sig.side == 1:
+                    dv1m_sigs.append(sig)
+        for sig in fade_open_short(
+            h["last_ts"], sym, h["sess_high"], h["last_px"], score
+        ):
+            if sig.side == -1:
+                fade_sigs.append(sig)
 
+    by_kind = {
+        "pullback": pull_sigs,
+        "gap1": gap1_sigs,
+        "ext8": ext8_sigs,
+        "dv1m": dv1m_sigs,
+        "fade": fade_sigs,
+    }
     rows = []
-    for exp_id, kind, flatten_at, take_2r, _lt10 in EXPERIMENTS:
-        if kind == "open":
-            rth = [s for s in (open_lt10 if _lt10 else open_sigs) if s.side == 1]
+    for exp_id, kind, cap in EXPERIMENTS:
+        sigs = by_kind[kind]
+        if kind in ("gap1", "ext8", "dv1m", "fade"):
             trades = replay_session(
                 bars,
                 [],
                 prior_dv,
-                rth_open_entries=rth,
-                take_2r=take_2r,
-                flatten_at=flatten_at,
-                **CAP8,
-            )
-        elif kind == "strong5":
-            sigs = [s for s in strong_sigs if s.side == 1]
-            trades = replay_session(
-                bars, sigs, prior_dv, flatten_at=flatten_at, take_2r=take_2r, **CAP8
+                rth_open_entries=sigs,
+                flatten_at=MINUTE_1159,
+                **cap,
             )
         else:
-            sigs = [s for s in newhigh_sigs if s.side == 1]
             trades = replay_session(
-                bars, sigs, prior_dv, flatten_at=flatten_at, take_2r=take_2r, **CAP8
+                bars, sigs, prior_dv, flatten_at=MINUTE_1159, **cap
             )
         rows.append(
             {
@@ -184,7 +140,7 @@ def _replay_one(args: tuple) -> dict:
     return {"session": session_iso, "n_hot": len(hots), "rows": rows}
 
 
-def run_arrow20(*, workers: int | None = None) -> int:
+def run_arrow21(*, workers: int | None = None) -> int:
     ensure_dirs()
     cpu = os.cpu_count() or 1
     workers = max(1, workers or min(8, cpu))
@@ -192,13 +148,14 @@ def run_arrow20(*, workers: int | None = None) -> int:
     study = study_sessions()
     all_sess = list(WARMUP_SESSIONS) + study
     print(
-        f"research start mode=arrow20 workers={workers} cpu={cpu} "
+        f"research start mode=arrow21 workers={workers} cpu={cpu} "
         f"develop={develop[0]}..{develop[-1]} holdout={holdout[0]}..{holdout[-1]} "
         f"tape={FULL_BARS}",
         flush=True,
     )
     print(
-        "long only; hot gate at 09:29; data/full only; no B-short rescore; no data/bars. No Arrow 21.",
+        "ids 1-5 long; id 6 short contrast; same 09:29 hot gate; data/full only; "
+        "no B-short rescore; no data/bars; did not rerun strong5/newhigh/flat1559. No Arrow 22.",
         flush=True,
     )
     if not FULL_ELIGIBILITY.exists():
@@ -224,7 +181,7 @@ def run_arrow20(*, workers: int | None = None) -> int:
 
     print(f"pass 1: 09:29 pre stats warmup+study n={len(all_sess)}", flush=True)
     feat: dict[str, dict[str, dict]] = {}
-    prog = Progress(len(all_sess), "arrow20_pre")
+    prog = Progress(len(all_sess), "arrow21_pre")
     prog.start_heartbeat()
     study_syms: set[str] = set()
     for iso, mp in by_sess.items():
@@ -270,6 +227,7 @@ def run_arrow20(*, workers: int | None = None) -> int:
                     "last_ts": st["last_ts"],
                     "last_px": st["last_px"],
                     "sess_low": st["sess_low"],
+                    "sess_high": st["sess_high"],
                     "pre_dv": st["dv0929"],
                     "pre_dv_rel": rel,
                     "ext_0929": ext,
@@ -286,7 +244,7 @@ def run_arrow20(*, workers: int | None = None) -> int:
         f"holdout={sum(len(hots_by_sess[_iso(d)]) for d in holdout)}",
         flush=True,
     )
-    prog2 = Progress(len(replay_jobs), "arrow20")
+    prog2 = Progress(len(replay_jobs), "arrow21")
     prog2.start_heartbeat()
     chunks: list[dict] = []
     with ThreadPoolExecutor(max_workers=workers) as pool:
@@ -347,21 +305,23 @@ def _write_reports(chunks, hots_by_sess, workers, cpu, develop, holdout) -> None
         )
     else:
         verdict = (
-            "VERDICT: FAIL — no Arrow 20 book has holdout >= $200/day AND non-red develop. "
-            "Develop-red / holdout-green is not a pass. First swing, not EV."
+            "VERDICT: FAIL — no Arrow 21 book has holdout >= $200/day AND non-red develop. "
+            "Develop-red / holdout-green is not a pass. Did not rerun strong5/newhigh/flat1559."
         )
 
     lines = [
-        "Arrow 20 — first long swing at 09:29 hot engines (data/full)",
+        "Arrow 21 — iterate the 09:29 hot book after Arrow 20 washout (data/full)",
         verdict,
-        "First look at this recipe. Holdout is not a tuner from Arrows 10-16. Not EV.",
-        "Long only. No B-short rescore. Did not touch data/bars. No Track B cap. No Arrow 21.",
+        "Same 09:29 hot gate unless an id tightens it. Ids 1-5 long; id 6 short contrast.",
+        "Did not rerun Arrow 20 strong5 / newhigh / flat1559. No B-short rescore. "
+        "Did not touch data/bars. No Track B cap. No Arrow 22.",
         f"account=100000  target={TARGET_LO:.0f}-{TARGET_HI:.0f}/day  failure_line={FAILURE_LINE:.0f}/day",
         f"develop n={len(develop)} {develop[0]}..{develop[-1]}",
         f"holdout n={len(holdout)} {holdout[0]}..{holdout[-1]}",
         f"workers={workers} cpu_count={cpu}",
         "Hot gate at 09:29: prior_close [$1,$20], pre_dv>=250k, pre_dv_rel>=3, ext in [0.03, 0.15).",
-        "cap8=8/16/1600 RISK_PER_IDEA=200. Fills=next tradeable open. Leak-fixed flatten.",
+        "id3 tightens ext to [0.03, 0.08). id4 tightens pre_dv>=1M. cap8=8/16/1600 except "
+        "id5 max_positions=3. RISK_PER_IDEA=200. Fills=next tradeable open. Leak-fixed flatten 11:59.",
         "",
         _hot_line("hot name-days develop", hot_dev),
         _hot_line("hot name-days holdout", hot_hol),
@@ -400,20 +360,22 @@ def _write_reports(chunks, hots_by_sess, workers, cpu, develop, holdout) -> None
             )
     text = "\n".join(lines) + "\n"
     REPORTS.mkdir(parents=True, exist_ok=True)
-    (REPORTS / "arrow20_results.txt").write_text(text, encoding="utf-8")
+    (REPORTS / "arrow21_results.txt").write_text(text, encoding="utf-8")
     print(text, flush=True)
 
     log_path = REPORTS / "RESEARCH_LOG.md"
     stamp = datetime.now(timezone.utc).astimezone(ET).isoformat(timespec="seconds")
     bits = [
-        f"## {stamp} — Arrow 20",
+        f"## {stamp} — Arrow 21",
         "",
         verdict,
         "",
-        "First long swing on data/full at the 09:29 hot gate (prior_close $1-20, pre_dv>=250k, "
-        "pre_dv_rel>=3, ext in [3%, 15)). Six ids: 09:30 open flatten 11:59; flatten 15:59; "
-        "strong 5-min hold; new high after 09:45; less-extended <10% open; open+2R. "
-        "Did not rescore the B-short. Did not touch data/bars. First look, not EV.",
+        "Same 09:29 hot gate as Arrow 20 (prior_close $1-20, pre_dv>=250k, pre_dv_rel>=3, "
+        "ext in [3%, 15)). Six ids: pullback to 09:29 px or RTH VWAP; 09:30 open only if "
+        "open <= +1% vs 09:29; tighter ext [3%, 8%); pre_dv>=1M 09:30 open; pullback with "
+        "max_positions=3; short the 09:30 open of the same hot names. Flatten 11:59. "
+        "Did not rerun strong5/newhigh/flat1559. Did not rescore the B-short. Did not "
+        "touch data/bars. No Arrow 22.",
         "",
         _hot_line("hot develop", hot_dev),
         _hot_line("hot holdout", hot_hol),

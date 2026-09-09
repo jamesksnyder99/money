@@ -488,3 +488,19 @@ hot holdout: n_sess=22 total=473 mean=21.50 median=19.0 max=63
 - open|lt10: develop $-30.39/day holdout $-334.41/day trades_holdout=166 avgR=-0.255 t=-2.60.
 - open|2R: develop $-62.55/day holdout $-220.09/day trades_holdout=171 avgR=-0.168 t=-1.57.
 
+## 2026-09-08T21:38:41-04:00 — Arrow 21
+
+VERDICT: FAIL — no Arrow 21 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass. Did not rerun strong5/newhigh/flat1559.
+
+Same 09:29 hot gate as Arrow 20 (prior_close $1-20, pre_dv>=250k, pre_dv_rel>=3, ext in [3%, 15)). Six ids: pullback to 09:29 px or RTH VWAP; 09:30 open only if open <= +1% vs 09:29; tighter ext [3%, 8%); pre_dv>=1M 09:30 open; pullback with max_positions=3; short the 09:30 open of the same hot names. Flatten 11:59. Did not rerun strong5/newhigh/flat1559. Did not rescore the B-short. Did not touch data/bars. No Arrow 22.
+
+hot develop: n_sess=42 total=501 mean=11.93 median=10.0 max=55
+hot holdout: n_sess=22 total=473 mean=21.50 median=19.0 max=63
+
+- pullback: develop $-514.03/day holdout $-1087.29/day trades_holdout=266 avgR=-0.679 t=-5.14.
+- open|gap1: develop $-37.09/day holdout $-236.91/day trades_holdout=171 avgR=-0.187 t=-1.65.
+- open|ext8: develop $8.64/day holdout $-293.90/day trades_holdout=162 avgR=-0.234 t=-2.22.
+- open|dv1m: develop $-78.59/day holdout $-336.48/day trades_holdout=156 avgR=-0.245 t=-2.65.
+- pullback|max3: develop $-204.18/day holdout $-494.70/day trades_holdout=127 avgR=-0.719 t=-3.91.
+- fade|open: develop $-204.55/day holdout $-84.60/day trades_holdout=163 avgR=-0.071 t=-0.56.
+

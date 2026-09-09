@@ -28,6 +28,7 @@ from research.arrow16 import run_arrow16  # noqa: E402
 from research.arrow18 import run_arrow18  # noqa: E402
 from research.arrow19 import run_arrow19  # noqa: E402
 from research.arrow20 import run_arrow20  # noqa: E402
+from research.arrow21 import run_arrow21  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
 
@@ -55,10 +56,11 @@ def main(argv: list[str] | None = None) -> int:
             "arrow18",
             "arrow19",
             "arrow20",
+            "arrow21",
             "rockets",
         ),
-        default="arrow20",
-        help="arrow20 first long swing at 09:29 hot engines on data/full",
+        default="arrow21",
+        help="arrow21 iterate 09:29 hot book after Arrow 20 washout on data/full",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -98,6 +100,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow19(workers=args.workers)
     if args.mode == "arrow20":
         return run_arrow20(workers=args.workers)
+    if args.mode == "arrow21":
+        return run_arrow21(workers=args.workers)
     if args.mode == "rockets":
         return run_rockets(workers=args.workers)
     raise SystemExit(f"unknown mode {args.mode}")
