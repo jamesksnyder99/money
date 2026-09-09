@@ -520,3 +520,23 @@ VERDICT: FAIL — no Arrow 22 book has holdout >= $200/day AND non-red develop. 
 - open|max3: develop $-164.69/day holdout $-132.04/day trades_holdout=64 avgR=-0.241 t=-2.94.
 - open|nocluster: develop $-295.61/day holdout $-234.78/day trades_holdout=112 avgR=-0.244 t=-2.92.
 
+## 2026-09-09T07:19:45-04:00 — Arrow 23
+
+VERDICT: FAIL — no Arrow 23 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass. Did not rerun 08:00/09:29 buy-the-open, A21 pullback, strong5, newhigh, or fade-the-hot-open.
+
+Six orthogonal jobs on data/full: coil break; afternoon AM-high break; failed-rocket short; flush higher-low; vs-IWM hold; climax short. cap8. Did not rerun 08:00/09:29 buy-the-open, A21 pullback, strong5, newhigh, or fade. Did not rescore the B-short. Did not touch data/bars. No Arrow 24.
+
+coil develop: n_sess=42 total=538 mean=12.81 median=13.0 max=24
+coil holdout: n_sess=22 total=381 mean=17.32 median=17.5 max=30
+08:00 hot develop: n_sess=42 total=328 mean=7.81 median=6.0 max=31
+08:00 hot holdout: n_sess=22 total=279 mean=12.68 median=11.0 max=27
+
+- coil_break: develop $-115.22/day holdout $-236.32/day trades_holdout=153 avgR=-0.210 hit=0.346 PF=0.537 reached_1R=0.209 t=-2.67.
+- am_high_pm: develop $-5.77/day holdout $-92.51/day trades_holdout=49 avgR=-0.375 hit=0.367 PF=0.536 reached_1R=0.592 t=-2.01.
+- fail_rocket: develop $-86.90/day holdout $-140.66/day trades_holdout=184 avgR=-0.085 hit=0.478 PF=0.720 reached_1R=0.136 t=-1.55.
+- flush_hl: develop $-72.79/day holdout $-63.13/day trades_holdout=159 avgR=-0.062 hit=0.384 PF=0.901 reached_1R=0.403 t=-0.38.
+- vs_iwm: develop $-701.72/day holdout $-561.71/day trades_holdout=265 avgR=-0.482 hit=0.309 PF=0.404 reached_1R=0.343 t=-5.50.
+- climax: develop $-418.33/day holdout $-634.97/day trades_holdout=266 avgR=-0.443 hit=0.327 PF=0.414 reached_1R=0.342 t=-5.12.
+
+Shape vs Arrows 20-22: those books were ~30% hit, negative avgR, stop-driven losses from buying an already-extended open. Three jobs here are a different shape even though none clear $200. fail_rocket shorts print 48% holdout hit and PF 0.720 with 82% time-flattens and avgR near zero — a slow bleed, not a chase wash. am_high_pm is almost flat on develop (-6/day) and 59% of holdout trades tag +1R, then give it back (medR -1.2, 59% stopped). flush_hl is the least-bad holdout (-63/day, PF 0.901) with a fat right tail (p90R 1.73) and 40% reaching +1R; still negative EV. coil_break is ~80% time-flatten dead money (mean extension ~1.5%). vs_iwm and climax are the same wreck as 20-22, only larger.
+
