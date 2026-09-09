@@ -540,3 +540,22 @@ coil holdout: n_sess=22 total=381 mean=17.32 median=17.5 max=30
 
 Shape vs Arrows 20-22: those books were ~30% hit, negative avgR, stop-driven losses from buying an already-extended open. Three jobs here are a different shape even though none clear $200. fail_rocket shorts print 48% holdout hit and PF 0.720 with 82% time-flattens and avgR near zero — a slow bleed, not a chase wash. am_high_pm is almost flat on develop (-6/day) and 59% of holdout trades tag +1R, then give it back (medR -1.2, 59% stopped). flush_hl is the least-bad holdout (-63/day, PF 0.901) with a fat right tail (p90R 1.73) and 40% reaching +1R; still negative EV. coil_break is ~80% time-flatten dead money (mean extension ~1.5%). vs_iwm and climax are the same wreck as 20-22, only larger.
 
+## 2026-09-09T08:13:01-04:00 — Arrow 24
+
+VERDICT: FAIL — no Arrow 24 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass. Holdout is not a tuner. Did not rerun 08:00/09:29 buy-the-extended-open, A21 pullback, strong5, newhigh, fade, vs_iwm, climax.
+
+Part A develop FLY=1152 FAIL=1335 other=61113. Cell (develop-locked, holdout PEEK): orw >= 0.0510, dv0929 >= 98028.1104, ext0944 >= 0.0337. n=569 FLY=431 rate=0.757 vs baseline 0.463. Applied as an extra population cut on every long door.
+100-grid both-green=0. flush-family beat harness control on develop: 6/25. cost_skips=2261.
+
+- flush_hl|harness: develop $-19.60/day holdout $141.51/day n_hold=28 avgR=0.549 hit=0.607 PF=3.535 t=1.97.
+- am_high_pm|harness: develop $10.82/day holdout $-25.48/day n_hold=3 avgR=-0.936 hit=0.000 PF=0.000 t=-1.81.
+
+Top 5 grid by holdout $/day:
+- flush|flat1159|px5: develop $-6.31/day holdout $146.05/day n=27 avgR=0.588 hit=0.630.
+- flush|flat1159|cap3: develop $-18.28/day holdout $145.33/day n=27 avgR=0.591 hit=0.630.
+- flush|flat1159|cost: develop $-19.60/day holdout $141.51/day n=28 avgR=0.549 hit=0.607.
+- flush|t15R|cap3: develop $-33.50/day holdout $121.23/day n=32 avgR=0.414 hit=0.656.
+- flush|t15R|base: develop $-31.80/day holdout $119.90/day n=34 avgR=0.385 hit=0.647.
+
+FLY vs FAIL named a develop-locked cell (wide 09:30-09:44 OR, pre_dv_0929 >= ~98k, ext_0944 >= 3.4%) with 76% FLY rate vs 46% baseline; it was applied to every long door and holdout was not used to pick it. Door families vs Arrows 20-22 (those were ~30% hit chasing an already-extended open): flush is a different shape — holdout hit ~60% and PF ~3.5 on the harness control and on flush|flat1159|*, but develop is still slightly red so not a pass (closest flush|flat1159|px5 -6/+146). volfirst|half1R_trail hits ~70% and often tags +1R, still sub-$200. launch is sparse after the cell cut. giveback is a wreck, and giveback|flat1159 is structurally zero (entry after 13:00 vs flatten 11:59). both-green=0 of 100. Holdout was not a tuner.
+

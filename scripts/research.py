@@ -31,6 +31,7 @@ from research.arrow20 import run_arrow20  # noqa: E402
 from research.arrow21 import run_arrow21  # noqa: E402
 from research.arrow22 import run_arrow22  # noqa: E402
 from research.arrow23 import run_arrow23  # noqa: E402
+from research.arrow24 import run_arrow24  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
 
@@ -61,10 +62,11 @@ def main(argv: list[str] | None = None) -> int:
             "arrow21",
             "arrow22",
             "arrow23",
+            "arrow24",
             "rockets",
         ),
-        default="arrow23",
-        help="arrow23 orthogonal rocket logics on data/full",
+        default="arrow24",
+        help="arrow24 FLY vs FAIL, harness, 100-book grid on data/full",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -110,6 +112,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow22(workers=args.workers)
     if args.mode == "arrow23":
         return run_arrow23(workers=args.workers)
+    if args.mode == "arrow24":
+        return run_arrow24(workers=args.workers)
     if args.mode == "rockets":
         return run_rockets(workers=args.workers)
     raise SystemExit(f"unknown mode {args.mode}")

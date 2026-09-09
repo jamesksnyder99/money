@@ -10,6 +10,7 @@ MINUTE_1000 = time(10, 0)
 MINUTE_1015 = time(10, 15)
 MINUTE_1100 = time(11, 0)
 MINUTE_1200 = time(12, 0)
+MINUTE_1300 = time(13, 0)
 MINUTE_0944 = time(9, 44)
 MINUTE_0945 = time(9, 45)
 MINUTE_1045 = time(10, 45)
@@ -34,6 +35,7 @@ class Signal:
     tag: str
     stop_from_entry: bool = False
     overnight: bool = False
+    atr: float = 0.0
 
 
 def bar_time(ts: datetime) -> time:
