@@ -15,7 +15,7 @@ from research.costs import (
 )
 from research.harness import cost_gate_blocks, harness_stop_px
 from research.fills import is_tradeable
-from research.signals import Signal, bar_time, MINUTE_1159
+from research.signals import Signal, bar_time, MINUTE_1159, MINUTE_1559
 
 RTH_OPEN = time(9, 30)
 SSR_FRAC = 0.90
@@ -199,6 +199,8 @@ class Book:
     use_structure_stop: bool = True
     cost_skips: int = 0
     pending_scale: dict[str, tuple[int, int]] = field(default_factory=dict)
+    hold_plus_r: float = 0.0
+    late_flatten_at: time = MINUTE_1559
 
     def n_pending_entry(self) -> int:
         return len(self.pending_entry)
@@ -239,6 +241,8 @@ def replay_session(
     harness_stop: bool = False,
     cost_gate: bool = False,
     use_structure_stop: bool = True,
+    hold_plus_r: float = 0.0,
+    late_flatten_at: time | None = None,
     stats: dict | None = None,
 ) -> list[Trade]:
     packed = {sym: _pack(df) for sym, df in bars_by_symbol.items()}
@@ -261,6 +265,8 @@ def replay_session(
         harness_stop=bool(harness_stop),
         cost_gate=bool(cost_gate),
         use_structure_stop=bool(use_structure_stop),
+        hold_plus_r=float(hold_plus_r or 0.0),
+        late_flatten_at=late_flatten_at or MINUTE_1559,
     )
     sigs_at: dict = {}
     for sig in signals:
@@ -295,14 +301,24 @@ def replay_session(
                 book.pending_entry[sig.symbol] = (idx, sig)
 
     times = sorted({t for arr in packed.values() for t in arr.ts})
+    early_cut_done = False
     for ts in times:
         tclock = bar_time(ts)
         # 1) fills at this open
         _fills_at(book, packed, ts)
-        if tclock >= book.flatten_at:
+        holding_late = (
+            book.hold_plus_r > 0
+            and tclock >= book.flatten_at
+            and tclock < book.late_flatten_at
+        )
+        if tclock >= book.flatten_at and not holding_late:
             _flatten_open(book, packed, ts)
             continue
-        if tclock < RTH_OPEN and not book.allow_premarket:
+        if holding_late:
+            if not early_cut_done:
+                _conditional_hold_cut(book, packed, ts)
+                early_cut_done = True
+        elif tclock < RTH_OPEN and not book.allow_premarket:
             continue
         # 2) stop/target on this bar H/L → next open; trail at close after +1R
         for pos in list(book.positions.values()):
@@ -342,6 +358,8 @@ def replay_session(
                             book.pending_scale[pos.symbol] = (nxt, pos.shares // 2)
                     pos.already_scaled = True
         # 3) new entries from signals at this close
+        if tclock >= book.flatten_at:
+            continue
         batch = sigs_at.get(ts, [])
         batch = sorted(batch, key=lambda s: -abs(s.score))
         for sig in batch:
@@ -651,10 +669,34 @@ def _flatten_open(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:
     book.pending_scale.clear()
 
 
+def _unrealized_r(pos: Position, px: float) -> float:
+    if pos.initial_r <= 1e-12:
+        return 0.0
+    return pos.side * (px - pos.entry_px) / pos.initial_r
+
+
+def _conditional_hold_cut(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:
+    """Keep names ≥ hold_plus_r at the early flatten open; flatten the rest."""
+    for pos in list(book.positions.values()):
+        arr = packed.get(pos.symbol)
+        if arr is None:
+            _flatten_one(book, packed, pos, ts)
+            continue
+        i = arr.by_ts.get(ts)
+        if i is None or not _tradeable(arr, i):
+            _flatten_one(book, packed, pos, ts)
+            continue
+        if _unrealized_r(pos, float(arr.open[i])) >= book.hold_plus_r - 1e-12:
+            continue
+        _flatten_one(book, packed, pos, ts)
+    book.pending_entry.clear()
+
+
 def _flatten_leftovers(book: Book, packed: dict[str, _Arrays], times: list) -> None:
+    clock = book.late_flatten_at if book.hold_plus_r > 0 else book.flatten_at
     flatten_ts = None
     for t in times:
-        if bar_time(t) >= book.flatten_at:
+        if bar_time(t) >= clock:
             flatten_ts = t
             break
     if flatten_ts is None and times:

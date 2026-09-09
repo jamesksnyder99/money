@@ -578,3 +578,23 @@ Ten longs on flush + FLY cell. Harness on. Did not rerun the 100-grid, giveback,
 
 Beat control on both slices: flush|cap3
 
+## 2026-09-09T10:37:41-04:00 — Arrow 26
+
+VERDICT: FAIL — no Arrow 26 book has holdout >= $200/day AND non-red develop. Develop-red / holdout-green is not a pass. +117 holdout on Arrow 25 flush|max6 is not EV.
+
+Ten longs on flush|max6 accel/decel rings. Harness on. Did not rerun nocell, after10, giveback, launch-catch, 08:00 open-buy, vs_iwm, climax, or the 100-grid. +117 is not EV. No Arrow 27.
+
+- flush|max6: develop $11.29/day holdout $116.77/day n_hold=23 vs_id1=1.00x avgR=0.550 hit=0.609 PF=3.363 t=1.70 both_green=True.
+- flush|cap3: develop $11.29/day holdout $125.28/day n_hold=22 vs_id1=0.96x avgR=0.618 hit=0.636 PF=4.063 t=1.80 both_green=True.
+- flush|rngaccel: develop $-0.69/day holdout $34.11/day n_hold=11 vs_id1=0.48x avgR=0.353 hit=0.727 PF=3.785 t=2.07 both_green=False.
+- flush|decel: develop $18.19/day holdout $57.35/day n_hold=20 vs_id1=0.87x avgR=0.318 hit=0.700 PF=2.586 t=1.37 both_green=True.
+- flush|volaccel: develop $-0.83/day holdout $17.53/day n_hold=6 vs_id1=0.26x avgR=0.320 hit=0.333 PF=1.687 t=0.41 both_green=False.
+- flush|slowwash: develop $2.43/day holdout $18.14/day n_hold=3 vs_id1=0.13x avgR=0.828 hit=0.667 PF=8.203 t=0.99 both_green=True.
+- flush|twohl: develop $-4.53/day holdout $50.22/day n_hold=20 vs_id1=0.87x avgR=0.269 hit=0.550 PF=2.202 t=1.20 both_green=False.
+- flush|skip0950: develop $1.45/day holdout $11.36/day n_hold=4 vs_id1=0.17x avgR=0.400 hit=0.500 PF=2.220 t=0.57 both_green=True.
+- flush|hold05: develop $23.71/day holdout $75.23/day n_hold=23 vs_id1=1.00x avgR=0.354 hit=0.522 PF=2.419 t=1.16 both_green=True.
+- flush|noreclaim: develop $-6.34/day holdout $81.66/day n_hold=18 vs_id1=0.78x avgR=0.499 hit=0.500 PF=3.969 t=1.20 both_green=False.
+
+Beat control on both slices: none
+Both-green: flush|max6, flush|cap3, flush|decel, flush|slowwash, flush|skip0950, flush|hold05
+

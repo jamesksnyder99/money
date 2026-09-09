@@ -74,6 +74,7 @@ def resample_5m(df: pl.DataFrame) -> list[dict]:
             pl.col("high").max().alias("high"),
             pl.col("low").min().alias("low"),
             pl.col("close").sort_by("bar_start").last().alias("close"),
+            pl.col("volume").sum().alias("volume"),
             pl.col("bar_start").sort_by("bar_start").last().alias("last_ts"),
             pl.col("symbol").first().alias("symbol"),
         )
@@ -88,6 +89,7 @@ def resample_5m(df: pl.DataFrame) -> list[dict]:
                 "high": float(rec["high"]),
                 "low": float(rec["low"]),
                 "close": float(rec["close"]),
+                "volume": float(rec["volume"]),
                 "last_ts": rec["last_ts"],
                 "symbol": str(rec["symbol"]),
             }
