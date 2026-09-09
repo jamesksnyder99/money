@@ -12,4 +12,4 @@ Evaluation is live-or-next-bar after costs, not in-sample curve-fit. Lab A is th
 
 Holdout (2026-07-31 through 2026-08-31) was used to pick rings on the B-short cell. That slice is contaminated; do not treat any holdout dollar print as expected value. Develop is the honest in-sample check. SSR (Short Sale Restriction) and borrow were unmodelled before Arrow 18.
 
-**Granularity law:** use the finest tape we possess (one-minute now) for reading and acting. A higher timeframe needs a scored reason — anti-twitch gain versus one-minute — not habit. Sub-minute (1s / 10s) is a future tape, not a default until asked.
+**Granularity law:** esteem the finest granularity we have. A higher timeframe is used only when it is superior to read or execute on. The law is not “always one-minute.” Today the finest tape is one-minute; a later 1-second or 10-second tape would inherit the default.
