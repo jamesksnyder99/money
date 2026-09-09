@@ -35,6 +35,7 @@ from research.arrow24 import run_arrow24  # noqa: E402
 from research.arrow25 import run_arrow25  # noqa: E402
 from research.arrow26 import run_arrow26  # noqa: E402
 from research.arrow27 import run_arrow27  # noqa: E402
+from research.arrow28 import run_arrow28  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
 
@@ -69,10 +70,11 @@ def main(argv: list[str] | None = None) -> int:
             "arrow25",
             "arrow26",
             "arrow27",
+            "arrow28",
             "rockets",
         ),
-        default="arrow27",
-        help="arrow27 repairs, combine_books, B-short SSR policy, flush|max6 reprint",
+        default="arrow28",
+        help="arrow28 B-short on data/full, afternoon exits, uptick10",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -126,6 +128,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow26(workers=args.workers)
     if args.mode == "arrow27":
         return run_arrow27(workers=args.workers)
+    if args.mode == "arrow28":
+        return run_arrow28(workers=args.workers)
     if args.mode == "rockets":
         return run_rockets(workers=args.workers)
     raise SystemExit(f"unknown mode {args.mode}")

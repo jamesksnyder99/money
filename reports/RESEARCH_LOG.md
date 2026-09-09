@@ -614,3 +614,20 @@ Honesty: do not write that the account is one improvement from $200. A18 SSR-on 
 - flush|max6: develop $12.18/day holdout $116.77/day n_hold=23 avgR=0.550 t=1.70 peak_conc=4.
 - COMBINED B_nofilter+flush|max6: develop $80.37/day holdout $295.62/day corr_dev=-0.190 corr_hold=-0.048 (holdout not EV).
 
+## 2026-09-09T14:07:00-04:00 — Arrow 28
+
+VERDICT: HOLD OUT CLEARS $200 WITH NON-RED DEVELOP — B_uptick10|atr1559
+
+B-short on data/full. SSR=B_uptick10. Afternoon exits. No rocket rings. No $500/idea. No virgin pull. Combined holdout is not EV. No Arrow 29.
+Row 0 counts vs A27 B_uptick10: develop 212/204 (1.04x) holdout 94/75 (1.25x) — DRIFT beyond ±10%. Likely causes: data/full 04:00-16:00 tape adds premarket 15m bars to the EMA stitch (Lab A started 07:30), and ssr_active session-low now includes 04:00-07:30 prints; harness ATR/0.6pct floor is on (A27 B-short did not use it) which changes size not skips.
+Honesty: combined develop is the combine_books number. Combined holdout is not EV.
+
+- B_uptick10|flat1159: develop $14.62/day holdout $148.24/day n_hold=94 avgR=0.202 PF=1.629 t=1.06 peak_conc=8 mean_conc=3.79.
+- B_uptick10|flat1559: develop $-12.99/day holdout $293.68/day n_hold=95 avgR=0.382 PF=2.319 t=2.05 peak_conc=8 mean_conc=3.70.
+- B_uptick10|hold05: develop $-2.80/day holdout $166.89/day n_hold=94 avgR=0.217 PF=1.677 t=1.12 peak_conc=8 mean_conc=3.03.
+- B_uptick10|atr1559: develop $82.65/day holdout $233.20/day n_hold=95 avgR=0.292 PF=2.198 t=2.19 peak_conc=8 mean_conc=3.13.
+- B_uptick10|flat1330: develop $-61.99/day holdout $199.10/day n_hold=95 avgR=0.256 PF=1.896 t=1.36 peak_conc=8 mean_conc=3.77.
+- B_uptick10|hold05_1430: develop $-36.72/day holdout $175.18/day n_hold=94 avgR=0.228 PF=1.730 t=1.09 peak_conc=8 mean_conc=3.16.
+- B_reject|flat1159: develop $-43.56/day holdout $83.66/day n_hold=80 avgR=0.147 PF=1.367 t=0.60 peak_conc=8 mean_conc=3.22.
+- COMBINED B_uptick10|atr1559+flush|max6: develop $94.83/day holdout $349.97/day corr_dev=-0.258 (holdout not EV).
+
