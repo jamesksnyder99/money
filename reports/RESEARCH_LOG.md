@@ -714,3 +714,11 @@ Id 0 develop n=21 vs A31 n=21 — within ±3.
 - flush|max6|atr1330: develop $11.13/day holdout $36.05/day n_hold=19 MFE-capture=0.241 reached_1R=0.368
 COMBINED B|conj|atr1559|lock+flush|max6|atr1330 develop $83.70 holdout $211.45 NOT EV
 
+## 2026-09-10T07:06:04-04:00 — Arrow 35
+
+Diagnostic. No new engine. No $200 verdict on a book. No B-short rescore. No flush rings. No $500/idea. No virgin pull. Holdout tables are PEEK. Combined holdout is not EV. No Arrow 36.
+On develop, confirmed-launch rocket-days (n=2809, prior_close $1-20) posted 10014.1 pct-points of harvestable altitude from the first fillable bar (median 0.89pp) versus 51457.4 pct-points of Arrow 30 sea-level gross (prior close, max high after launch − 1R). Sit-able share of that mountain for a next-open engine is 19.5% — the rest is either the 1R haircut from a later fillable price or premarket wick that is gone before 09:45. Arrow 30's never-sit hours (04-07 and after 12:00) held 53.3% of sea-level gross; a next-open book can still sit the 04-07 launches at 09:45, so harvestable is the honest leftover, not the specialist's 0.6% flush coverage. Holdout tables are PEEK, not a tuner. Holdout is not EV.
+Frozen five (develop): minutes_since_launch rho=+0.6275, ext rho=+0.2824, orw rho=+0.2719, vwap_rel rho=+0.2042, was_rocket_prev rho=+0.1486
+Develop members n=59679  holdout members n=30001  GATE=NO
+COMBINED B|conj|atr1559|lock+flush|max6|repaired develop $78.77 holdout $254.50 NOT EV (reprint)
+
