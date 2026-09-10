@@ -750,3 +750,16 @@ Noon hold / afternoon continuation. Did not rerun A36 afternoon birth. No cell. 
 - power|1430|flat1559: develop $-11.56/day holdout $24.59/day n_dev=14 n_hold=5 MFE-capture=1.676 reached_1R=0.000 SHELVE
 COMBINED B|conj|atr1559|lock+flush|max6|repaired develop $78.77 holdout $254.50 NOT EV (reprint)
 
+## 2026-09-10T09:27:34-04:00 — Arrow 38
+
+VERDICT: FAIL — no Arrow 38 reclaim book has holdout >= $200/day AND non-red develop (ids with develop n < 40 are SHELVED). Combined holdout is not expected value (EV).
+
+Premarket-high reclaim after the open wash. Did not rerun 36 or 37. No cell. No score gate. No B-short rescore. No $500/idea. No virgin pull. Combined holdout is not EV. No Arrow 39.
+Premarket-high reclaim after the open wash. Did not rerun 36 birth or 37 noon hold. No cell. No score gate. B-short not rescored; COMBINED uses A33 B|conj|atr1559|lock reprint (develop $72.57/day) + A31 flush control reprint (flush|max6|repaired) because no develop-not-red id with n>=40. Combined holdout is not EV.
+
+- pmrecl|dip3|flat1159: develop $-21.27/day holdout $-35.05/day n_dev=23 n_hold=29 MFE-capture=-0.193 reached_1R=0.207 SHELVE
+- pmrecl|dip3|atr1559: develop $-5.19/day holdout $-57.61/day n_dev=32 n_hold=43 MFE-capture=-0.231 reached_1R=0.186 SHELVE
+- pmrecl|dip2|flat1159: develop $-49.07/day holdout $-20.10/day n_dev=36 n_hold=39 MFE-capture=-0.078 reached_1R=0.231 SHELVE
+- pmrecl|dip3|rvol3: develop $-11.29/day holdout $-58.04/day n_dev=9 n_hold=19 MFE-capture=-0.953 reached_1R=0.053 SHELVE
+COMBINED B|conj|atr1559|lock+flush|max6|repaired develop $78.77 holdout $254.50 NOT EV (reprint)
+
