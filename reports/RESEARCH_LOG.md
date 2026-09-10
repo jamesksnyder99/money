@@ -812,3 +812,17 @@ Weekly residual vs IWM. Long 15 worst / short 15 best, 5-session hold. Odd month
 - res_long: IS $-67.52/day n=283  OOS $-71.20/day n=224  no seat
 - res_short: IS $246.77/day n=272  OOS $-1.37/day n=218  no seat
 - res_ls: IS $179.26/day n=555  OOS $-72.57/day n=442  no seat
+
+## 2026-09-10T18:56:51-04:00 — Arrow 45
+
+VERDICT: FAIL — no Arrow 45 short ring has OOS >= $100/day AND non-red IS. Slate $200 is not this arrow's job.
+
+Id 0 n15_h5 IS $/day=246.77/246.77 n=272/272 — within ±10% of Arrow 44 res_short.
+Lift vs control on both IS and OOS: n15_h10.
+Short only residual winners. Rings locked from IS. One OOS look. Did not use an OOS month to pick a threshold. Did not bring back res_long. Did not retune Arrow 43 clocks or frozen B/flush. No new ingest. No Arrow 46.
+- n15_h5: IS $246.77/day n=272  OOS $-1.37/day n=218  no seat
+- n10_h5: IS $235.76/day n=180  OOS $29.26/day n=145  no seat
+- n8_h5: IS $186.11/day n=143  OOS $52.43/day n=116  no seat
+- n15_h5_r04: IS $246.77/day n=272  OOS $-1.37/day n=218  no seat
+- n15_h5_r08: IS $246.77/day n=272  OOS $-1.37/day n=218  no seat
+- n15_h10: IS $281.72/day n=262  OOS $19.64/day n=198  no seat  lift-both
