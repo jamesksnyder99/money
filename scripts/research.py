@@ -43,6 +43,7 @@ from research.arrow32 import run_arrow32  # noqa: E402
 from research.arrow33 import run_arrow33  # noqa: E402
 from research.arrow34 import run_arrow34  # noqa: E402
 from research.arrow35 import run_arrow35  # noqa: E402
+from research.arrow36 import run_arrow36  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
 
@@ -85,10 +86,11 @@ def main(argv: list[str] | None = None) -> int:
             "arrow33",
             "arrow34",
             "arrow35",
+            "arrow36",
             "rockets",
         ),
-        default="arrow35",
-        help="arrow35 harvestable altitude + point-in-time score",
+        default="arrow36",
+        help="arrow36 ungated RTH confirmed-launch birth",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -158,6 +160,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow34(workers=args.workers)
     if args.mode == "arrow35":
         return run_arrow35(workers=args.workers)
+    if args.mode == "arrow36":
+        return run_arrow36(workers=args.workers)
     if args.mode == "rockets":
         return run_rockets(workers=args.workers)
     raise SystemExit(f"unknown mode {args.mode}")
