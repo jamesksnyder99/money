@@ -794,3 +794,12 @@ One look on data/virgin/. Frozen $200/$200 A33 B|conj|atr1559|lock + A31 flush|m
 COMBINED $/day=-172.52 n_B=469 n_flush=89 IWM alpha $-155.55 skip=0 NOT EV
 B|pdv>=$10M $/day=-160.29 n=469
 B|$20-80|pdv>=$10M $/day=-52.82 n=368
+
+## 2026-09-10T18:05:20-04:00 — Arrow 43
+
+VERDICT: FAIL — no Arrow 43 clock book has OOS >= $100/day AND non-red IS. Slate $200 is not this arrow's job.
+
+Clock split. Three frozen books: on_long, on_short, rth_long. Odd months IS, even months OOS, split on entry session. Combined virgin Jan–May + full Jun–Aug. Did not retune B|conj|atr1559|lock or flush|max6|repaired. No new ingest. Did not touch Lab A data/bars. Combined of the three is a side line, not a slate. No Arrow 44.
+- on_long: IS $-45.25/day n=1849  OOS $-53.71/day n=1598  no seat
+- on_short: IS $-158.58/day n=1849  OOS $-127.00/day n=1598  no seat
+- rth_long: IS $-79.04/day n=1887  OOS $-109.62/day n=1644  no seat
