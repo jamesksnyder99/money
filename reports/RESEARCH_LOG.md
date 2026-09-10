@@ -840,3 +840,19 @@ Short only. Hold 10. Rings locked from IS. One OOS look. Did not use an OOS mont
 - n15_lb10_h10: IS $220.99/day n=260  OOS $122.66/day n=197  SEAT
 - n15_h10_r15: IS $304.30/day n=247  OOS $19.64/day n=198  no seat
 - n8_h10_r15: IS $189.83/day n=134  OOS $88.00/day n=105  no seat
+
+## 2026-09-10T19:41:21-04:00 — Arrow 47
+
+VERDICT: SEAT — n15_lb10_h10, n8_lb10_h10, n15_lb10_h5, n15_lb10_h10_r20, n15_lb10_h10_3k (OOS >= $100/day and IS not red). Slate $200 is not this arrow's job.
+
+Id 0 n15_lb10_h10 IS $/day=220.99/220.99 n=260/260 — within ±10% of Arrow 46 n15_lb10_h10.
+Lift vs control on both IS and OOS: n15_lb10_h10_3k.
+Id 3 n15_lb10_h5 OOS $109.01/day kept the OOS lift (>= $100).
+Id 5 $3k / id 0 $2k scale IS 1.50x OOS 1.50x vs linear 1.50x. Near-linear.
+Short only. lb=10. Rings locked from IS. One OOS look. Did not use an OOS month to pick a threshold. Did not add a long leg. Did not retune Arrow 43 clocks or frozen B/flush. No new ingest. No Arrow 48.
+- n15_lb10_h10: IS $220.99/day n=260  OOS $122.66/day n=197 t=1.39  SEAT
+- n10_lb10_h10: IS $141.81/day n=170  OOS $96.69/day n=131 t=1.45  no seat
+- n8_lb10_h10: IS $122.94/day n=135  OOS $102.47/day n=104 t=1.56  SEAT
+- n15_lb10_h5: IS $137.97/day n=268  OOS $109.01/day n=206 t=1.50  SEAT
+- n15_lb10_h10_r20: IS $232.46/day n=258  OOS $122.66/day n=197 t=1.39  SEAT
+- n15_lb10_h10_3k: IS $332.58/day n=260  OOS $184.38/day n=197 t=1.39  SEAT  lift-both
