@@ -826,3 +826,17 @@ Short only residual winners. Rings locked from IS. One OOS look. Did not use an 
 - n15_h5_r04: IS $246.77/day n=272  OOS $-1.37/day n=218  no seat
 - n15_h5_r08: IS $246.77/day n=272  OOS $-1.37/day n=218  no seat
 - n15_h10: IS $281.72/day n=262  OOS $19.64/day n=198  no seat  lift-both
+
+## 2026-09-10T19:21:20-04:00 — Arrow 46
+
+VERDICT: SEAT — n15_lb10_h10 (OOS >= $100/day and IS not red). Slate $200 is not this arrow's job.
+
+Id 0 n15_h10 IS $/day=281.72/281.72 n=262/262 — within ±10% of Arrow 45 n15_h10.
+Lift vs control on both IS and OOS: none.
+Short only. Hold 10. Rings locked from IS. One OOS look. Did not use an OOS month to pick a threshold. Did not add a long leg. Did not retune Arrow 43 clocks or frozen B/flush. No new ingest. No Arrow 47.
+- n15_h10: IS $281.72/day n=262  OOS $19.64/day n=198  no seat
+- n10_h10: IS $252.27/day n=171  OOS $78.60/day n=132  no seat
+- n8_h10: IS $189.78/day n=135  OOS $88.00/day n=105  no seat
+- n15_lb10_h10: IS $220.99/day n=260  OOS $122.66/day n=197  SEAT
+- n15_h10_r15: IS $304.30/day n=247  OOS $19.64/day n=198  no seat
+- n8_h10_r15: IS $189.83/day n=134  OOS $88.00/day n=105  no seat
