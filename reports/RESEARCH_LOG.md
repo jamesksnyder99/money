@@ -699,3 +699,18 @@ Leftover lever: the door — leader covers little of the gap/OR field.
 - drift_elig: develop $-6.56/day holdout $63.77/day n_hold=70 MFE-capture=0.110 IWM skip=0
 COMBINED B|conj|atr1559|lock+flush|max6|repaired develop $78.77 holdout $254.50 NOT EV
 
+## 2026-09-09T21:56:41-04:00 — Arrow 34
+
+VERDICT: FAIL — no Arrow 34 flush book has holdout >= $200/day AND non-red develop. Combined holdout is not expected value (EV).
+
+ATR trail on A31 flush|max6|repaired. Door frozen. B-short not rescored. No $500/idea. No virgin pull. Combined holdout is not EV. No Arrow 35.
+Door frozen (A31 flush|max6|repaired). B-short not rescored; COMBINED uses A33 B|conj|atr1559|lock reprint (develop $72.57/day) + best develop-not-red flush (flush|max6|atr1330). Good-look diagnostic (develop>=$25 and MFE-capture>=0.30, not the pass line): none. Combined holdout is not EV.
+Id 0 develop n=21 vs A31 n=21 — within ±3.
+
+- flush|max6|flat1159: develop $6.20/day holdout $79.10/day n_hold=19 MFE-capture=0.369 reached_1R=0.263
+- flush|max6|atr1559: develop $-10.41/day holdout $36.42/day n_hold=19 MFE-capture=0.226 reached_1R=0.368
+- flush|max6|arm05: develop $1.88/day holdout $27.23/day n_hold=19 MFE-capture=0.188 reached_1R=0.263
+- flush|max6|atr15: develop $-8.15/day holdout $62.45/day n_hold=19 MFE-capture=0.343 reached_1R=0.368
+- flush|max6|atr1330: develop $11.13/day holdout $36.05/day n_hold=19 MFE-capture=0.241 reached_1R=0.368
+COMBINED B|conj|atr1559|lock+flush|max6|atr1330 develop $83.70 holdout $211.45 NOT EV
+
