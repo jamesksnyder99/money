@@ -679,3 +679,23 @@ Id 1 vs id 0 filled: develop added=7 dropped=0 holdout added=0 dropped=0 trades 
 - B|unarmed20|lock: develop $-30.84/day holdout $65.52/day n_hold=97 MFE-capture=0.105 IWM skip=0
 COMBINED B|conj|atr1559|lock+flush|max6|repaired develop $79.23 holdout $256.74 NOT EV
 
+## 2026-09-09T21:02:05-04:00 — Arrow 33
+
+VERDICT: FAIL — no Arrow 33 book has holdout >= $200/day AND non-red develop. Combined holdout is not expected value (EV).
+
+Hygiene, cap/rank on A32 conjunction lock, develop depth rollup. Do not promote atr150. No flush rings. No $500/idea. No virgin pull. Combined holdout is not EV. No Arrow 34.
+Do not promote A32 atr150. Frozen leader is B|conj|atr1559|lock. COMBINED uses best develop-not-red B (B|conj|atr1559|lock, develop $72.57/day) + A31 flush reprint. Combined holdout is not EV.
+Id 0 vs A32 B|conj|atr1559|lock: develop 228/244 holdout 93/98 — within ±10%.
+RVOL skip share=0.071 (42/590).
+drift_elig (prior_close [10,30] Lab-A band) develop n=191 holdout n=70 vs A27 B_uptick10 holdout 75 and A32 conj holdout 98. Not a champion.
+Leftover lever: the door — leader covers little of the gap/OR field.
+
+- B|conj|atr1559|lock: develop $72.57/day holdout $175.40/day n_hold=93 MFE-capture=0.230 IWM skip=0
+- B|conj|cap12: develop $64.34/day holdout $134.90/day n_hold=109 MFE-capture=0.159 IWM skip=0
+- B|conj|cap16: develop $41.55/day holdout $142.46/day n_hold=113 MFE-capture=0.163 IWM skip=0
+- B|conj|rank_gap: develop $38.19/day holdout $132.44/day n_hold=93 MFE-capture=0.178 IWM skip=0
+- B|conj|rank_rvol: develop $37.04/day holdout $142.91/day n_hold=93 MFE-capture=0.192 IWM skip=0
+- B|conj|rank_orw: develop $47.32/day holdout $146.55/day n_hold=93 MFE-capture=0.200 IWM skip=0
+- drift_elig: develop $-6.56/day holdout $63.77/day n_hold=70 MFE-capture=0.110 IWM skip=0
+COMBINED B|conj|atr1559|lock+flush|max6|repaired develop $78.77 holdout $254.50 NOT EV
+

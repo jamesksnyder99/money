@@ -96,7 +96,7 @@ def test_r2_giveback_flat1159_is_structural() -> None:
 
 
 def test_r4_untradeable_flatten_uses_close() -> None:
-    """A31 A5: 11:59 untradeable and no later print is unresolved, not an 11:58 backdate."""
+    """A33: 11:59 untradeable, no later print → mark 11:58 close, tag unresolved."""
     df = _bars(
         [
             _row("TEST", 9, 30, 10.00, 10.20, 9.90, 10.10, 1000),
@@ -109,6 +109,7 @@ def test_r4_untradeable_flatten_uses_close() -> None:
     st = {}
     trades = replay_session({"TEST": df}, [sig], {"TEST": 50_000_000.0}, stats=st)
     assert len(trades) == 1
-    assert abs(trades[0].exit_px - 10.18) > 1e-6
+    assert abs(trades[0].exit_px - 10.18) < 1e-9
     assert trades[0].tag == "unresolved"
+    assert trades[0].exit_ts.hour == 11 and trades[0].exit_ts.minute == 58
     assert st.get("unresolved_flatten", 0) >= 1

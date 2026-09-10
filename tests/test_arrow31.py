@@ -228,7 +228,7 @@ def test_a5_1159_dead_is_not_1150_fill() -> None:
     assert trades
     assert trades[0].exit_ts.hour == 12
     assert trades[0].exit_ts.minute == 0
-    assert trades[0].tag == "time"
+    assert trades[0].tag == "unresolved_late"
 
     df_dead = _bars(
         [
@@ -248,7 +248,11 @@ def test_a5_1159_dead_is_not_1150_fill() -> None:
         stats=st2,
     )
     assert st2.get("unresolved_flatten", 0) >= 1
-    assert not any(t.exit_ts.hour == 11 and t.exit_ts.minute == 50 for t in dead)
+    assert dead
+    assert dead[0].tag == "unresolved"
+    assert dead[0].exit_ts.hour == 11 and dead[0].exit_ts.minute == 50
+    assert abs(dead[0].exit_px - 9.78) < 1e-9
+    assert abs(dead[0].exit_px - dead[0].entry_px) > 1e-9
 
 
 def test_cr1_1010_undercut_fires_0935_does_not_kill() -> None:

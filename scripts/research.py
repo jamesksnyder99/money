@@ -40,6 +40,7 @@ from research.arrow29 import run_arrow29  # noqa: E402
 from research.arrow30 import run_arrow30  # noqa: E402
 from research.arrow31 import run_arrow31  # noqa: E402
 from research.arrow32 import run_arrow32  # noqa: E402
+from research.arrow33 import run_arrow33  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
 
@@ -79,10 +80,11 @@ def main(argv: list[str] | None = None) -> int:
             "arrow30",
             "arrow31",
             "arrow32",
+            "arrow33",
             "rockets",
         ),
-        default="arrow32",
-        help="arrow32 B-short conjunction and trail rings on the repaired lock",
+        default="arrow33",
+        help="arrow33 hygiene, cap/rank on the standing short, depth rollup",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -146,6 +148,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow31(workers=args.workers)
     if args.mode == "arrow32":
         return run_arrow32(workers=args.workers)
+    if args.mode == "arrow33":
+        return run_arrow33(workers=args.workers)
     if args.mode == "rockets":
         return run_rockets(workers=args.workers)
     raise SystemExit(f"unknown mode {args.mode}")

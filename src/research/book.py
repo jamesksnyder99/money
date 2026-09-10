@@ -281,6 +281,7 @@ class Book:
     liquidation_requested: int = 0
     liquidation_filled: int = 0
     unresolved_flatten: int = 0
+    unresolved_late: int = 0
     flatten_backdate_avoided: int = 0
     trail_atr_mult: float = 1.0
     trail_arm_r: float = 1.0
@@ -546,6 +547,7 @@ def replay_session(
         stats["liquidation_requested"] = book.liquidation_requested
         stats["liquidation_filled"] = book.liquidation_filled
         stats["unresolved_flatten"] = book.unresolved_flatten
+        stats["unresolved_late"] = book.unresolved_late
         stats["flatten_backdate_avoided"] = book.flatten_backdate_avoided
         stats["unarmed_red_exits"] = book.unarmed_red_exits
     return book.trades
@@ -612,8 +614,10 @@ def _fills_at(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:
         pos = book.positions.get(sym)
         if pos is not None:
             _close_position(book, pos, float(arr.open[idx]), ts, tag)
-            if tag == "time":
+            if tag in ("time", "unresolved_late"):
                 book.liquidation_filled += 1
+            if tag == "unresolved_late":
+                book.unresolved_late += 1
 
 
 def _open_position(book: Book, sig: Signal, px: float, ts: datetime) -> None:
@@ -864,6 +868,37 @@ def _had_tradeable_before_clock(arr: _Arrays, clock: time, after_ts: datetime) -
     return False
 
 
+def _flatten_fill_plan(
+    arr: _Arrays, clock: time, after_ts: datetime
+) -> tuple[int, str, str] | None:
+    """Plan a flatten fill. Never uses entry_px.
+
+    Later tradeable at flatten clock → open, tag time.
+    Later tradeable after the clock → open, tag unresolved_late.
+    Else last tradeable close after entry, tag unresolved.
+    """
+    idx = _first_tradeable_clock_at_or_after(arr, clock, after_ts)
+    if idx is not None:
+        tag = "time" if bar_time(arr.ts[idx]) == clock else "unresolved_late"
+        return idx, tag, "open"
+    last = _last_tradeable_after(arr, after_ts)
+    if last is not None:
+        return last, "unresolved", "close"
+    return None
+
+
+def _apply_flatten_plan(book: Book, pos: Position, arr: _Arrays, plan: tuple[int, str, str]) -> None:
+    idx, tag, how = plan
+    px = float(arr.open[idx]) if how == "open" else float(arr.close[idx])
+    _close_position(book, pos, px, arr.ts[idx], tag)
+    if tag in ("time", "unresolved_late"):
+        book.liquidation_filled += 1
+    if tag == "unresolved_late":
+        book.unresolved_late += 1
+    if tag == "unresolved":
+        book.unresolved_flatten += 1
+
+
 def _flatten_one(
     book: Book,
     packed: dict[str, _Arrays],
@@ -871,36 +906,29 @@ def _flatten_one(
     flatten_ts: datetime | None,
     clock: time | None = None,
 ) -> None:
-    """A5: fill at or after flatten clock. Never backdate to an earlier print."""
+    """A5/A33: fill at or after flatten clock; else mark last tradeable close. Never entry_px."""
     arr = packed.get(pos.symbol)
     book.liquidation_requested += 1
+    clock = clock or book.flatten_at
     if arr is None:
         book.unresolved_flatten += 1
-        _close_position(book, pos, pos.entry_px, pos.entry_ts, "unresolved")
+        _close_position(book, pos, pos.stop, pos.entry_ts, "unresolved")
         return
-    clock = clock or book.flatten_at
-    idx = _first_tradeable_clock_at_or_after(arr, clock, pos.entry_ts)
-    if idx is None:
-        if _had_tradeable_before_clock(arr, clock, pos.entry_ts):
-            book.flatten_backdate_avoided += 1
+    plan = _flatten_fill_plan(arr, clock, pos.entry_ts)
+    if plan is None:
         book.unresolved_flatten += 1
-        _close_position(book, pos, pos.entry_px, pos.entry_ts, "unresolved")
+        _close_position(book, pos, pos.stop, pos.entry_ts, "unresolved")
         return
-    if flatten_ts is not None and arr.ts[idx] < flatten_ts and bar_time(arr.ts[idx]) < clock:
-        # should not happen; belt-and-suspenders against backdate
-        if _had_tradeable_before_clock(arr, clock, pos.entry_ts):
-            book.flatten_backdate_avoided += 1
-        book.unresolved_flatten += 1
-        _close_position(book, pos, pos.entry_px, pos.entry_ts, "unresolved")
-        return
-    _close_position(book, pos, float(arr.open[idx]), arr.ts[idx], "time")
-    book.liquidation_filled += 1
+    _idx, tag, _how = plan
+    if tag == "unresolved" and _had_tradeable_before_clock(arr, clock, pos.entry_ts):
+        book.flatten_backdate_avoided += 1
+    _apply_flatten_plan(book, pos, arr, plan)
 
 
 def _request_time_exit(
     book: Book, packed: dict[str, _Arrays], now_ts: datetime, clock: time | None = None
 ) -> None:
-    """A5: queue flatten at first own-tape tradeable at or after `clock`. No backdate."""
+    """Queue flatten at first own-tape tradeable at or after `clock`. Mark last close if none."""
     clock = clock or book.flatten_at
     for pos in list(book.positions.values()):
         if pos.symbol in book.pending_exit:
@@ -909,20 +937,23 @@ def _request_time_exit(
         arr = packed.get(pos.symbol)
         if arr is None:
             book.unresolved_flatten += 1
-            _close_position(book, pos, pos.entry_px, pos.entry_ts, "unresolved")
+            _close_position(book, pos, pos.stop, pos.entry_ts, "unresolved")
             continue
-        idx = _first_tradeable_clock_at_or_after(arr, clock, pos.entry_ts)
-        if idx is None:
+        plan = _flatten_fill_plan(arr, clock, pos.entry_ts)
+        if plan is None:
+            book.unresolved_flatten += 1
+            _close_position(book, pos, pos.stop, pos.entry_ts, "unresolved")
+            continue
+        idx, tag, how = plan
+        if how == "close":
             if _had_tradeable_before_clock(arr, clock, pos.entry_ts):
                 book.flatten_backdate_avoided += 1
-            book.unresolved_flatten += 1
-            _close_position(book, pos, pos.entry_px, pos.entry_ts, "unresolved")
+            _apply_flatten_plan(book, pos, arr, plan)
             continue
         if arr.ts[idx] == now_ts:
-            _close_position(book, pos, float(arr.open[idx]), now_ts, "time")
-            book.liquidation_filled += 1
+            _apply_flatten_plan(book, pos, arr, plan)
         else:
-            book.pending_exit[pos.symbol] = (idx, "time")
+            book.pending_exit[pos.symbol] = (idx, tag)
     book.pending_entry.clear()
     book.pending_scale.clear()
 
@@ -1004,8 +1035,10 @@ def _flatten_leftovers(book: Book, packed: dict[str, _Arrays], times: list) -> N
                 continue
             if idx < len(arr.ts) and _tradeable(arr, idx) and bar_time(arr.ts[idx]) >= clock:
                 _close_position(book, pos, float(arr.open[idx]), arr.ts[idx], tag)
-                if tag == "time":
+                if tag in ("time", "unresolved_late"):
                     book.liquidation_filled += 1
+                if tag == "unresolved_late":
+                    book.unresolved_late += 1
             book.pending_exit.pop(sym, None)
     if book.positions:
         for pos in list(book.positions.values()):
@@ -1014,8 +1047,14 @@ def _flatten_leftovers(book: Book, packed: dict[str, _Arrays], times: list) -> N
         book.pending_exit.clear()
     if book.positions:
         for pos in list(book.positions.values()):
+            arr = packed.get(pos.symbol)
+            if arr is not None:
+                last = _last_tradeable_after(arr, pos.entry_ts)
+                if last is not None:
+                    _apply_flatten_plan(book, pos, arr, (last, "unresolved", "close"))
+                    continue
             book.unresolved_flatten += 1
-            _close_position(book, pos, pos.entry_px, pos.entry_ts, "unresolved")
+            _close_position(book, pos, pos.stop, pos.entry_ts, "unresolved")
 
 
 def daily_close_drawdown(daily: list[float]) -> float:

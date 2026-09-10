@@ -44,6 +44,7 @@ def _held_to_1159(side: int, vol_1159: int) -> pl.DataFrame:
 
 
 def test_flatten_zero_volume_1159_uses_1158() -> None:
+    """A33: 11:59 untradeable, no later print → mark 11:58 close, tag unresolved, real ts."""
     for side, stop in ((1, 9.50), (-1, 10.50)):
         df = _held_to_1159(side, vol_1159=0)
         sig = Signal(df["bar_start"][0], "TEST", side, stop, None, 1.0, "test")
@@ -51,7 +52,8 @@ def test_flatten_zero_volume_1159_uses_1158() -> None:
         assert len(trades) == 1
         assert trades[0].exit_ts == df["bar_start"][2]
         assert abs(trades[0].exit_px - 10.18) < 1e-9
-        assert trades[0].tag == "time"
+        assert trades[0].tag == "unresolved"
+        assert abs(trades[0].exit_px - trades[0].entry_px) > 1e-9
 
 
 def test_ssr_rejects_close_at_or_below_90pct() -> None:
