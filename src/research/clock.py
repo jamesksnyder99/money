@@ -12,7 +12,13 @@ from pathlib import Path
 
 import polars as pl
 
-from ingest.calendar import VIRGIN_STUDY_END, study_sessions, virgin_study_sessions
+from ingest.calendar import (
+    VIRGIN_STUDY_END,
+    nyse_sessions,
+    study_sessions,
+    virgin_study_sessions,
+    virgin_warmup_sessions,
+)
 from ingest.paths import FULL_BARS, VIRGIN_BARS, safe_symbol_filename
 
 IS_MONTHS = frozenset({1, 3, 5, 7, 9, 11})
@@ -80,3 +86,50 @@ def clock_frame(sessions: list[date] | None = None) -> pl.DataFrame:
             "tape": [tape_name(d) for d in sess],
         }
     )
+
+
+def feature_sessions() -> list[date]:
+    """Warmup + study. Warmup is lookback only; no fills."""
+    seen: set[date] = set()
+    out: list[date] = []
+    for d in list(virgin_warmup_sessions()) + combined_study_sessions():
+        if d not in seen:
+            seen.add(d)
+            out.append(d)
+    return out
+
+
+def session_shift(d: date, n: int, sessions: list[date] | None = None) -> date | None:
+    """n sessions after d (negative = before). None if off the calendar."""
+    sess = list(sessions) if sessions is not None else feature_sessions()
+    try:
+        i = sess.index(d)
+    except ValueError:
+        return None
+    j = i + n
+    if 0 <= j < len(sess):
+        return sess[j]
+    return None
+
+
+def rebalance_sessions(study: list[date] | None = None) -> list[date]:
+    """Last NYSE session of each calendar week that falls inside study.
+
+    Friday, or Thursday when Friday is closed. A week whose true last
+    NYSE session is off-tape (e.g. after 2026-08-31) is not a rebalance.
+    """
+    study_list = list(study) if study is not None else combined_study_sessions()
+    study_set = set(study_list)
+    if not study_list:
+        return []
+    cal = nyse_sessions(date(2025, 12, 1), date(2026, 9, 11))
+    by: dict[tuple[int, int], list[date]] = {}
+    for d in cal:
+        iso = d.isocalendar()
+        by.setdefault((iso[0], iso[1]), []).append(d)
+    out: list[date] = []
+    for key in sorted(by):
+        last = max(by[key])
+        if last in study_set:
+            out.append(last)
+    return out

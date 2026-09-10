@@ -803,3 +803,12 @@ Clock split. Three frozen books: on_long, on_short, rth_long. Odd months IS, eve
 - on_long: IS $-45.25/day n=1849  OOS $-53.71/day n=1598  no seat
 - on_short: IS $-158.58/day n=1849  OOS $-127.00/day n=1598  no seat
 - rth_long: IS $-79.04/day n=1887  OOS $-109.62/day n=1644  no seat
+
+## 2026-09-10T18:30:52-04:00 — Arrow 44
+
+VERDICT: FAIL — res_ls does not have OOS >= $100/day AND non-red IS. Legs are diagnostics. Slate $200 is not this arrow's job.
+
+Weekly residual vs IWM. Long 15 worst / short 15 best, 5-session hold. Odd months IS, even months OOS, split on entry session. Combined virgin Jan–May + full Jun–Aug. Did not retune Arrow 43 clocks or B|conj|atr1559|lock or flush|max6|repaired. No new ingest. Did not touch Lab A data/bars. Legs are diagnostics. No Arrow 45.
+- res_long: IS $-67.52/day n=283  OOS $-71.20/day n=224  no seat
+- res_short: IS $246.77/day n=272  OOS $-1.37/day n=218  no seat
+- res_ls: IS $179.26/day n=555  OOS $-72.57/day n=442  no seat
