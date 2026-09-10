@@ -763,3 +763,18 @@ Premarket-high reclaim after the open wash. Did not rerun 36 birth or 37 noon ho
 - pmrecl|dip3|rvol3: develop $-11.29/day holdout $-58.04/day n_dev=9 n_hold=19 MFE-capture=-0.953 reached_1R=0.053 SHELVE
 COMBINED B|conj|atr1559|lock+flush|max6|repaired develop $78.77 holdout $254.50 NOT EV (reprint)
 
+## 2026-09-10T11:10:32-04:00 — Arrow 40
+
+VERDICT: HOLD OUT CLEARS $200 WITH NON-RED DEVELOP — B200|F200, B200|F400, B200|F600, B400|F400, Bbud|Fbud|1600, Bbud|Fbud|2400
+
+Session risk budget on frozen B conjunction lock + repaired flush. No new door. No Arrow 39. No atr150. No virgin pull. Combined holdout is not EV. No Arrow 41.
+Frozen doors only (A33 B|conj|atr1559|lock + A31 flush|max6|repaired). Sized off intraday peak-to-trough, not daily-close DD. Good-look (combined develop>=$150 and joint intraday maxDD<3% of $100k, not the pass line): none. Do not write that $400 flush is safe because daily-close DD was small. Combined holdout is not EV.
+Id 0 B n develop 228/228 holdout 93/93 — within ±10%. Id 0 flush n develop 21/21 holdout 19/19 — within ±3.
+
+- B200|F200: develop $78.77/day holdout $254.50/day B n_hold=93 flush n_hold=19 intraday DD$=-1589.38 (1.59%) joint_peak$=1912 MFE-capture=0.260
+- B200|F400: develop $77.14/day holdout $338.96/day B n_hold=93 flush n_hold=19 intraday DD$=-2605.91 (2.61%) joint_peak$=2312 MFE-capture=0.292
+- B200|F600: develop $77.69/day holdout $346.61/day B n_hold=93 flush n_hold=19 intraday DD$=-2705.56 (2.71%) joint_peak$=2379 MFE-capture=0.289
+- B400|F400: develop $174.95/day holdout $431.69/day B n_hold=93 flush n_hold=19 intraday DD$=-2686.26 (2.69%) joint_peak$=2916 MFE-capture=0.297
+- Bbud|Fbud|1600: develop $70.29/day holdout $297.28/day B n_hold=91 flush n_hold=18 intraday DD$=-1091.76 (1.09%) joint_peak$=1596 MFE-capture=0.290
+- Bbud|Fbud|2400: develop $96.69/day holdout $342.43/day B n_hold=93 flush n_hold=19 intraday DD$=-2750.78 (2.75%) joint_peak$=2152 MFE-capture=0.271
+

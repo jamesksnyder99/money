@@ -36,12 +36,16 @@ def position_shares(
     price: float,
     prior_dollar_volume: float,
     morning_dv: float | None = None,
+    risk_per_idea: float | None = None,
 ) -> int:
     if not math.isfinite(stop_distance) or stop_distance < 0.01:
         return 0
     if not math.isfinite(price) or price <= 0:
         return 0
-    raw = RISK_PER_IDEA / stop_distance
+    rpi = float(risk_per_idea) if risk_per_idea is not None else RISK_PER_IDEA
+    if not math.isfinite(rpi) or rpi <= 0:
+        return 0
+    raw = rpi / stop_distance
     cap_notional = min(MAX_NOTIONAL_FRAC * ACCOUNT, ADV_NOTIONAL_FRAC * max(prior_dollar_volume, 0.0))
     if morning_dv is not None:
         cap_notional = min(cap_notional, MORNING_DV_NOTIONAL_FRAC * max(float(morning_dv), 0.0))

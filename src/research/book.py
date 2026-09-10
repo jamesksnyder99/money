@@ -287,19 +287,32 @@ class Book:
     trail_arm_r: float = 1.0
     unarmed_red_minutes: float = 0.0
     unarmed_red_exits: int = 0
+    risk_per_idea: float = RISK_PER_IDEA
+    joint_cap: float | None = None
+    other_risk_at: object | None = None
+    joint_blocks: int = 0
 
     def n_pending_entry(self) -> int:
         return len(self.pending_entry)
 
-    def can_enter(self, symbol: str) -> bool:
+    def can_enter(self, symbol: str, ts: datetime | None = None) -> bool:
         if symbol in self.positions or symbol in self.pending_entry:
             return False
         if len(self.positions) + self.n_pending_entry() >= self.max_positions:
             return False
         if self.entries >= self.max_entries:
             return False
-        if self.risk_out + RISK_PER_IDEA > self.max_risk_outstanding + 1e-9:
+        rpi = float(self.risk_per_idea or RISK_PER_IDEA)
+        if self.risk_out + rpi > self.max_risk_outstanding + 1e-9:
             return False
+        if self.joint_cap is not None:
+            extra = 0.0
+            if self.other_risk_at is not None and ts is not None:
+                extra = float(self.other_risk_at(ts) or 0.0)
+            alloc = self.risk_out + self.n_pending_entry() * rpi
+            if extra + alloc + rpi > float(self.joint_cap) + 1e-9:
+                self.joint_blocks += 1
+                return False
         return True
 
 
@@ -339,6 +352,9 @@ def replay_session(
     prior_session_low: dict[str, float] | None = None,
     prior_session_prior_close: dict[str, float] | None = None,
     stats: dict | None = None,
+    risk_per_idea: float | None = None,
+    joint_cap: float | None = None,
+    other_risk_at=None,
 ) -> list[Trade]:
     packed = {sym: _pack(df) for sym, df in bars_by_symbol.items()}
     book = Book(
@@ -372,6 +388,9 @@ def replay_session(
         ssr_fill_cap=float(ssr_fill_cap or 0.0),
         prior_session_low=dict(prior_session_low or {}),
         prior_session_prior_close=dict(prior_session_prior_close or {}),
+        risk_per_idea=float(risk_per_idea) if risk_per_idea is not None else RISK_PER_IDEA,
+        joint_cap=float(joint_cap) if joint_cap is not None else None,
+        other_risk_at=other_risk_at,
     )
     sigs_at: dict = {}
     for sig in signals:
@@ -398,145 +417,22 @@ def replay_session(
                 prior_session_prior_close=book.prior_session_prior_close.get(sig.symbol),
             ):
                 continue
-            if not book.can_enter(sig.symbol):
-                continue
+            fill_ts = None
             idx = None
             for i, t in enumerate(arr.ts):
                 if bar_time(t) >= RTH_OPEN and _tradeable(arr, i):
                     idx = i
+                    fill_ts = t
                     break
+            if not book.can_enter(sig.symbol, ts=fill_ts):
+                continue
             if idx is not None:
                 book.pending_entry[sig.symbol] = (idx, sig)
 
     times = sorted({t for arr in packed.values() for t in arr.ts})
-    early_cut_done = False
-    flatten_requested = False
+    st = {"flatten_requested": False, "early_cut_done": False}
     for ts in times:
-        tclock = bar_time(ts)
-        # 1) fills at this open
-        _fills_at(book, packed, ts)
-        holding_late = (
-            book.hold_plus_r > 0
-            and tclock >= book.flatten_at
-            and tclock < book.late_flatten_at
-        )
-        if tclock >= book.flatten_at and not holding_late:
-            if not flatten_requested:
-                clock = book.late_flatten_at if book.hold_plus_r > 0 else book.flatten_at
-                _request_time_exit(book, packed, ts, clock)
-                flatten_requested = True
-            continue
-        if holding_late:
-            if not early_cut_done:
-                _conditional_hold_cut(book, packed, ts)
-                early_cut_done = True
-        elif tclock < RTH_OPEN and not book.allow_premarket:
-            continue
-        # 2) stop/target on this bar H/L → next open; trail at close after +1R
-        for pos in list(book.positions.values()):
-            arr = packed.get(pos.symbol)
-            if arr is None:
-                continue
-            i = arr.by_ts.get(ts)
-            if i is None or not _tradeable(arr, i):
-                continue
-            if pos.symbol in book.pending_exit:
-                continue
-            hit, tag = _hit_stop_target(pos, arr.high[i], arr.low[i])
-            if hit:
-                nxt = _next_tradeable(arr, i)
-                if nxt is not None:
-                    book.pending_exit[pos.symbol] = (nxt, tag)
-                continue
-            if book.trail_after_1r or book.atr_trail or book.scale_half_at_1r:
-                crossed = _update_trail(pos, arr.high[i], arr.low[i], arr.close[i], book)
-                if crossed and pos.symbol not in book.pending_exit:
-                    nxt = _next_tradeable(arr, i)
-                    if nxt is not None:
-                        book.pending_exit[pos.symbol] = (nxt, "trail_cross")
-                        book.crossed_at_creation += 1
-            if (
-                book.unarmed_red_minutes > 0
-                and not pos.trail_armed
-                and not pos.unarmed_red_checked
-                and pos.symbol not in book.pending_exit
-            ):
-                elapsed = (ts - pos.entry_ts).total_seconds() / 60.0
-                if elapsed + 1e-12 >= book.unarmed_red_minutes:
-                    pos.unarmed_red_checked = True
-                    px = float(arr.close[i])
-                    net = signed_pnl(pos.side, pos.shares, pos.entry_px, px) - round_trip_cost(
-                        pos.shares, pos.entry_px, px
-                    )
-                    if net < 0:
-                        nxt = _next_tradeable(arr, i)
-                        if nxt is not None:
-                            book.pending_exit[pos.symbol] = (nxt, "unarmed_red")
-                            book.unarmed_red_exits += 1
-            if (
-                book.scale_half_at_1r
-                and not pos.already_scaled
-                and pos.symbol not in book.pending_exit
-                and pos.symbol not in book.pending_scale
-            ):
-                r = pos.initial_r
-                armed = (
-                    (pos.side > 0 and arr.close[i] >= pos.entry_px + r - 1e-12)
-                    or (pos.side < 0 and arr.close[i] <= pos.entry_px - r + 1e-12)
-                )
-                if armed:
-                    pos.trail_armed = True
-                    pos.stop = pos.entry_px
-                    if pos.shares >= 2:
-                        nxt = _next_tradeable(arr, i)
-                        if nxt is not None:
-                            book.pending_scale[pos.symbol] = (nxt, pos.shares // 2)
-                    pos.already_scaled = True
-        # 3) new entries from signals at this close (A3: last_entry_at, not flatten_at)
-        if tclock >= book.last_entry_at:
-            continue
-        batch = sigs_at.get(ts, [])
-        batch = sorted(batch, key=lambda s: -abs(s.score))
-        for sig in batch:
-            arr = packed.get(sig.symbol)
-            pc = (prior_close or {}).get(sig.symbol)
-            if sig.side == -1:
-                book.n_short_signals += 1
-                active = _ssr_now(
-                    sig,
-                    arr,
-                    pc,
-                    book.prior_session_low.get(sig.symbol),
-                    book.prior_session_prior_close.get(sig.symbol),
-                )
-                if active:
-                    book.n_ssr_signals += 1
-                book.ssr_at_signal[sig.symbol] = active
-            if _short_blocked(
-                sig,
-                arr,
-                pc,
-                book.prior_dv.get(sig.symbol, 0.0),
-                ssr_filter=ssr_filter,
-                borrow_filter=borrow_filter,
-                ssr_policy=book.ssr_policy,
-                prior_session_low=book.prior_session_low.get(sig.symbol),
-                prior_session_prior_close=book.prior_session_prior_close.get(sig.symbol),
-            ):
-                continue
-            if not book.can_enter(sig.symbol):
-                continue
-            if arr is None:
-                continue
-            i = arr.by_ts.get(ts)
-            if i is None:
-                continue
-            nxt = _next_tradeable(arr, i)
-            if nxt is None:
-                continue
-            if bar_time(arr.ts[nxt]) >= book.last_entry_at:
-                continue
-            book.pending_entry[sig.symbol] = (nxt, sig)
+        _step_book(book, packed, ts, sigs_at, prior_close, ssr_filter, borrow_filter, st)
     _flatten_leftovers(book, packed, times)
     if stats is not None:
         stats["cost_skips"] = book.cost_skips
@@ -550,6 +446,7 @@ def replay_session(
         stats["unresolved_late"] = book.unresolved_late
         stats["flatten_backdate_avoided"] = book.flatten_backdate_avoided
         stats["unarmed_red_exits"] = book.unarmed_red_exits
+        stats["joint_blocks"] = book.joint_blocks
     return book.trades
 
 
@@ -620,8 +517,243 @@ def _fills_at(book: Book, packed: dict[str, _Arrays], ts: datetime) -> None:
                 book.unresolved_late += 1
 
 
+def _step_book(
+    book: Book,
+    packed: dict[str, _Arrays],
+    ts: datetime,
+    sigs_at: dict,
+    prior_close: dict | None,
+    ssr_filter: bool,
+    borrow_filter: bool,
+    st: dict,
+) -> None:
+    tclock = bar_time(ts)
+    _fills_at(book, packed, ts)
+    holding_late = (
+        book.hold_plus_r > 0
+        and tclock >= book.flatten_at
+        and tclock < book.late_flatten_at
+    )
+    if tclock >= book.flatten_at and not holding_late:
+        if not st["flatten_requested"]:
+            clock = book.late_flatten_at if book.hold_plus_r > 0 else book.flatten_at
+            _request_time_exit(book, packed, ts, clock)
+            st["flatten_requested"] = True
+        return
+    if holding_late:
+        if not st["early_cut_done"]:
+            _conditional_hold_cut(book, packed, ts)
+            st["early_cut_done"] = True
+    elif tclock < RTH_OPEN and not book.allow_premarket:
+        return
+    for pos in list(book.positions.values()):
+        arr = packed.get(pos.symbol)
+        if arr is None:
+            continue
+        i = arr.by_ts.get(ts)
+        if i is None or not _tradeable(arr, i):
+            continue
+        if pos.symbol in book.pending_exit:
+            continue
+        hit, tag = _hit_stop_target(pos, arr.high[i], arr.low[i])
+        if hit:
+            nxt = _next_tradeable(arr, i)
+            if nxt is not None:
+                book.pending_exit[pos.symbol] = (nxt, tag)
+            continue
+        if book.trail_after_1r or book.atr_trail or book.scale_half_at_1r:
+            crossed = _update_trail(pos, arr.high[i], arr.low[i], arr.close[i], book)
+            if crossed and pos.symbol not in book.pending_exit:
+                nxt = _next_tradeable(arr, i)
+                if nxt is not None:
+                    book.pending_exit[pos.symbol] = (nxt, "trail_cross")
+                    book.crossed_at_creation += 1
+        if (
+            book.unarmed_red_minutes > 0
+            and not pos.trail_armed
+            and not pos.unarmed_red_checked
+            and pos.symbol not in book.pending_exit
+        ):
+            elapsed = (ts - pos.entry_ts).total_seconds() / 60.0
+            if elapsed + 1e-12 >= book.unarmed_red_minutes:
+                pos.unarmed_red_checked = True
+                px = float(arr.close[i])
+                net = signed_pnl(pos.side, pos.shares, pos.entry_px, px) - round_trip_cost(
+                    pos.shares, pos.entry_px, px
+                )
+                if net < 0:
+                    nxt = _next_tradeable(arr, i)
+                    if nxt is not None:
+                        book.pending_exit[pos.symbol] = (nxt, "unarmed_red")
+                        book.unarmed_red_exits += 1
+        if (
+            book.scale_half_at_1r
+            and not pos.already_scaled
+            and pos.symbol not in book.pending_exit
+            and pos.symbol not in book.pending_scale
+        ):
+            r = pos.initial_r
+            armed = (
+                (pos.side > 0 and arr.close[i] >= pos.entry_px + r - 1e-12)
+                or (pos.side < 0 and arr.close[i] <= pos.entry_px - r + 1e-12)
+            )
+            if armed:
+                pos.trail_armed = True
+                pos.stop = pos.entry_px
+                if pos.shares >= 2:
+                    nxt = _next_tradeable(arr, i)
+                    if nxt is not None:
+                        book.pending_scale[pos.symbol] = (nxt, pos.shares // 2)
+                pos.already_scaled = True
+    if tclock >= book.last_entry_at:
+        return
+    batch = sigs_at.get(ts, [])
+    batch = sorted(batch, key=lambda s: -abs(s.score))
+    for sig in batch:
+        arr = packed.get(sig.symbol)
+        pc = (prior_close or {}).get(sig.symbol)
+        if sig.side == -1:
+            book.n_short_signals += 1
+            active = _ssr_now(
+                sig,
+                arr,
+                pc,
+                book.prior_session_low.get(sig.symbol),
+                book.prior_session_prior_close.get(sig.symbol),
+            )
+            if active:
+                book.n_ssr_signals += 1
+            book.ssr_at_signal[sig.symbol] = active
+        if _short_blocked(
+            sig,
+            arr,
+            pc,
+            book.prior_dv.get(sig.symbol, 0.0),
+            ssr_filter=ssr_filter,
+            borrow_filter=borrow_filter,
+            ssr_policy=book.ssr_policy,
+            prior_session_low=book.prior_session_low.get(sig.symbol),
+            prior_session_prior_close=book.prior_session_prior_close.get(sig.symbol),
+        ):
+            continue
+        if arr is None:
+            continue
+        i = arr.by_ts.get(ts)
+        if i is None:
+            continue
+        nxt = _next_tradeable(arr, i)
+        if nxt is None:
+            continue
+        if not book.can_enter(sig.symbol, ts=arr.ts[nxt]):
+            continue
+        if bar_time(arr.ts[nxt]) >= book.last_entry_at:
+            continue
+        book.pending_entry[sig.symbol] = (nxt, sig)
+
+
+def replay_two_books(
+    bars_by_symbol: dict[str, pl.DataFrame],
+    spec_a: dict,
+    spec_b: dict,
+) -> tuple[list, list]:
+    """Drive two books on the same tape so a live joint_cap sees both risk_out."""
+    packed = {sym: _pack(df) for sym, df in bars_by_symbol.items()}
+
+    def _make(spec: dict) -> tuple[Book, dict, dict]:
+        kw = dict(spec.get("kw") or {})
+        stats = spec.get("stats")
+        sigs = spec.get("signals") or []
+        book = Book(
+            prior_dv=spec.get("prior_dv") or {},
+            take_2r=bool(kw.get("take_2r")),
+            trail_after_1r=bool(kw.get("trail_after_1r")),
+            flatten_at=kw.get("flatten_at") or MINUTE_1159,
+            last_entry_at=kw.get("last_entry_at") if kw.get("last_entry_at") is not None else (kw.get("flatten_at") or MINUTE_1159),
+            max_positions=int(kw.get("max_positions") or MAX_POSITIONS),
+            max_entries=int(kw.get("max_entries") or MAX_ENTRIES),
+            max_risk_outstanding=float(kw.get("max_risk_outstanding") or MAX_RISK_OUTSTANDING),
+            min_stop_frac=float(kw.get("min_stop_frac") or 0.0),
+            morning_dv=dict(kw.get("morning_dv") or {}),
+            allow_premarket=bool(kw.get("allow_premarket")),
+            take_r=float(kw.get("take_r") or 0.0),
+            scale_half_at_1r=bool(kw.get("scale_half_at_1r")),
+            atr_trail=bool(kw.get("atr_trail")),
+            harness_stop=bool(kw.get("harness_stop")),
+            cost_gate=bool(kw.get("cost_gate")),
+            use_structure_stop=kw.get("use_structure_stop", True),
+            hold_plus_r=float(kw.get("hold_plus_r") or 0.0),
+            late_flatten_at=kw.get("late_flatten_at") or MINUTE_1559,
+            ssr_filter=bool(kw.get("ssr_filter")),
+            ssr_policy=str(kw.get("ssr_policy") or ""),
+            ssr_uptick_minutes=int(kw.get("ssr_uptick_minutes") or 10),
+            trail_atr_mult=float(kw.get("trail_atr_mult") if kw.get("trail_atr_mult") is not None else 1.0),
+            trail_arm_r=float(kw.get("trail_arm_r") if kw.get("trail_arm_r") is not None else 1.0),
+            unarmed_red_minutes=float(kw.get("unarmed_red_minutes") or 0.0),
+            ssr_fill_cap=float(kw.get("ssr_fill_cap") or 0.0),
+            prior_session_low=dict(kw.get("prior_session_low") or {}),
+            prior_session_prior_close=dict(kw.get("prior_session_prior_close") or {}),
+            risk_per_idea=float(kw["risk_per_idea"]) if kw.get("risk_per_idea") is not None else RISK_PER_IDEA,
+            joint_cap=float(kw["joint_cap"]) if kw.get("joint_cap") is not None else None,
+        )
+        sigs_at: dict = {}
+        for sig in sigs:
+            if sig.overnight:
+                continue
+            sigs_at.setdefault(sig.signal_ts, []).append(sig)
+        st = {"flatten_requested": False, "early_cut_done": False, "stats": stats}
+        return book, sigs_at, st
+
+    book_a, sigs_a, st_a = _make(spec_a)
+    book_b, sigs_b, st_b = _make(spec_b)
+
+    def _live(other: Book):
+        def at(_ts):
+            rpi = float(other.risk_per_idea or RISK_PER_IDEA)
+            return other.risk_out + other.n_pending_entry() * rpi
+
+        return at
+
+    book_a.other_risk_at = _live(book_b)
+    book_b.other_risk_at = _live(book_a)
+    times = sorted({t for arr in packed.values() for t in arr.ts})
+    pc_a = spec_a.get("prior_close")
+    pc_b = spec_b.get("prior_close")
+    kwa = spec_a.get("kw") or {}
+    kwb = spec_b.get("kw") or {}
+    for ts in times:
+        _step_book(
+            book_a, packed, ts, sigs_a, pc_a, bool(kwa.get("ssr_filter")), bool(kwa.get("borrow_filter")), st_a
+        )
+        _step_book(
+            book_b, packed, ts, sigs_b, pc_b, bool(kwb.get("ssr_filter")), bool(kwb.get("borrow_filter")), st_b
+        )
+    _flatten_leftovers(book_a, packed, times)
+    _flatten_leftovers(book_b, packed, times)
+
+    def _dump(book: Book, st: dict) -> None:
+        stats = st.get("stats")
+        if stats is None:
+            return
+        stats["cost_skips"] = book.cost_skips
+        stats["ssr_nofill"] = book.ssr_nofill
+        stats["n_short_signals"] = book.n_short_signals
+        stats["n_ssr_signals"] = book.n_ssr_signals
+        stats["crossed_at_creation"] = book.crossed_at_creation
+        stats["liquidation_requested"] = book.liquidation_requested
+        stats["liquidation_filled"] = book.liquidation_filled
+        stats["unresolved_flatten"] = book.unresolved_flatten
+        stats["unresolved_late"] = book.unresolved_late
+        stats["flatten_backdate_avoided"] = book.flatten_backdate_avoided
+        stats["unarmed_red_exits"] = book.unarmed_red_exits
+        stats["joint_blocks"] = book.joint_blocks
+
+    _dump(book_a, st_a)
+    _dump(book_b, st_b)
+    return book_a.trades, book_b.trades
+
+
 def _open_position(book: Book, sig: Signal, px: float, ts: datetime) -> None:
-    if not book.can_enter(sig.symbol):
+    if not book.can_enter(sig.symbol, ts=ts):
         return
     if sig.stop_from_entry:
         dist = max(0.10, 0.01 * px)
@@ -670,10 +802,13 @@ def _open_position(book: Book, sig: Signal, px: float, ts: datetime) -> None:
         book.cost_skips += 1
         return
     mdv = book.morning_dv.get(sig.symbol) if book.morning_dv else None
-    shares = position_shares(stop_dist, px, book.prior_dv.get(sig.symbol, 0.0), morning_dv=mdv)
+    rpi = float(book.risk_per_idea or RISK_PER_IDEA)
+    shares = position_shares(
+        stop_dist, px, book.prior_dv.get(sig.symbol, 0.0), morning_dv=mdv, risk_per_idea=rpi
+    )
     if shares < 1:
         return
-    risk = min(RISK_PER_IDEA, shares * stop_dist)
+    risk = min(rpi, shares * stop_dist)
     target = sig.target
     if book.take_r > 0:
         target = px + sig.side * book.take_r * stop_dist
@@ -1201,3 +1336,16 @@ def joint_peak_risk(*trade_lists: list) -> float:
         run += d
         peak = max(peak, run)
     return peak
+
+
+def outstanding_at(trades, ts) -> float:
+    """Risk still open at ts (entry <= ts < exit)."""
+    s = 0.0
+    for t in trades or []:
+        et = _trade_ts(t, "entry_ts")
+        xt = _trade_ts(t, "exit_ts")
+        if et is None or ts is None:
+            continue
+        if et <= ts and (xt is None or xt > ts):
+            s += float(_trade_field(t, "risk") or 0.0)
+    return s
