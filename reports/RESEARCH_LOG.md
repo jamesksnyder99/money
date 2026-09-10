@@ -736,3 +736,17 @@ Ungated RTH confirmed launch. No cell. No score gate. No RVOL floor. B-short not
 - birth|1200-1500|atr1559: develop $-199.56/day holdout $39.07/day n_dev=225 n_hold=97 MFE-capture=0.051 reached_1R=0.464
 COMBINED B|conj|atr1559|lock+flush|max6|repaired develop $78.77 holdout $254.50 NOT EV (reprint)
 
+## 2026-09-10T09:00:59-04:00 — Arrow 37
+
+VERDICT: FAIL — no Arrow 37 continuation book has holdout >= $200/day AND non-red develop (ids with develop n < 40 are SHELVED). Combined holdout is not expected value (EV).
+
+Noon hold / afternoon continuation. Did not rerun A36 afternoon birth. No cell. No score gate. No B-short rescore. No $500/idea. No virgin pull. Combined holdout is not EV. No Arrow 38.
+Noon hold / afternoon continuation. Did not rerun A36 afternoon birth. No cell. No score gate. B-short not rescored; COMBINED uses A33 B|conj|atr1559|lock reprint (develop $72.57/day) + A31 flush control reprint (flush|max6|repaired) because no develop-not-red id with n>=40. Combined holdout is not EV.
+
+- noon|tight|atr1559: develop $-154.25/day holdout $-51.91/day n_dev=107 n_hold=53 MFE-capture=-0.144 reached_1R=0.340
+- noon|tight|flat1330: develop $-127.55/day holdout $-37.04/day n_dev=107 n_hold=53 MFE-capture=-0.124 reached_1R=0.245
+- noon|loose|atr1559: develop $-167.16/day holdout $-6.26/day n_dev=220 n_hold=97 MFE-capture=-0.009 reached_1R=0.392
+- relaunch|atr1559: develop $-16.66/day holdout $-20.44/day n_dev=130 n_hold=64 MFE-capture=-0.091 reached_1R=0.094
+- power|1430|flat1559: develop $-11.56/day holdout $24.59/day n_dev=14 n_hold=5 MFE-capture=1.676 reached_1R=0.000 SHELVE
+COMBINED B|conj|atr1559|lock+flush|max6|repaired develop $78.77 holdout $254.50 NOT EV (reprint)
+
