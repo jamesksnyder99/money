@@ -9,7 +9,9 @@ from ingest.calendar import WARMUP_SESSIONS, prior_session
 MIN_CLOSE = 1.00
 MAX_CLOSE = 30.00
 MAX_CLOSE_FULL = 50.00
+MAX_CLOSE_VIRGIN = 80.00
 MIN_DOLLAR_VOLUME = 1_000_000.0
+PDV_10M = 10_000_000.0
 
 
 def eod_session_dates(df: pl.DataFrame) -> pl.DataFrame:
@@ -35,9 +37,10 @@ def evaluate_session(
     min_close: float = MIN_CLOSE,
     max_close: float = MAX_CLOSE,
     min_dv: float = MIN_DOLLAR_VOLUME,
+    sessions: list[date] | None = None,
 ) -> pl.DataFrame:
     """Point-in-time eligibility for session D using official EOD of D-1."""
-    prior = prior or prior_session(session)
+    prior = prior or prior_session(session, sessions)
     if prior >= session:
         raise ValueError(f"prior {prior} must be before session {session}")
     day = eod.filter(pl.col("eod_date") == prior)
@@ -71,6 +74,15 @@ def evaluate_session(
     )
 
 
+def with_pdv_10m_flag(elig: pl.DataFrame) -> pl.DataFrame:
+    """$10M prior-day dollar volume is a filter column, not an ingest wall."""
+    if elig.height == 0:
+        return elig
+    return elig.with_columns(
+        (pl.col("prior_dollar_volume") >= PDV_10M).fill_null(False).alias("pdv_ge_10m")
+    )
+
+
 def build_eligibility(
     eod: pl.DataFrame,
     symbols: list[str],
@@ -78,11 +90,18 @@ def build_eligibility(
     *,
     is_warmup: bool,
     max_close: float = MAX_CLOSE,
+    sessions_for_prior: list[date] | None = None,
 ) -> pl.DataFrame:
     frames = []
     universe = pl.DataFrame({"symbol": symbols})
     for session in sessions:
-        day = evaluate_session(eod, session, is_warmup=is_warmup, max_close=max_close)
+        day = evaluate_session(
+            eod,
+            session,
+            is_warmup=is_warmup,
+            max_close=max_close,
+            sessions=sessions_for_prior,
+        )
         base = universe.with_columns(pl.lit(session).alias("session_date"))
         merged = base.join(day, on=["symbol", "session_date"], how="left")
         merged = merged.with_columns(

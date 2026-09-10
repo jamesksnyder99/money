@@ -15,6 +15,7 @@ from ingest.paths import ensure_dirs  # noqa: E402
 from ingest.full import run_arrow17  # noqa: E402
 from ingest.run import run_arrow2, run_study, run_universe, run_warmup, write_calendar  # noqa: E402
 from ingest.validate import validate_warmup  # noqa: E402
+from ingest.virgin import run_arrow41  # noqa: E402
 
 
 def _defaults() -> tuple[int, int]:
@@ -40,9 +41,10 @@ def main(argv: list[str] | None = None) -> int:
             "study",
             "arrow2",
             "arrow17",
+            "arrow41",
         ),
-        default="warmup",
-        help="arrow17=04:00-16:00 full tape under data/full (does not touch data/bars)",
+        default="arrow41",
+        help="arrow41=virgin Dec 2025 warmup + Jan-May 2026 04:00-16:00 under data/virgin",
     )
     p.add_argument(
         "--workers",
@@ -62,6 +64,12 @@ def main(argv: list[str] | None = None) -> int:
         help="re-pull even if parquet + ok manifest line exist",
     )
     args = p.parse_args(argv)
+    if args.mode == "arrow41":
+        return run_arrow41(
+            workers=args.workers,
+            theta_concurrency=args.theta_concurrency,
+            force=args.force,
+        )
     ensure_dirs()
     if args.mode == "calendar":
         write_calendar()

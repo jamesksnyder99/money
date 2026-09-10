@@ -19,6 +19,13 @@ FULL_ELIGIBILITY = FULL_ROOT / "eligibility.parquet"
 FULL_MANIFEST = FULL_ROOT / "manifest.parquet"
 FULL_BENCH = FULL_ROOT / "bench"
 FULL_IWM = FULL_BENCH / "IWM"
+VIRGIN_ROOT = DATA / "virgin"
+VIRGIN_BARS = VIRGIN_ROOT / "bars"
+VIRGIN_ELIGIBILITY = VIRGIN_ROOT / "eligibility.parquet"
+VIRGIN_MANIFEST = VIRGIN_ROOT / "manifest.parquet"
+VIRGIN_EOD = VIRGIN_ROOT / "eod"
+VIRGIN_BENCH = VIRGIN_ROOT / "bench"
+VIRGIN_IWM = VIRGIN_BENCH / "IWM"
 MANIFEST = DATA / "manifests" / "pulls.jsonl"
 INGEST_REPORT = REPORTS / "ingest_latest.txt"
 ARROW01_REPORT = REPORTS / "arrow01_timing.txt"
@@ -70,6 +77,26 @@ def bar_path(session_date, symbol: str) -> Path:
 def full_bar_path(session_date, symbol: str) -> Path:
     iso = session_date.isoformat() if hasattr(session_date, "isoformat") else str(session_date)
     return FULL_BARS / iso / f"{safe_symbol_filename(symbol)}.parquet"
+
+
+def virgin_bar_path(session_date, symbol: str) -> Path:
+    iso = session_date.isoformat() if hasattr(session_date, "isoformat") else str(session_date)
+    return VIRGIN_BARS / iso / f"{safe_symbol_filename(symbol)}.parquet"
+
+
+def virgin_eod_path(symbol: str, chunk: str) -> Path:
+    return VIRGIN_EOD / chunk / f"{safe_symbol_filename(symbol)}.parquet"
+
+
+def virgin_iwm_path(session_date) -> Path:
+    iso = session_date.isoformat() if hasattr(session_date, "isoformat") else str(session_date)
+    return VIRGIN_IWM / f"{iso}.parquet"
+
+
+def ensure_virgin_dirs() -> None:
+    """Create only data/virgin trees. Does not mkdir data/full or Lab A data/bars."""
+    for path in (VIRGIN_BARS, VIRGIN_EOD, VIRGIN_IWM, REPORTS):
+        path.mkdir(parents=True, exist_ok=True)
 
 
 def eod_path(symbol: str, chunk: str = "warmup") -> Path:

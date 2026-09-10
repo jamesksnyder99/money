@@ -24,6 +24,7 @@ from research.arrow13 import run_arrow13  # noqa: E402
 from research.arrow14 import run_arrow14  # noqa: E402
 from research.arrow15 import run_arrow15  # noqa: E402
 from ingest.full import run_arrow17  # noqa: E402
+from ingest.virgin import run_arrow41  # noqa: E402
 from research.arrow16 import run_arrow16  # noqa: E402
 from research.arrow18 import run_arrow18  # noqa: E402
 from research.arrow19 import run_arrow19  # noqa: E402
@@ -94,11 +95,12 @@ def main(argv: list[str] | None = None) -> int:
             "arrow37",
             "arrow38",
             "arrow40",
+            "arrow41",
             "equity",
             "rockets",
         ),
-        default="equity",
-        help="sidecar combined EOD equity curve $200/$200",
+        default="arrow41",
+        help="arrow41 virgin ingest Jan-May 2026 under data/virgin",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -176,6 +178,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow38(workers=args.workers)
     if args.mode == "arrow40":
         return run_arrow40(workers=args.workers)
+    if args.mode == "arrow41":
+        return run_arrow41(workers=args.workers)
     if args.mode == "equity":
         return run_equity_curve(workers=args.workers)
     if args.mode == "rockets":

@@ -23,6 +23,28 @@ EOD_START = date(2026, 5, 14)
 EOD_END = date(2026, 5, 28)
 MEMORIAL_DAY = date(2026, 5, 25)
 
+# Official NYSE/Nasdaq 2025 full closures (Jan 9 = National Day of Mourning).
+NYSE_CLOSED_2025 = frozenset(
+    {
+        date(2025, 1, 1),
+        date(2025, 1, 9),
+        date(2025, 1, 20),
+        date(2025, 2, 17),
+        date(2025, 4, 18),
+        date(2025, 5, 26),
+        date(2025, 6, 19),
+        date(2025, 7, 4),
+        date(2025, 9, 1),
+        date(2025, 11, 27),
+        date(2025, 12, 25),
+    }
+)
+NYSE_EARLY_CLOSE_2025 = {
+    date(2025, 7, 3): time(13, 0),
+    date(2025, 11, 28): time(13, 0),
+    date(2025, 12, 24): time(13, 0),
+}
+
 # Official NYSE/Nasdaq 2026 full closures (Jul 3 is Independence Day observed).
 NYSE_CLOSED_2026 = frozenset(
     {
@@ -42,6 +64,11 @@ NYSE_EARLY_CLOSE_2026 = {
     date(2026, 11, 27): time(13, 0),
     date(2026, 12, 24): time(13, 0),
 }
+NYSE_CLOSED = NYSE_CLOSED_2025 | NYSE_CLOSED_2026
+NYSE_EARLY_CLOSE = {**NYSE_EARLY_CLOSE_2025, **NYSE_EARLY_CLOSE_2026}
+
+VIRGIN_STUDY_START = date(2026, 1, 2)
+VIRGIN_STUDY_END = date(2026, 5, 29)
 
 SESSION_OPEN = time(7, 30)
 WINDOW_END = time(12, 0)
@@ -49,7 +76,7 @@ REGULAR_CLOSE = time(16, 0)
 
 
 def is_nyse_session(d: date) -> bool:
-    return d.weekday() < 5 and d not in NYSE_CLOSED_2026
+    return d.weekday() < 5 and d not in NYSE_CLOSED
 
 
 def nyse_sessions(start: date, end: date) -> list[date]:
@@ -94,6 +121,26 @@ def eod_dates_for_warmup() -> list[date]:
     """Prior official EOD dates covering eligibility for the 10 warmup sessions."""
     needed = {prior_session(d) for d in WARMUP_SESSIONS}
     return sorted(needed)
+
+
+def virgin_warmup_sessions() -> list[date]:
+    """Last 10 NYSE sessions of 2025. On disk for priors / EMA; do not score."""
+    dec = nyse_sessions(date(2025, 12, 1), date(2025, 12, 31))
+    return dec[-10:]
+
+
+def virgin_study_sessions() -> list[date]:
+    """First 2026 NYSE session through last full May 2026 session. All of January is study."""
+    return nyse_sessions(VIRGIN_STUDY_START, VIRGIN_STUDY_END)
+
+
+def virgin_sessions() -> list[date]:
+    return virgin_warmup_sessions() + virgin_study_sessions()
+
+
+def virgin_prior_calendar() -> list[date]:
+    """NYSE sessions covering the prior of first warmup through last study day."""
+    return nyse_sessions(date(2025, 12, 1), VIRGIN_STUDY_END)
 
 
 def sessions_frame() -> pl.DataFrame:

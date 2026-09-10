@@ -778,3 +778,11 @@ Id 0 B n develop 228/228 holdout 93/93 — within ±10%. Id 0 flush n develop 21
 - Bbud|Fbud|1600: develop $70.29/day holdout $297.28/day B n_hold=91 flush n_hold=18 intraday DD$=-1091.76 (1.09%) joint_peak$=1596 MFE-capture=0.290
 - Bbud|Fbud|2400: develop $96.69/day holdout $342.43/day B n_hold=93 flush n_hold=19 intraday DD$=-2750.78 (2.75%) joint_peak$=2152 MFE-capture=0.271
 
+## 2026-09-10T14:56:06-04:00 — Arrow 41
+
+VERDICT: INGEST ONLY — no $200 verdict. Did not score engines.
+
+Virgin 04:00-16:00 1-minute tape under data/virgin/. Warmup last 10 NYSE 2025 (2025-12-17..2025-12-31, not scored). Study first 2026 session through last full May (2026-01-02..2026-05-29; all of January in study). Prior close [$1, $80], prior DV >= $1M; $10M is a filter column not an ingest wall. IWM bench 04:00-16:00. Did not touch data/full or Lab A data/bars. No Arrow 42.
+
+sessions=112 name-days=340057 unique=5328 1m_rows=244841040 mean_bars=720.0 pdv_ge_10m=181614 prior_close_gt_50=48400 pulled=340057 empty=0 missing=0 failures=0 iwm=112/112 wall_min=155.7
+
