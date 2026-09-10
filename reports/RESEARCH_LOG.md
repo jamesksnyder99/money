@@ -786,3 +786,11 @@ Virgin 04:00-16:00 1-minute tape under data/virgin/. Warmup last 10 NYSE 2025 (2
 
 sessions=112 name-days=340057 unique=5328 1m_rows=244841040 mean_bars=720.0 pdv_ge_10m=181614 prior_close_gt_50=48400 pulled=340057 empty=0 missing=0 failures=0 iwm=112/112 wall_min=155.7
 
+## 2026-09-10T16:24:16-04:00 — Arrow 42
+
+VERDICT: FAIL — combined frozen books do not print >= $200/day on the virgin window. This window is the first unstained look; it is still one sample of weather, not EV.
+
+One look on data/virgin/. Frozen $200/$200 A33 B|conj|atr1559|lock + A31 flush|max6|repaired. Score 2026-01-02..2026-05-29 as one window. Did not split and pick. Did not change doors. Did not touch data/full or Lab A data/bars. Combined dollars are not EV. No Arrow 43.
+COMBINED $/day=-172.52 n_B=469 n_flush=89 IWM alpha $-155.55 skip=0 NOT EV
+B|pdv>=$10M $/day=-160.29 n=469
+B|$20-80|pdv>=$10M $/day=-52.82 n=368
