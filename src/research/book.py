@@ -11,6 +11,7 @@ from research.costs import (
     MAX_RISK_OUTSTANDING,
     RISK_PER_IDEA,
     position_shares,
+    round_trip_cost,
     signed_pnl,
 )
 from research.harness import cost_gate_blocks, harness_stop_px
@@ -40,6 +41,7 @@ class Position:
     atr: float = 0.0
     already_scaled: bool = False
     orig_shares: int = 0
+    unarmed_red_checked: bool = False
 
 
 @dataclass
@@ -280,6 +282,10 @@ class Book:
     liquidation_filled: int = 0
     unresolved_flatten: int = 0
     flatten_backdate_avoided: int = 0
+    trail_atr_mult: float = 1.0
+    trail_arm_r: float = 1.0
+    unarmed_red_minutes: float = 0.0
+    unarmed_red_exits: int = 0
 
     def n_pending_entry(self) -> int:
         return len(self.pending_entry)
@@ -325,6 +331,9 @@ def replay_session(
     late_flatten_at: time | None = None,
     ssr_policy: str = "",
     ssr_uptick_minutes: int = 10,
+    trail_atr_mult: float = 1.0,
+    trail_arm_r: float = 1.0,
+    unarmed_red_minutes: float = 0.0,
     ssr_fill_cap: float = 0.0,
     prior_session_low: dict[str, float] | None = None,
     prior_session_prior_close: dict[str, float] | None = None,
@@ -356,6 +365,9 @@ def replay_session(
         ssr_filter=bool(ssr_filter),
         ssr_policy=str(ssr_policy or ""),
         ssr_uptick_minutes=int(ssr_uptick_minutes or 10),
+        trail_atr_mult=float(trail_atr_mult if trail_atr_mult is not None else 1.0),
+        trail_arm_r=float(trail_arm_r if trail_arm_r is not None else 1.0),
+        unarmed_red_minutes=float(unarmed_red_minutes or 0.0),
         ssr_fill_cap=float(ssr_fill_cap or 0.0),
         prior_session_low=dict(prior_session_low or {}),
         prior_session_prior_close=dict(prior_session_prior_close or {}),
@@ -443,6 +455,24 @@ def replay_session(
                         book.pending_exit[pos.symbol] = (nxt, "trail_cross")
                         book.crossed_at_creation += 1
             if (
+                book.unarmed_red_minutes > 0
+                and not pos.trail_armed
+                and not pos.unarmed_red_checked
+                and pos.symbol not in book.pending_exit
+            ):
+                elapsed = (ts - pos.entry_ts).total_seconds() / 60.0
+                if elapsed + 1e-12 >= book.unarmed_red_minutes:
+                    pos.unarmed_red_checked = True
+                    px = float(arr.close[i])
+                    net = signed_pnl(pos.side, pos.shares, pos.entry_px, px) - round_trip_cost(
+                        pos.shares, pos.entry_px, px
+                    )
+                    if net < 0:
+                        nxt = _next_tradeable(arr, i)
+                        if nxt is not None:
+                            book.pending_exit[pos.symbol] = (nxt, "unarmed_red")
+                            book.unarmed_red_exits += 1
+            if (
                 book.scale_half_at_1r
                 and not pos.already_scaled
                 and pos.symbol not in book.pending_exit
@@ -517,6 +547,7 @@ def replay_session(
         stats["liquidation_filled"] = book.liquidation_filled
         stats["unresolved_flatten"] = book.unresolved_flatten
         stats["flatten_backdate_avoided"] = book.flatten_backdate_avoided
+        stats["unarmed_red_exits"] = book.unarmed_red_exits
     return book.trades
 
 
@@ -701,25 +732,32 @@ def _update_trail(pos: Position, high: float, low: float, close: float, book: Bo
     if r <= 0:
         return False
     atr_mode = bool(book.atr_trail) if book is not None else False
+    arm_r = float(book.trail_arm_r) if book is not None else 1.0
+    if arm_r <= 0:
+        arm_r = 1.0
+    atr_mult = float(book.trail_atr_mult) if book is not None else 1.0
+    if atr_mult <= 0:
+        atr_mult = 1.0
+    width = pos.atr * atr_mult
     prev_stop = pos.stop
     if pos.side > 0:
         pos.favorable_extreme = max(pos.favorable_extreme, high)
-        if not pos.trail_armed and close >= pos.entry_px + r - 1e-12:
+        if not pos.trail_armed and close >= pos.entry_px + arm_r * r - 1e-12:
             pos.trail_armed = True
             pos.stop = pos.entry_px
         if pos.trail_armed:
             if atr_mode and pos.atr > 0:
-                pos.stop = max(pos.stop, pos.favorable_extreme - pos.atr)
+                pos.stop = max(pos.stop, pos.favorable_extreme - width)
             else:
                 pos.stop = max(pos.stop, pos.favorable_extreme * (1.0 - 0.005))
     else:
         pos.favorable_extreme = min(pos.favorable_extreme, low)
-        if not pos.trail_armed and close <= pos.entry_px - r + 1e-12:
+        if not pos.trail_armed and close <= pos.entry_px - arm_r * r + 1e-12:
             pos.trail_armed = True
             pos.stop = pos.entry_px
         if pos.trail_armed:
             if atr_mode and pos.atr > 0:
-                pos.stop = min(pos.stop, pos.favorable_extreme + pos.atr)
+                pos.stop = min(pos.stop, pos.favorable_extreme + width)
             else:
                 pos.stop = min(pos.stop, pos.favorable_extreme * (1.0 + 0.005))
     if not pos.trail_armed:

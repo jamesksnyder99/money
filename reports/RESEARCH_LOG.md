@@ -662,3 +662,20 @@ C-R3 stitch 04:00 flat n=214/94  07:30 flat n=223/92 vs A27 204/75. Neither cham
 COMBINED lock develop $76.30 holdout $248.65 NOT EV
 FULL develop $76.30 holdout $250.35 NOT EV
 
+## 2026-09-09T20:20:53-04:00 — Arrow 32
+
+VERDICT: HOLD OUT CLEARS $200 WITH NON-RED DEVELOP — B|atr150|lock
+
+B-short conjunction and trail rings on the A31 lock. A1-A5 on. last_entry_at=11:59. No flush rings. No $500/idea. No virgin pull. Combined holdout is not EV. No Arrow 33.
+Id 0 is the A31 lock reprint. B|atr150|lock is the $200 pass (develop not red). COMBINED uses the brief's best develop-not-red B (B|conj|atr1559|lock), not the pass book. Combined holdout is not EV.
+Id 0 vs A31 B|uptick10|atr1559|lock: develop 216/216 holdout 94/94 — within ±10%.
+Id 1 vs id 0 filled: develop added=7 dropped=0 holdout added=0 dropped=0 trades 244/216 and 98/94 cap8-displace_sess=1
+
+- B|uptick10|atr1559|lock: develop $70.09/day holdout $169.55/day n_hold=94 MFE-capture=0.217 IWM skip=0
+- B|conj|atr1559|lock: develop $73.03/day holdout $177.63/day n_hold=98 MFE-capture=0.220 IWM skip=0
+- B|atr075|lock: develop $54.04/day holdout $160.90/day n_hold=95 MFE-capture=0.214 IWM skip=0
+- B|atr150|lock: develop $26.46/day holdout $206.64/day n_hold=94 MFE-capture=0.246 IWM skip=0
+- B|arm05|lock: develop $65.30/day holdout $134.80/day n_hold=96 MFE-capture=0.187 IWM skip=0
+- B|unarmed20|lock: develop $-30.84/day holdout $65.52/day n_hold=97 MFE-capture=0.105 IWM skip=0
+COMBINED B|conj|atr1559|lock+flush|max6|repaired develop $79.23 holdout $256.74 NOT EV
+
