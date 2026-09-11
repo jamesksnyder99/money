@@ -60,6 +60,7 @@ from research.arrow50 import run_arrow50  # noqa: E402
 from research.arrow51 import run_arrow51  # noqa: E402
 from research.arrow52 import run_arrow52  # noqa: E402
 from research.arrow53 import run_arrow53  # noqa: E402
+from research.arrow54 import run_arrow54  # noqa: E402
 from research.equity_curve import run_equity_curve  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
@@ -120,11 +121,12 @@ def main(argv: list[str] | None = None) -> int:
             "arrow51",
             "arrow52",
             "arrow53",
+            "arrow54",
             "equity",
             "rockets",
         ),
-        default="arrow53",
-        help="arrow53 group leftover",
+        default="arrow54",
+        help="arrow54 fade into the Friday fill",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -228,6 +230,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow52(workers=args.workers)
     if args.mode == "arrow53":
         return run_arrow53(workers=args.workers)
+    if args.mode == "arrow54":
+        return run_arrow54(workers=args.workers)
     if args.mode == "equity":
         return run_equity_curve(workers=args.workers)
     if args.mode == "rockets":

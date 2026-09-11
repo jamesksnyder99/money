@@ -962,3 +962,19 @@ Short only. Group leftover. Friday last-RTH hold 10 except wed_vs_univ. Did not 
 - vs_pdv: IS $456.26/day n=121  OOS $254.96/day n=91 t=2.58  SLATE  OOS CI excludes 0
 - vs_px_iwm: IS $501.77/day n=121  OOS $237.59/day n=92 t=2.38  SLATE  OOS CI excludes 0
 - wed_vs_univ: IS $583.07/day n=118  OOS $417.12/day n=113 t=2.16  SLATE  lift-both  OOS CI excludes 0
+
+## 2026-09-11T09:16:46-04:00 — Arrow 54
+
+VERDICT: SEAT — plain (OOS >= $100/day and IS not red).
+
+Id 0 plain IS $/day=495.38/495.38 n=121/121 — within ±10% of Arrow 53 vs_iwm.
+fade1 IS n=125 vs plain n=121 (cut -3%, a little). weeks skipped by filter=0.
+Lift vs plain on both IS and OOS: none.
+Seat $100: plain.  Slate $200: plain.
+Short only. Fade-into-entry on leftover vs IWM. Did not use an OOS month to pick a threshold. Did not add a long leg. Did not retune Arrow 43 clocks or frozen B/flush. No new ingest. No Arrow 55.
+- plain: IS $495.38/day n=121  OOS $276.17/day n=91 t=2.69  skip_filt=0  SLATE  OOS CI excludes 0
+- fade1: IS $367.90/day n=125  OOS $-6.97/day n=96 t=-0.05  skip_filt=0  no seat
+- fade2: IS $70.32/day n=129  OOS $27.82/day n=95 t=0.20  skip_filt=0  no seat
+- rth_down: IS $281.90/day n=121  OOS $54.12/day n=94 t=0.35  skip_filt=0  no seat
+- no_repeat: IS $370.06/day n=125  OOS $37.11/day n=92 t=0.31  skip_filt=0  no seat
+- wed_fade1: IS $593.13/day n=124  OOS $90.36/day n=117 t=0.54  skip_filt=0  no seat
