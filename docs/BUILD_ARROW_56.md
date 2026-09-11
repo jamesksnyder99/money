@@ -1,4 +1,4 @@
-# Build Arrow 56 — net-pair size and Friday+Monday (IS / OOS)
+# Build Arrow 56 — net-pair size and Wednesday+Monday (IS / OOS)
 
 Read `docs/SUCCESS.md`, `AGENTS.md`, `docs/DATA_CONTRACT.md`,
 `docs/BUILD_ARROW_55.md`, `reports/arrow55_results.txt`,
@@ -11,8 +11,9 @@ weekday of the pair, skip the later ticket. Reuse `src/research/clock.py`.
 
 Arrow 55: Friday and Wednesday are two seats (daily PnL corr ≈ 0,
 overlap 3.2/8). `pair_3k_net` is the slate that fits (OOS +$225, peak
-live ~$81k). `pair_3k` with two tickets peaks ~$116k. This arrow sizes
-the net pair and asks whether Friday+Monday is another pair.
+live ~$81k). Wednesday+Thursday net was the weaker pair. This arrow
+sizes the Friday+Wednesday net pair and asks whether Wednesday+Monday
+is another pair. Monday was the unused high even-month weekday.
 No fade. No sector map. No long leg. No retune of 43 or frozen B / flush.
 No new ingest. Do not touch Lab A `data/bars/` except to read a helper.
 
@@ -33,11 +34,10 @@ All stacked ids use the net rule unless named `dbl`.
 | 1 `fw_2k_net` | Friday + Wednesday | $2,000 |
 | 2 `fw_4k_net` | Friday + Wednesday | $4,000 |
 | 3 `fw_4k_dbl` | Friday + Wednesday | $4,000, two tickets allowed in the same name |
-| 4 `fm_3k_net` | Friday + Monday | $3,000, net |
-| 5 `fm_3k_corr` | score Friday $3,000 and Monday $3,000 as separate books; print daily PnL correlation; do not stack |
+| 4 `wm_3k_net` | Wednesday + Monday | $3,000, net |
+| 5 `wm_3k_corr` | score Wednesday $3,000 and Monday $3,000 as separate books; print daily PnL correlation and mean name overlap; do not stack |
 
-Id 5 is diagnostic. Print Pearson correlation IS and OOS and mean name
-overlap like Arrow 55.
+Id 5 is diagnostic. Print Pearson correlation IS and OOS like Arrow 55.
 
 ## Order of work
 
@@ -58,7 +58,7 @@ For each id × IS × OOS: $/day, n, hit, wins, losses, avgWin, avgLoss,
 PF, se, t, CI, daily-close DD, worst day, peak live notional, IWM alpha,
 months.
 First paragraph: reprint, scale vs $3k, who fits and clears slate,
-Friday+Monday correlation and overlap, whether Friday+Monday is a second pair.
+Wednesday+Monday correlation and overlap, whether Wednesday+Monday is a second pair.
 
 Append RESEARCH_LOG.md.
 
