@@ -1117,3 +1117,9 @@ Last-month MAX, first night. Long and short are separate engines. Did not retune
 - short_max_iwm_m: IS $95.46/day n=29  OOS $62.08/day n=30 t=0.81  peak_live $23937  no seat
 - short_max_n15_m: IS $151.98/day n=56  OOS $-20.15/day n=53 t=-0.21  peak_live $44891  no seat
 - short_max_4k_m: IS $126.92/day n=29  OOS $83.23/day n=30 t=0.81  peak_live $31922  no seat
+
+## 2026-09-11T17:32:50-04:00 — Arrow 63
+
+Ingest only. Official SEC EDGAR SIC map into data/meta/. Did not use a paid EDGAR wrapper.
+symbols_on_disk=15322 mapped=6021 no_cik=8850 cik_no_sic=451 sic2_buckets=71 median_per_sic2=28.0 http_failures=0 wall_min=48.2.
+Did not score engines. Did not touch data/full, data/virgin bars, or Lab A data/bars. No Arrow 64.

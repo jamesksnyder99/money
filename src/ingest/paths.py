@@ -26,6 +26,11 @@ VIRGIN_MANIFEST = VIRGIN_ROOT / "manifest.parquet"
 VIRGIN_EOD = VIRGIN_ROOT / "eod"
 VIRGIN_BENCH = VIRGIN_ROOT / "bench"
 VIRGIN_IWM = VIRGIN_BENCH / "IWM"
+META_DIR = DATA / "meta"
+SECTOR_SIC = META_DIR / "sector_sic.parquet"
+SECTOR_SIC_CSV = META_DIR / "sector_sic.csv"
+SECTOR_SIC_CACHE = META_DIR / "submissions_cache.jsonl"
+SECTOR_SIC_META = META_DIR / "pull_meta.json"
 MANIFEST = DATA / "manifests" / "pulls.jsonl"
 INGEST_REPORT = REPORTS / "ingest_latest.txt"
 ARROW01_REPORT = REPORTS / "arrow01_timing.txt"
@@ -97,6 +102,12 @@ def ensure_virgin_dirs() -> None:
     """Create only data/virgin trees. Does not mkdir data/full or Lab A data/bars."""
     for path in (VIRGIN_BARS, VIRGIN_EOD, VIRGIN_IWM, REPORTS):
         path.mkdir(parents=True, exist_ok=True)
+
+
+def ensure_meta_dirs() -> None:
+    """Create data/meta only. Does not mkdir data/full, data/virgin, or Lab A data/bars."""
+    META_DIR.mkdir(parents=True, exist_ok=True)
+    REPORTS.mkdir(parents=True, exist_ok=True)
 
 
 def eod_path(symbol: str, chunk: str = "warmup") -> Path:
