@@ -997,3 +997,24 @@ Short only. Friday + Wednesday pair. Did not use an OOS month to pick a threshol
 - pair_3k: IS $537.94/day n=239  OOS $345.26/day n=204 t=3.26  peak_live $119451  SEAT  OOS CI excludes 0
 - pair_3k_net: IS $291.47/day n=156  OOS $224.73/day n=138 t=2.39  peak_live $80650  SLATE  OOS CI excludes 0
 - pair_3k_thu: IS $285.63/day n=146  OOS $130.58/day n=141 t=1.14  peak_live $80723  SEAT
+
+## 2026-09-11T10:55:16-04:00 — Arrow 56
+
+VERDICT: SEAT — fw_3k_net, fw_2k_net, fw_4k_net, fw_4k_dbl, wm_3k_net (OOS >= $100/day and IS not red).
+
+Id 0 fw_3k_net IS $/day=291.47/291.47 n=156/156 — within ±10% of Arrow 55 pair_3k_net.
+fw_2k_net IS 0.67x OOS 0.66x vs linear 0.67x. Near-linear.
+fw_4k_net IS 1.34x OOS 1.34x vs linear 1.33x. Near-linear.
+fw_4k_dbl IS 2.46x OOS 2.05x vs linear 1.33x. Did not scale near-linear (costs or missing fills).
+Id 5 wm_3k_corr Pearson daily PnL Wednesday $3k vs Monday $3k IS=-0.047 OOS=-0.045 (entry-session series; not stacked).
+Wednesday+Monday is a second pair (overlap 3.31/8, corr IS=-0.047 OOS=-0.045, wm_3k_net OOS $207.37/day peak_live $77654).
+Fit $100k: fw_3k_net, fw_2k_net, wm_3k_net.  Seat $100: fw_3k_net, fw_2k_net, fw_4k_net, fw_4k_dbl, wm_3k_net.  Slate $200: fw_3k_net, wm_3k_net.
+Lift vs fw_3k_net on both and fit $100k: none.
+Short only. Friday+Wednesday net size; Wednesday+Monday second pair. Did not use an OOS month to pick a threshold. Did not add a long leg. Did not retune Arrow 43 clocks or frozen B/flush. No fade filter. Did not pair Friday+Monday. No new ingest. No Arrow 57.
+- fw_3k_net: IS $291.47/day n=156  OOS $224.73/day n=138 t=2.39  peak_live $80650  SLATE  OOS CI excludes 0
+- fw_2k_net: IS $194.11/day n=156  OOS $149.36/day n=138 t=2.39  peak_live $53692  SEAT  OOS CI excludes 0
+- fw_4k_net: IS $389.87/day n=156  OOS $300.17/day n=138 t=2.39  peak_live $107717  SEAT  OOS CI excludes 0
+- fw_4k_dbl: IS $717.77/day n=239  OOS $461.29/day n=204 t=3.26  peak_live $159521  SEAT  OOS CI excludes 0
+- wm_3k_net: IS $296.87/day n=145  OOS $207.37/day n=152 t=1.76  peak_live $77654  SLATE
+- wm_wed_3k: IS $290.63/day n=118  OOS $207.61/day n=113 t=2.16  peak_live $71674  SLATE  OOS CI excludes 0
+- wm_mon_3k: IS $140.87/day n=102  OOS $192.79/day n=115 t=1.67  peak_live $71673  SEAT
