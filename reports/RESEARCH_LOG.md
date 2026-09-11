@@ -930,3 +930,19 @@ Short only. n=8 $6k Friday last-RTH. Rank 15 parent. Rings locked from IS. One O
 - lb20_h10: IS $510.81/day n=117  OOS $163.47/day n=107 t=0.98  SEAT
 - lb12_h10: IS $547.67/day n=127  OOS $356.13/day n=107 t=2.12  SLATE  OOS CI excludes 0
 - lb15_h15: IS $780.69/day n=122  OOS $267.53/day n=99 t=1.24  SEAT
+
+## 2026-09-11T07:22:48-04:00 — Arrow 52
+
+VERDICT: SEAT — fri_h10, mon_h10, tue_h10, wed_h10, thu_h10, stand_top8 (OOS >= $100/day and IS not red).
+
+Id 0 fri_h10 IS $/day=495.38/575.43 n=121/129 — outside ±10% of Arrow 51 lb15_h10. A51 last-of-week n=129 IS $/day=575.43. Friday-only n=121 IS $/day=495.38. Non-Friday last-of-week dates in A51 calendar: 3 (2026-04-02, 2026-06-18, 2026-07-02). Friday-only n differs because Arrow 51 used last-of-week including Thursdays. Printed both. Still scored the other ids. Did not roll those Thursdays onto Friday.
+Weekday seat: fri_h10, mon_h10, tue_h10, wed_h10, thu_h10.  Weekday slate: fri_h10, mon_h10, tue_h10, wed_h10, thu_h10.  Weekday lift-both vs Friday: wed_h10.
+stand_top8 is a seat (OOS $150.39/day).
+Lift vs control on both IS and OOS: wed_h10.
+Short only. Weekday books scored apart. Did not combine them. lb=15 n=8 $6k. Did not use an OOS month to pick a threshold. Did not add a long leg. Did not retune Arrow 43 clocks or frozen B/flush. No new ingest. No Arrow 53.
+- fri_h10: IS $495.38/day n=121  OOS $276.17/day n=91 t=2.69  SLATE  OOS CI excludes 0
+- mon_h10: IS $281.67/day n=102  OOS $386.17/day n=115 t=1.67  SLATE
+- tue_h10: IS $294.21/day n=116  OOS $321.02/day n=116 t=1.37  SLATE
+- wed_h10: IS $583.07/day n=118  OOS $417.12/day n=113 t=2.16  SLATE  lift-both  OOS CI excludes 0
+- thu_h10: IS $494.38/day n=116  OOS $389.46/day n=115 t=1.79  SLATE  OOS CI excludes 0
+- stand_top8: IS $340.89/day n=192  OOS $150.39/day n=211 t=0.90  SEAT
