@@ -946,3 +946,19 @@ Short only. Weekday books scored apart. Did not combine them. lb=15 n=8 $6k. Did
 - wed_h10: IS $583.07/day n=118  OOS $417.12/day n=113 t=2.16  SLATE  lift-both  OOS CI excludes 0
 - thu_h10: IS $494.38/day n=116  OOS $389.46/day n=115 t=1.79  SLATE  OOS CI excludes 0
 - stand_top8: IS $340.89/day n=192  OOS $150.39/day n=211 t=0.90  SEAT
+
+## 2026-09-11T08:13:39-04:00 — Arrow 53
+
+VERDICT: SEAT — vs_iwm, vs_univ, vs_px, vs_pdv, vs_px_iwm, wed_vs_univ (OOS >= $100/day and IS not red).
+
+Id 0 vs_iwm IS $/day=495.38/495.38 n=121/121 — within ±10% of Arrow 52 fri_h10.
+vs_univ vs vs_iwm IS Friday overlap: mean 8.00/8 names in common (n_fridays=17). Same book.
+Lift vs vs_iwm on both IS and OOS: wed_vs_univ.
+Seat $100: vs_iwm, vs_univ, vs_px, vs_pdv, vs_px_iwm, wed_vs_univ.  Slate $200: vs_iwm, vs_univ, vs_px, vs_pdv, vs_px_iwm, wed_vs_univ.
+Short only. Group leftover. Friday last-RTH hold 10 except wed_vs_univ. Did not use an OOS month to pick a threshold. Did not add a long leg. Did not retune Arrow 43 clocks or frozen B/flush. No new ingest. No Arrow 54.
+- vs_iwm: IS $495.38/day n=121  OOS $276.17/day n=91 t=2.69  SLATE  OOS CI excludes 0
+- vs_univ: IS $495.38/day n=121  OOS $276.17/day n=91 t=2.69  SLATE  OOS CI excludes 0
+- vs_px: IS $501.77/day n=121  OOS $237.59/day n=92 t=2.38  SLATE  OOS CI excludes 0
+- vs_pdv: IS $456.26/day n=121  OOS $254.96/day n=91 t=2.58  SLATE  OOS CI excludes 0
+- vs_px_iwm: IS $501.77/day n=121  OOS $237.59/day n=92 t=2.38  SLATE  OOS CI excludes 0
+- wed_vs_univ: IS $583.07/day n=118  OOS $417.12/day n=113 t=2.16  SLATE  lift-both  OOS CI excludes 0
