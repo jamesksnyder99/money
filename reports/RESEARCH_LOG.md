@@ -1054,3 +1054,20 @@ Short only. Short the loser slot. Did not retune leftover pair or frozen B/flush
 - lose_h10_6k: IS $1078.25/day n=640  OOS $-379.86/day n=554 t=-0.59  peak_live $479176  no seat
 - lose_h10_n15: IS $308.01/day n=1216  OOS $-338.39/day n=1049 t=-0.77  peak_live $448233  no seat
 - lose_h5_6k: IS $512.92/day n=651  OOS $-626.62/day n=606 t=-1.16  peak_live $239703  no seat
+
+## 2026-09-11T13:55:45-04:00 — Arrow 59
+
+VERDICT: FAIL — no Arrow 59 engine has OOS >= $100/day AND non-red IS.
+
+  hot eight n=672 mean=0.00091 hit=0.478
+  quiet eight n=672 mean=0.00225 hit=0.499
+Seat $100: none. Short: none. Long: none.
+Hot-and-up changed the hot eight (mean 3.99/8 pass). Quiet-and-down changed the quiet eight (mean 3.99/8 pass).
+Pearson daily PnL short_hot_1159 vs long_quiet_1159 IS=-0.714 OOS=-0.777 (entry-session series).
+Volume-pace hotel. Long and short are separate engines. Did not retune leftover pair, same-slot ids, or frozen B/flush. Did not use an OOS month to pick a threshold. No new ingest. No Arrow 60.
+- short_hot_1159: IS $-78.96/day n=672  OOS $-94.63/day n=656 t=-2.92  peak_live $23958  no seat  OOS CI excludes 0
+- long_quiet_1159: IS $-3.59/day n=672  OOS $-65.51/day n=656 t=-2.15  peak_live $23956  no seat  OOS CI excludes 0
+- short_hot_next: IS $-73.46/day n=667  OOS $-193.97/day n=640 t=-3.02  peak_live $23958  no seat  OOS CI excludes 0
+- long_quiet_next: IS $37.16/day n=666  OOS $6.36/day n=639 t=0.13  peak_live $23956  no seat
+- short_hot_up_1159: IS $-26.86/day n=224  OOS $-28.15/day n=277 t=-1.63  peak_live $23913  no seat
+- long_quiet_dn_1159: IS $4.50/day n=209  OOS $-16.23/day n=165 t=-1.14  peak_live $23903  no seat
