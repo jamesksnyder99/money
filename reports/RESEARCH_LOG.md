@@ -1142,3 +1142,17 @@ Group leftover versus SIC2. Long and short are separate engines. Did not retune 
 - short_sic_wed: IS $299.75/day n=116  OOS $213.71/day n=112 t=2.25  peak_live $71778  SLATE  lift-both  OOS CI excludes 0
 - short_sic_fri_n15: IS $334.93/day n=228  OOS $101.55/day n=175 t=1.06  peak_live $134458  SEAT
 - short_sic_fri_4k: IS $290.46/day n=122  OOS $189.82/day n=92 t=2.24  peak_live $95768  SEAT  lift-both  OOS CI excludes 0
+
+## 2026-09-11T19:30:36-04:00 — Arrow 65
+
+VERDICT: SLATE — close_3k, close_4k, nextrth_4k, nextrth_4k_keep (OOS MTM >= $200/day, IS MTM not red, peak live <= $100000).
+
+Id 0 close_3k IS entry $/day=290.63/290.63 n=118/118 — within ±10% of Arrow 56 wm_wed_3k. Next-open still seats: yes (open_4k OOS MTM $147.95/day). Keep-missing changed n: open_4k n=229 vs open_4k_keep n=260 (exit_partial IS 10 OOS 21). Peak live close_3k $71225 vs old $69–$72k mark (id0 peak $71225). Seat $100 MTM: close_3k, close_4k, open_4k, nextrth_4k, open_4k_keep, nextrth_4k_keep. Slate $200: close_3k, close_4k, nextrth_4k, nextrth_4k_keep.
+Seat $100 MTM: close_3k, close_4k, open_4k, nextrth_4k, open_4k_keep, nextrth_4k_keep. Slate $200: close_3k, close_4k, nextrth_4k, nextrth_4k_keep.
+Wednesday leftover plumbing. Split on signal session. Did not retune leftover pair, SIC, MAX, or frozen B/flush. Did not use an OOS month to pick a threshold. No new ingest. No Arrow 66.
+- close_3k: entry IS $290.63 MTM $281.45 n=118  entry OOS $207.61 MTM $217.02 n=113 t=1.17  peak_live $71225  SLATE
+- close_4k: entry IS $388.02 MTM $375.78 n=118  entry OOS $277.40 MTM $289.94 n=113 t=1.17  peak_live $95051  SLATE
+- open_4k: entry IS $310.78 MTM $317.42 n=116  entry OOS $154.75 MTM $147.95 n=113 t=0.36  peak_live $91107  SEAT
+- nextrth_4k: entry IS $369.55 MTM $401.16 n=116  entry OOS $292.74 MTM $260.36 n=113 t=1.16  peak_live $91206  SLATE
+- open_4k_keep: entry IS $276.48 MTM $262.71 n=126  entry OOS $126.03 MTM $136.86 n=134 t=0.33  peak_live $96737  SEAT
+- nextrth_4k_keep: entry IS $359.39 MTM $371.17 n=126  entry OOS $259.27 MTM $247.26 n=134 t=1.03  peak_live $98066  SLATE
