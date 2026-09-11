@@ -69,6 +69,7 @@ from research.arrow58 import run_arrow58  # noqa: E402
 from research.arrow59 import run_arrow59  # noqa: E402
 from research.arrow60 import run_arrow60  # noqa: E402
 from research.arrow62 import run_arrow62  # noqa: E402
+from research.arrow64 import run_arrow64  # noqa: E402
 from research.equity_curve import run_equity_curve  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
@@ -139,11 +140,12 @@ def main(argv: list[str] | None = None) -> int:
             "arrow60",
             "arrow62",
             "arrow63",
+            "arrow64",
             "equity",
             "rockets",
         ),
-        default="arrow63",
-        help="arrow63 SEC SIC map ingest",
+        default="arrow64",
+        help="arrow64 group leftover versus SIC2",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -267,6 +269,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow62(workers=args.workers)
     if args.mode == "arrow63":
         return run_arrow63(workers=args.workers)
+    if args.mode == "arrow64":
+        return run_arrow64(workers=args.workers)
     if args.mode == "equity":
         return run_equity_curve(workers=args.workers)
     if args.mode == "rockets":

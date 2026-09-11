@@ -1123,3 +1123,22 @@ Last-month MAX, first night. Long and short are separate engines. Did not retune
 Ingest only. Official SEC EDGAR SIC map into data/meta/. Did not use a paid EDGAR wrapper.
 symbols_on_disk=15322 mapped=6021 no_cik=8850 cik_no_sic=451 sic2_buckets=71 median_per_sic2=28.0 http_failures=0 wall_min=48.2.
 Did not score engines. Did not touch data/full, data/virgin bars, or Lab A data/bars. No Arrow 64.
+
+## 2026-09-11T18:22:11-04:00 — Arrow 64
+
+VERDICT: SLATE — short_sic_wed (OOS >= $200/day, IS not red, peak live <= $100000).
+
+SIC-mapped Friday field mean 1304.5 names vs Arrow 52 wall-eligible mean 1367.6. id0 IWM-eight vs id1 SIC-eight IS Friday overlap: mean 7.06/8 (n_fridays=17). Engines that clear seat $100/day on OOS with IS not red: short_iwm_fri, short_sic_fri, short_sic_wed, short_sic_fri_n15, short_sic_fri_4k. Slate $200: short_sic_wed. Short seats: short_iwm_fri, short_sic_fri, short_sic_wed, short_sic_fri_n15, short_sic_fri_4k. Long seats: none. A long id is not judged as a failed short. Wednesday short_sic_wed IS $299.75 OOS $213.71. Friday short_sic_fri IS $217.77 OOS $141.92. Group ids that lift $/day versus id 0 on both IS and OOS: short_sic_wed, short_sic_fri_4k.
+  mean SIC-mapped eligible names per Friday=1304.5 (Arrow 52 wall-eligible mean=1367.6, n_fridays=17)
+  mean sic2 peers per name that kept a group residual=71.42 (n=17516)
+  id0 IWM-eight vs id1 SIC-eight IS Friday overlap: mean 7.06/8 (n_fridays=17).
+Seat $100: short_iwm_fri, short_sic_fri, short_sic_wed, short_sic_fri_n15, short_sic_fri_4k. Slate $200: short_sic_wed. Short: short_iwm_fri, short_sic_fri, short_sic_wed, short_sic_fri_n15, short_sic_fri_4k. Long: none. Lift-both vs id0: short_sic_wed, short_sic_fri_4k.
+Pearson daily PnL short_iwm_fri vs short_sic_fri IS=0.945 OOS=0.840; short_sic_fri vs long_sic_fri IS=-0.502 OOS=-0.246 (entry-session series).
+Wednesday short_sic_wed IS $299.75 OOS $213.71. Friday short_sic_fri IS $217.77 OOS $141.92.
+Group leftover versus SIC2. Long and short are separate engines. Did not retune leftover pair, MAX, or frozen B/flush. Did not call SEC. Did not use an OOS month to pick a threshold. No new ingest. No Arrow 65.
+- short_iwm_fri: IS $221.49/day n=123  OOS $131.27/day n=91 t=2.67  peak_live $71669  SEAT  OOS CI excludes 0
+- short_sic_fri: IS $217.77/day n=122  OOS $141.92/day n=92 t=2.24  peak_live $71704  SEAT  OOS CI excludes 0
+- long_sic_fri: IS $99.15/day n=135  OOS $83.65/day n=96 t=0.73  peak_live $71809  no seat
+- short_sic_wed: IS $299.75/day n=116  OOS $213.71/day n=112 t=2.25  peak_live $71778  SLATE  lift-both  OOS CI excludes 0
+- short_sic_fri_n15: IS $334.93/day n=228  OOS $101.55/day n=175 t=1.06  peak_live $134458  SEAT
+- short_sic_fri_4k: IS $290.46/day n=122  OOS $189.82/day n=92 t=2.24  peak_live $95768  SEAT  lift-both  OOS CI excludes 0
