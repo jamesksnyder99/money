@@ -894,3 +894,21 @@ Short only. lb=10 n=8. Rings locked from IS. One OOS look. Did not use an OOS mo
 - n8_h10_6k: IS $371.20/day n=135  OOS $309.29/day n=104 t=1.56  one=$48000 two=$96000  SLATE  lift-both
 - n8_h5_4k: IS $129.16/day n=141  OOS $181.93/day n=110 t=1.75  one=$32000 two=$64000  SEAT
 - n8_h5_5k: IS $161.12/day n=141  OOS $227.89/day n=110 t=1.75  one=$40000 two=$80000  SLATE
+
+## 2026-09-10T20:52:40-04:00 — Arrow 50
+
+VERDICT: SEAT — fri_h10, mon_h10, fri_h5, fri_give5, fri_h10_iwm8, lb15_fri_h10 (OOS >= $100/day and IS not red).
+
+Id 0 fri_h10 IS $/day=371.20/371.2 n=135/135 — within ±10% of Arrow 49 n8_h10_6k.
+Lift vs control on both IS and OOS: lb15_fri_h10.
+Seat $100: fri_h10, mon_h10, fri_h5, fri_give5, fri_h10_iwm8, lb15_fri_h10.
+Slate $200 on OOS with IS not red and two-cohort fit: fri_h10, mon_h10, fri_h5, fri_give5, fri_h10_iwm8, lb15_fri_h10.
+Monday entry OOS $418.86/day kept the OOS slate print (>= $200).
+IS character id 3 fri_give5 exit +5 vs +10: n5=68 (0.496) n10=69 (0.504). Description. Does not pick an id.
+Short only. n=8 $6k. Rings locked from IS. One OOS look. Did not use an OOS month to pick a threshold. Did not add a long leg. Did not retune Arrow 43 clocks or frozen B/flush. No new ingest. No Arrow 51.
+- fri_h10: IS $371.20/day n=135  OOS $309.29/day n=104 t=1.56  SLATE
+- mon_h10: IS $328.53/day n=121  OOS $418.86/day n=119 t=1.45  SLATE
+- fri_h5: IS $194.02/day n=141  OOS $273.34/day n=110 t=1.75  SLATE
+- fri_give5: IS $288.01/day n=137  OOS $468.76/day n=108 t=2.30  SLATE
+- fri_h10_iwm8: IS $371.20/day n=135  OOS $261.07/day n=97 t=1.36  SLATE
+- lb15_fri_h10: IS $575.43/day n=129  OOS $367.59/day n=107 t=2.50  SLATE  lift-both
