@@ -14,6 +14,7 @@ import polars as pl
 
 from ingest.calendar import (
     VIRGIN_STUDY_END,
+    december_2025_sessions,
     nyse_sessions,
     study_sessions,
     virgin_study_sessions,
@@ -97,6 +98,24 @@ def feature_sessions() -> list[date]:
             seen.add(d)
             out.append(d)
     return out
+
+
+def arrow62_feature_sessions() -> list[date]:
+    """Full December 2025 + combined study. Does not change leftover lookback."""
+    seen: set[date] = set()
+    out: list[date] = []
+    for d in list(december_2025_sessions()) + combined_study_sessions():
+        if d not in seen:
+            seen.add(d)
+            out.append(d)
+    return out
+
+
+def month_first_last(year: int, month: int, sessions: list[date]) -> tuple[date, date] | None:
+    days = [d for d in sessions if d.year == year and d.month == month]
+    if not days:
+        return None
+    return min(days), max(days)
 
 
 def session_shift(d: date, n: int, sessions: list[date] | None = None) -> date | None:

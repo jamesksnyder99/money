@@ -1098,3 +1098,22 @@ Sessions=12 pulled=12 skipped_disk=0 skipped_not_session=0.
 Did not score engines. Did not touch data/full or Lab A data/bars. Did not rebuild 2025-12-17..2025-12-31. No Arrow 62.
 eligible name-days=36776 failures=0 wall_min=20.1.
 December 2025 on virgin is complete.
+
+## 2026-09-11T16:21:53-04:00 — Arrow 62
+
+VERDICT: FAIL — no Arrow 62 engine has OOS >= $100/day AND non-red IS.
+
+December rank works (fixture=AA first=2025-12-01 last=2025-12-31 on virgin; IWM both stamps). MAX eight n=29 mean=-0.09466 hit=0.379; MIN eight n=32 mean=-0.00900 hit=0.625. Engines that clear seat $100/day on OOS with IS not red: none. MAX vs IWM-MAX overlap mean 8.00/8 (n_months=8). Short seats: none. Long seats: none. A long id is not judged as a failed short. 4 IS months and 4 OOS months of entries; do not dress a 4-point t-stat as a large sample.
+  MAX eight n=29 mean=-0.09466 hit=0.379
+  MIN eight n=32 mean=-0.00900 hit=0.625
+Seat $100: none. Short: none. Long: none.
+MAX vs IWM-MAX overlap mean 8.00/8 (n_months=8).
+Pearson daily PnL short_max_m vs long_min_m IS=-0.631 OOS=-0.668 (entry-session series). Pearson monthly IS=-0.806 OOS=-0.899 (4 IS months, 4 OOS months).
+Booked months=8 (IS 4, OOS 4); skipped_thin=0. There are only 4 IS months and 4 OOS months of entries. Do not dress a 4-point t-stat as a large sample.
+Last-month MAX, first night. Long and short are separate engines. Did not retune leftover pair, same-slot, volume-pace, day-two, or frozen B/flush. Did not use an OOS month to pick a threshold. No new ingest. No Arrow 63.
+- short_max_m: IS $95.46/day n=29  OOS $62.08/day n=30 t=0.81  peak_live $23937  no seat
+- long_min_m: IS $-13.21/day n=32  OOS $32.46/day n=32 t=0.61  peak_live $23955  no seat
+- short_max_h10: IS $13.85/day n=30  OOS $89.24/day n=29 t=1.65  peak_live $23937  no seat  OOS CI excludes 0
+- short_max_iwm_m: IS $95.46/day n=29  OOS $62.08/day n=30 t=0.81  peak_live $23937  no seat
+- short_max_n15_m: IS $151.98/day n=56  OOS $-20.15/day n=53 t=-0.21  peak_live $44891  no seat
+- short_max_4k_m: IS $126.92/day n=29  OOS $83.23/day n=30 t=0.81  peak_live $31922  no seat
