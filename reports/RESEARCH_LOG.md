@@ -978,3 +978,22 @@ Short only. Fade-into-entry on leftover vs IWM. Did not use an OOS month to pick
 - rth_down: IS $281.90/day n=121  OOS $54.12/day n=94 t=0.35  skip_filt=0  no seat
 - no_repeat: IS $370.06/day n=125  OOS $37.11/day n=92 t=0.31  skip_filt=0  no seat
 - wed_fade1: IS $593.13/day n=124  OOS $90.36/day n=117 t=0.54  skip_filt=0  no seat
+
+## 2026-09-11T10:15:39-04:00 — Arrow 55
+
+VERDICT: SEAT — fri_6k, wed_6k, pair_6k, pair_3k, pair_3k_net, pair_3k_thu (OOS >= $100/day and IS not red).
+
+Id 0 fri_6k IS $/day=495.38/495.38 n=121/121 — within ±10% of Arrow 54 plain. Id 1 wed_6k IS $/day=583.07/583.07 n=118/118 — within ±10% of Arrow 52 wed_h10.
+Pearson daily PnL fri_6k vs wed_6k IS=-0.052 OOS=-0.072 (entry-session series from ids 0 and 1).
+$3k net pair (pair_3k_net) is a slate that fits $100k (OOS $224.73/day peak_live $80650).
+Friday and Wednesday eights are not the same eight names (mean overlap 3.18/8).
+Id 2 pair_6k peak live notional $239501 misses the $100k cap — diagnostic paper stack, allowed to miss.
+Lift vs fri_6k on both (stacked also must fit $100k): wed_6k.
+Seat $100: fri_6k, wed_6k, pair_6k, pair_3k, pair_3k_net, pair_3k_thu.  Slate $200: pair_3k_net.
+Short only. Friday + Wednesday pair. Did not use an OOS month to pick a threshold. Did not add a long leg. Did not retune Arrow 43 clocks or frozen B/flush. No fade filter. No new ingest. No Arrow 56.
+- fri_6k: IS $495.38/day n=121  OOS $276.17/day n=91 t=2.69  peak_live $143697  SEAT  OOS CI excludes 0
+- wed_6k: IS $583.07/day n=118  OOS $417.12/day n=113 t=2.16  peak_live $143695  SEAT  lift-both  OOS CI excludes 0
+- pair_6k: IS $1078.45/day n=239  OOS $693.29/day n=204 t=3.27  peak_live $239501  SEAT  OOS CI excludes 0
+- pair_3k: IS $537.94/day n=239  OOS $345.26/day n=204 t=3.26  peak_live $119451  SEAT  OOS CI excludes 0
+- pair_3k_net: IS $291.47/day n=156  OOS $224.73/day n=138 t=2.39  peak_live $80650  SLATE  OOS CI excludes 0
+- pair_3k_thu: IS $285.63/day n=146  OOS $130.58/day n=141 t=1.14  peak_live $80723  SEAT
