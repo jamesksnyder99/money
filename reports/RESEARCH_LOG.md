@@ -1071,3 +1071,22 @@ Volume-pace hotel. Long and short are separate engines. Did not retune leftover 
 - long_quiet_next: IS $37.16/day n=666  OOS $6.36/day n=639 t=0.13  peak_live $23956  no seat
 - short_hot_up_1159: IS $-26.86/day n=224  OOS $-28.15/day n=277 t=-1.63  peak_live $23913  no seat
 - long_quiet_dn_1159: IS $4.50/day n=209  OOS $-16.23/day n=165 t=-1.14  peak_live $23903  no seat
+
+## 2026-09-11T14:38:28-04:00 — Arrow 60
+
+VERDICT: FAIL — no Arrow 60 engine has OOS >= $100/day AND non-red IS.
+
+  T extremes per session n_sess=83 mean=26.25 max=86
+  booked T+1 09:30-15:59 n=656 mean=0.00046 hit=0.457
+  still-extended (>=1.05) n=595 mean=-0.00005 hit=0.461
+  gave-back (<1.05) n=61 mean=0.00545 hit=0.426
+Seat $100: none. Short: none. Long: none.
+Still-extended short IS $-50.77 OOS $-29.62. Gave-back short IS $-17.55 OOS $0.41.
+Pearson daily PnL short_0930_1159 vs long_0930_1159 IS=-1.000 OOS=-1.000 (entry-session series).
+Day-two after an extreme. Long and short are separate engines. Did not retune leftover pair, same-slot, volume-pace, or frozen B/flush. Did not use an OOS month to pick a threshold. No new ingest. No Arrow 61.
+- short_0930_1159: IS $-68.32/day n=656  OOS $-29.21/day n=643 t=-0.34  peak_live $23961  no seat
+- long_0930_1159: IS $-45.78/day n=656  OOS $-86.23/day n=643 t=-0.99  peak_live $23961  no seat
+- short_0930_next: IS $233.19/day n=642  OOS $-66.82/day n=638 t=-0.46  peak_live $23961  no seat
+- short_still_1159: IS $-50.77/day n=595  OOS $-29.62/day n=583 t=-0.37  peak_live $23953  no seat
+- short_gave_1159: IS $-17.55/day n=61  OOS $0.41/day n=60 t=0.01  peak_live $14968  no seat
+- long_gave_1159: IS $6.46/day n=61  OOS $-11.72/day n=60 t=-0.39  peak_live $14968  no seat
