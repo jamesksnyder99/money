@@ -875,3 +875,22 @@ Short only. lb=10. Rings locked from IS. One OOS look. Did not use an OOS month 
 - n8_h10_3k: IS $185.30/day n=135  OOS $153.84/day n=104 t=1.56  SEAT
 - n15_h5_3k: IS $207.00/day n=268  OOS $163.83/day n=206 t=1.50  SEAT
 - n8_h5_3k: IS $96.65/day n=141  OOS $136.20/day n=110 t=1.74  SEAT
+
+## 2026-09-10T20:20:11-04:00 — Arrow 49
+
+VERDICT: SEAT — n8_h10_3k, n8_h10_4k, n8_h10_5k, n8_h10_6k, n8_h5_4k, n8_h5_5k (OOS >= $100/day and IS not red).
+
+Id 0 n8_h10_3k IS $/day=185.30/185.3 n=135/135 — within ±10% of Arrow 48 n8_h10_3k.
+n8_h10_4k $4000 / id 0 $3000 IS 1.33x OOS 1.34x vs linear 1.33x. Near-linear.
+n8_h10_5k $5000 / id 0 $3000 IS 1.67x OOS 1.68x vs linear 1.67x. Near-linear.
+n8_h10_6k $6000 / id 0 $3000 IS 2.00x OOS 2.01x vs linear 2.00x. Near-linear.
+Seat $100: n8_h10_3k, n8_h10_4k, n8_h10_5k, n8_h10_6k, n8_h5_4k, n8_h5_5k.
+Slate $200 on OOS with IS not red and two-cohort fit: n8_h10_4k, n8_h10_5k, n8_h10_6k, n8_h5_5k.
+Lift vs control on both IS and OOS: n8_h10_4k, n8_h10_5k, n8_h10_6k.
+Short only. lb=10 n=8. Rings locked from IS. One OOS look. Did not use an OOS month to pick a threshold. Did not add a long leg. Did not retune Arrow 43 clocks or frozen B/flush. No new ingest. No Arrow 50.
+- n8_h10_3k: IS $185.30/day n=135  OOS $153.84/day n=104 t=1.56  one=$24000 two=$48000  SEAT
+- n8_h10_4k: IS $246.79/day n=135  OOS $205.79/day n=104 t=1.56  one=$32000 two=$64000  SLATE  lift-both
+- n8_h10_5k: IS $309.07/day n=135  OOS $257.68/day n=104 t=1.56  one=$40000 two=$80000  SLATE  lift-both
+- n8_h10_6k: IS $371.20/day n=135  OOS $309.29/day n=104 t=1.56  one=$48000 two=$96000  SLATE  lift-both
+- n8_h5_4k: IS $129.16/day n=141  OOS $181.93/day n=110 t=1.75  one=$32000 two=$64000  SEAT
+- n8_h5_5k: IS $161.12/day n=141  OOS $227.89/day n=110 t=1.75  one=$40000 two=$80000  SLATE

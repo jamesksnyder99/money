@@ -55,6 +55,7 @@ from research.arrow45 import run_arrow45  # noqa: E402
 from research.arrow46 import run_arrow46  # noqa: E402
 from research.arrow47 import run_arrow47  # noqa: E402
 from research.arrow48 import run_arrow48  # noqa: E402
+from research.arrow49 import run_arrow49  # noqa: E402
 from research.equity_curve import run_equity_curve  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
@@ -110,11 +111,12 @@ def main(argv: list[str] | None = None) -> int:
             "arrow46",
             "arrow47",
             "arrow48",
+            "arrow49",
             "equity",
             "rockets",
         ),
-        default="arrow48",
-        help="arrow48 scale and n8 on the lb10 seat",
+        default="arrow49",
+        help="arrow49 n8 scale toward slate",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -208,6 +210,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow47(workers=args.workers)
     if args.mode == "arrow48":
         return run_arrow48(workers=args.workers)
+    if args.mode == "arrow49":
+        return run_arrow49(workers=args.workers)
     if args.mode == "equity":
         return run_equity_curve(workers=args.workers)
     if args.mode == "rockets":
