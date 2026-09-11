@@ -57,6 +57,7 @@ from research.arrow47 import run_arrow47  # noqa: E402
 from research.arrow48 import run_arrow48  # noqa: E402
 from research.arrow49 import run_arrow49  # noqa: E402
 from research.arrow50 import run_arrow50  # noqa: E402
+from research.arrow51 import run_arrow51  # noqa: E402
 from research.equity_curve import run_equity_curve  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
@@ -114,11 +115,12 @@ def main(argv: list[str] | None = None) -> int:
             "arrow48",
             "arrow49",
             "arrow50",
+            "arrow51",
             "equity",
             "rockets",
         ),
-        default="arrow50",
-        help="arrow50 execution and hold path on n8",
+        default="arrow51",
+        help="arrow51 rank 15 parent and giveback path",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -216,6 +218,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow49(workers=args.workers)
     if args.mode == "arrow50":
         return run_arrow50(workers=args.workers)
+    if args.mode == "arrow51":
+        return run_arrow51(workers=args.workers)
     if args.mode == "equity":
         return run_equity_curve(workers=args.workers)
     if args.mode == "rockets":

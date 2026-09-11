@@ -912,3 +912,21 @@ Short only. n=8 $6k. Rings locked from IS. One OOS look. Did not use an OOS mont
 - fri_give5: IS $288.01/day n=137  OOS $468.76/day n=108 t=2.30  SLATE
 - fri_h10_iwm8: IS $371.20/day n=135  OOS $261.07/day n=97 t=1.36  SLATE
 - lb15_fri_h10: IS $575.43/day n=129  OOS $367.59/day n=107 t=2.50  SLATE  lift-both
+
+## 2026-09-10T21:21:26-04:00 — Arrow 51
+
+VERDICT: SEAT — lb15_h10, lb15_give5, lb15_h5, lb20_h10, lb12_h10, lb15_h15 (OOS >= $100/day and IS not red).
+
+Id 0 lb15_h10 IS $/day=575.43/575.43 n=129/129 — within ±10% of Arrow 50 lb15_fri_h10.
+Lift vs control on both IS and OOS: none.
+Seat $100: lb15_h10, lb15_give5, lb15_h5, lb20_h10, lb12_h10, lb15_h15.
+Slate $200 on OOS with IS not red and overlapping-cohort fit: lb15_h10, lb15_give5, lb12_h10.
+Give5 on rank 15 did not lift both slices versus control. IS n5=70 (0.543) n10=59 (0.457)  OOS n5=61 (0.565) n10=47 (0.435).
+OOS CI excludes 0: lb15_h10, lb15_give5, lb12_h10.
+Short only. n=8 $6k Friday last-RTH. Rank 15 parent. Rings locked from IS. One OOS look. Did not use an OOS month to pick a threshold. Did not add a long leg or a Monday id. Did not retune Arrow 43 clocks or frozen B/flush. No new ingest. No Arrow 52.
+- lb15_h10: IS $575.43/day n=129  OOS $367.59/day n=107 t=2.50  SLATE  OOS CI excludes 0
+- lb15_give5: IS $384.03/day n=129  OOS $317.17/day n=108 t=2.76  SLATE  OOS CI excludes 0
+- lb15_h5: IS $217.58/day n=134  OOS $156.11/day n=109 t=1.76  SEAT
+- lb20_h10: IS $510.81/day n=117  OOS $163.47/day n=107 t=0.98  SEAT
+- lb12_h10: IS $547.67/day n=127  OOS $356.13/day n=107 t=2.12  SLATE  OOS CI excludes 0
+- lb15_h15: IS $780.69/day n=122  OOS $267.53/day n=99 t=1.24  SEAT
