@@ -1090,3 +1090,11 @@ Day-two after an extreme. Long and short are separate engines. Did not retune le
 - short_still_1159: IS $-50.77/day n=595  OOS $-29.62/day n=583 t=-0.37  peak_live $23953  no seat
 - short_gave_1159: IS $-17.55/day n=61  OOS $0.41/day n=60 t=0.01  peak_live $14968  no seat
 - long_gave_1159: IS $6.46/day n=61  OOS $-11.72/day n=60 t=-0.39  peak_live $14968  no seat
+
+## 2026-09-11T15:55:54-04:00 — Arrow 61
+
+Ingest only. Rest of December 2025 (2025-12-01..2025-12-16) into data/virgin/.
+Sessions=12 pulled=12 skipped_disk=0 skipped_not_session=0.
+Did not score engines. Did not touch data/full or Lab A data/bars. Did not rebuild 2025-12-17..2025-12-31. No Arrow 62.
+eligible name-days=36776 failures=0 wall_min=20.1.
+December 2025 on virgin is complete.

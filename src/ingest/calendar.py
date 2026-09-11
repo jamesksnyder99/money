@@ -69,6 +69,22 @@ NYSE_EARLY_CLOSE = {**NYSE_EARLY_CLOSE_2025, **NYSE_EARLY_CLOSE_2026}
 
 VIRGIN_STUDY_START = date(2026, 1, 2)
 VIRGIN_STUDY_END = date(2026, 5, 29)
+ARROW61_START = date(2025, 12, 1)
+ARROW61_END = date(2025, 12, 16)
+ARROW61_EXPECTED: tuple[date, ...] = (
+    date(2025, 12, 1),
+    date(2025, 12, 2),
+    date(2025, 12, 3),
+    date(2025, 12, 4),
+    date(2025, 12, 5),
+    date(2025, 12, 8),
+    date(2025, 12, 9),
+    date(2025, 12, 10),
+    date(2025, 12, 11),
+    date(2025, 12, 12),
+    date(2025, 12, 15),
+    date(2025, 12, 16),
+)
 
 SESSION_OPEN = time(7, 30)
 WINDOW_END = time(12, 0)
@@ -141,6 +157,20 @@ def virgin_sessions() -> list[date]:
 def virgin_prior_calendar() -> list[date]:
     """NYSE sessions covering the prior of first warmup through last study day."""
     return nyse_sessions(date(2025, 12, 1), VIRGIN_STUDY_END)
+
+
+def arrow61_sessions() -> list[date]:
+    """NYSE sessions 2025-12-01 through 2025-12-16. Arrow 61 append; not scored."""
+    return nyse_sessions(ARROW61_START, ARROW61_END)
+
+
+def arrow61_prior_calendar() -> list[date]:
+    """Prior of 2025-12-01 (2025-11-28) through 2025-12-16."""
+    return nyse_sessions(date(2025, 11, 28), ARROW61_END)
+
+
+def december_2025_sessions() -> list[date]:
+    return nyse_sessions(date(2025, 12, 1), date(2025, 12, 31))
 
 
 def sessions_frame() -> pl.DataFrame:

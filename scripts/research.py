@@ -24,7 +24,7 @@ from research.arrow13 import run_arrow13  # noqa: E402
 from research.arrow14 import run_arrow14  # noqa: E402
 from research.arrow15 import run_arrow15  # noqa: E402
 from ingest.full import run_arrow17  # noqa: E402
-from ingest.virgin import run_arrow41  # noqa: E402
+from ingest.virgin import run_arrow41, run_arrow61  # noqa: E402
 from research.arrow16 import run_arrow16  # noqa: E402
 from research.arrow18 import run_arrow18  # noqa: E402
 from research.arrow19 import run_arrow19  # noqa: E402
@@ -116,6 +116,7 @@ def main(argv: list[str] | None = None) -> int:
             "arrow40",
             "arrow41",
             "arrow42",
+            "arrow61",
             "arrow43",
             "arrow44",
             "arrow45",
@@ -218,6 +219,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow40(workers=args.workers)
     if args.mode == "arrow41":
         return run_arrow41(workers=args.workers)
+    if args.mode == "arrow61":
+        return run_arrow61(workers=args.workers)
     if args.mode == "arrow42":
         return run_arrow42(workers=args.workers)
     if args.mode == "arrow43":

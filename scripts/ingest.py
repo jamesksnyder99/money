@@ -15,7 +15,7 @@ from ingest.paths import ensure_dirs  # noqa: E402
 from ingest.full import run_arrow17  # noqa: E402
 from ingest.run import run_arrow2, run_study, run_universe, run_warmup, write_calendar  # noqa: E402
 from ingest.validate import validate_warmup  # noqa: E402
-from ingest.virgin import run_arrow41  # noqa: E402
+from ingest.virgin import run_arrow41, run_arrow61  # noqa: E402
 
 
 def _defaults() -> tuple[int, int]:
@@ -42,9 +42,10 @@ def main(argv: list[str] | None = None) -> int:
             "arrow2",
             "arrow17",
             "arrow41",
+            "arrow61",
         ),
-        default="arrow41",
-        help="arrow41=virgin Dec 2025 warmup + Jan-May 2026 04:00-16:00 under data/virgin",
+        default="arrow61",
+        help="arrow61=append 2025-12-01..16 into data/virgin",
     )
     p.add_argument(
         "--workers",
@@ -66,6 +67,12 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     if args.mode == "arrow41":
         return run_arrow41(
+            workers=args.workers,
+            theta_concurrency=args.theta_concurrency,
+            force=args.force,
+        )
+    if args.mode == "arrow61":
+        return run_arrow61(
             workers=args.workers,
             theta_concurrency=args.theta_concurrency,
             force=args.force,
