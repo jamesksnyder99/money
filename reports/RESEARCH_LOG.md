@@ -1038,3 +1038,19 @@ Same-slot hotel. Long and short are separate engines. Did not retune Friday+Wedn
 - long_lose_h5: IS $-379.83/day n=651  OOS $194.26/day n=606 t=0.72  peak_live $119674  no seat
 - short_res_h1: IS $34.89/day n=637  OOS $-75.64/day n=620 t=-0.55  peak_live $23958  no seat
 - long_res_h1: IS $-269.70/day n=669  OOS $108.10/day n=645 t=0.68  peak_live $23966  no seat
+
+## 2026-09-11T11:59:10-04:00 — Arrow 58
+
+VERDICT: FAIL — no Arrow 58 short ring has OOS >= $100/day AND non-red IS.
+
+IS character loser eight next-session raw return n=669 mean=-0.00861 hit=0.441 vs Arrow 57 -0.00861 / 0.441. Same neighborhood as Arrow 57 loser-slot.
+Seat $100: none.  Slate $200: none.
+Hold 10 paid on both IS and OOS: none.
+Lift vs lose_h1 on both IS and OOS: lose_h10.
+Short only. Short the loser slot. Did not retune leftover pair or frozen B/flush. No long id. No IWM subtract. Did not use an OOS month to pick a threshold. No new ingest. No Arrow 59.
+- lose_h1: IS $141.19/day n=669  OOS $-236.72/day n=645 t=-1.49  peak_live $23966  no seat
+- lose_h5: IS $256.59/day n=651  OOS $-312.75/day n=606 t=-1.16  peak_live $119674  no seat
+- lose_h10: IS $539.10/day n=640  OOS $-189.96/day n=554 t=-0.59  peak_live $239176  no seat  lift-both
+- lose_h10_6k: IS $1078.25/day n=640  OOS $-379.86/day n=554 t=-0.59  peak_live $479176  no seat
+- lose_h10_n15: IS $308.01/day n=1216  OOS $-338.39/day n=1049 t=-0.77  peak_live $448233  no seat
+- lose_h5_6k: IS $512.92/day n=651  OOS $-626.62/day n=606 t=-1.16  peak_live $239703  no seat
