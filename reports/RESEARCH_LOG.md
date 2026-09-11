@@ -1018,3 +1018,23 @@ Short only. Friday+Wednesday net size; Wednesday+Monday second pair. Did not use
 - wm_3k_net: IS $296.87/day n=145  OOS $207.37/day n=152 t=1.76  peak_live $77654  SLATE
 - wm_wed_3k: IS $290.63/day n=118  OOS $207.61/day n=113 t=2.16  peak_live $71674  SLATE  OOS CI excludes 0
 - wm_mon_3k: IS $140.87/day n=102  OOS $192.79/day n=115 t=1.67  peak_live $71673  SEAT
+
+## 2026-09-11T11:33:11-04:00 — Arrow 57
+
+VERDICT: FAIL — no Arrow 57 engine has OOS >= $100/day AND non-red IS.
+
+  winner-slot eight n=637 mean=-0.00398 hit=0.425
+  loser-slot eight n=669 mean=-0.00861 hit=0.441
+  residual-vs-IWM winner eight n=637 mean=-0.00398 hit=0.425
+  residual-vs-IWM loser eight n=669 mean=-0.00861 hit=0.441
+Seat $100: none.
+Short seats: none. Long seats: none. A long id is not judged as a failed short.
+Pearson daily PnL short_win_h1 vs long_lose_h1 IS=-0.127 OOS=-0.136 (entry-session series).
+IWM does not change the jersey (id 0 vs id 4 mean overlap 8.00/8, n_sess=84). Subtracting a session-wide IWM return is a scalar.
+Same-slot hotel. Long and short are separate engines. Did not retune Friday+Wednesday leftover pair or frozen B/flush. Did not use an OOS month to pick a threshold. No new ingest. No Arrow 58.
+- short_win_h1: IS $34.89/day n=637  OOS $-75.64/day n=620 t=-0.55  peak_live $23958  no seat
+- long_lose_h1: IS $-269.70/day n=669  OOS $108.10/day n=645 t=0.68  peak_live $23966  no seat
+- short_win_h5: IS $637.22/day n=633  OOS $-32.47/day n=591 t=-0.16  peak_live $119551  no seat
+- long_lose_h5: IS $-379.83/day n=651  OOS $194.26/day n=606 t=0.72  peak_live $119674  no seat
+- short_res_h1: IS $34.89/day n=637  OOS $-75.64/day n=620 t=-0.55  peak_live $23958  no seat
+- long_res_h1: IS $-269.70/day n=669  OOS $108.10/day n=645 t=0.68  peak_live $23966  no seat
