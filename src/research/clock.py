@@ -150,6 +150,14 @@ def arrow74_february() -> list[date]:
     return nyse_sessions(date(2026, 2, 1), date(2026, 2, 28))
 
 
+def arrow75_feature_sessions() -> list[date]:
+    """Dec 2025 through Feb 2026. 15-session left + 10-session home hour.
+
+    Does not change leftover 2026 lookback.
+    """
+    return nyse_sessions(date(2025, 12, 1), date(2026, 2, 28))
+
+
 def month_first_last(year: int, month: int, sessions: list[date]) -> tuple[date, date] | None:
     days = [d for d in sessions if d.year == year and d.month == month]
     if not days:

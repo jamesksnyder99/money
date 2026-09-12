@@ -1235,3 +1235,10 @@ VERDICT: SNIFF — two months is not a seat. February is one look, not a $200 sl
 
 January character (11:01→15:59 of the eight morning winners / laggards). Description. Does not pick an id. winners n=160 mean=0.00488 hit=0.531  laggards n=160 mean=0.01787 hit=0.537. Afternoon fade of morning winners: no. 11:01 fill still prints: yes (id 0 Jan n=160; id 3 11:00-fill Jan n=160). Wednesday-only Jan $/day=-96.51 vs every-session -174.92. Long Jan $/day=363.53 vs short -174.92.
 short_all Jan $-174.92 n=160  Feb $-129.05 n=152  long_all Jan $363.53 Feb $-125.99. Did not use February to pick a threshold. No Arrow 75.
+
+## 2026-09-12T12:08:28-04:00 — Arrow 75
+
+January home-hour distribution (name-days n=26343): 0930=26198, 1030=21, 1130=20, 1230=9, 1330=0, 1430=95. Last bucket 14:30–15:59 is 90 minutes; others 60. Mean fraction of that day's RTH range in estimated home hour=0.717 (naive 60/390=0.154). Clock concentrated: yes. Description. Does not pick an id. Did not use February to pick a bucket. January prints: short_left, long_left, short_morn, long_morn, short_left_wed, short_left_open. January green: short_left, short_morn, short_left_wed, short_left_open. February green (survive): short_left, short_morn, short_left_wed, short_left_open. Long_left Jan $-81.66 Feb $-46.94 vs short_left Jan $319.39 Feb $31.08.
+
+VERDICT: SNIFF — two months is not a seat. February is one look, not a $200 slate pass. Did not treat January/February as the shop IS/OOS split. Did not score March–August.
+short_left Jan $319.39 n=176 hrs=22  Feb $31.08 n=151. long_left Jan $-81.66 Feb $-46.94. Did not use February to pick a bucket. No Arrow 76.

@@ -78,6 +78,7 @@ from research.arrow71 import run_arrow71  # noqa: E402
 from research.arrow72 import run_arrow72  # noqa: E402
 from research.arrow73 import run_arrow73  # noqa: E402
 from research.arrow74 import run_arrow74  # noqa: E402
+from research.arrow75 import run_arrow75  # noqa: E402
 from research.equity_curve import run_equity_curve  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
@@ -159,11 +160,12 @@ def main(argv: list[str] | None = None) -> int:
             "arrow72",
             "arrow73",
             "arrow74",
+            "arrow75",
             "equity",
             "rockets",
         ),
-        default="arrow74",
-        help="arrow74 intradaily leftover January/February 2026",
+        default="arrow75",
+        help="arrow75 home hour January/February 2026",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -309,6 +311,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow73(workers=args.workers)
     if args.mode == "arrow74":
         return run_arrow74(workers=args.workers)
+    if args.mode == "arrow75":
+        return run_arrow75(workers=args.workers)
     if args.mode == "equity":
         return run_equity_curve(workers=args.workers)
     if args.mode == "rockets":
