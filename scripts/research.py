@@ -84,6 +84,7 @@ from research.arrow77 import run_arrow77  # noqa: E402
 from research.arrow78 import run_arrow78  # noqa: E402
 from research.arrow79 import run_arrow79  # noqa: E402
 from research.arrow80 import run_arrow80  # noqa: E402
+from research.arrow81 import run_arrow81  # noqa: E402
 from research.equity_curve import run_equity_curve  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
@@ -171,11 +172,12 @@ def main(argv: list[str] | None = None) -> int:
             "arrow78",
             "arrow79",
             "arrow80",
+            "arrow81",
             "equity",
             "rockets",
         ),
-        default="arrow80",
-        help="arrow80 five frozen open leftover year books",
+        default="arrow81",
+        help="arrow81 H10 last-RTH adverse stops",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -333,6 +335,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow79(workers=args.workers)
     if args.mode == "arrow80":
         return run_arrow80(workers=args.workers)
+    if args.mode == "arrow81":
+        return run_arrow81(workers=args.workers)
     if args.mode == "equity":
         return run_equity_curve(workers=args.workers)
     if args.mode == "rockets":

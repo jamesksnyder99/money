@@ -1277,3 +1277,10 @@ Id 1 n8_1029 January $/day=268.33 vs Arrow 76 h1029_n8 268.33 n=160 — within �
 
 VERDICT: LOOK — not a $200 slate pass. The year is one look of five frozen day books, not a new IS/OOS split. Jan–Apr 2026 already had a look; Sep–Dec 2025 and May–Aug 2026 are new for this hotel. Did not pick an id after seeing a month. Did not gap-filter. Did not retune Wednesday H10.
 n15_1029 $-45.96 n8_1029 $5.85 n8_1029_notue $12.28 n8_1129 $-28.15 comp_1029 $8.15. Sep hole=True Jun fat=False. comp corr fall=0.046 may-aug=0.074. Did not gap-filter. No Arrow 81.
+
+## 2026-09-12T16:20:26-04:00 — Arrow 81
+
+Id 0 h10_4k IS MTM $/day=401.16/401.16 n=116/116 — within ±10% of Arrow 66 h10_4k. k that beat id 0 on both slices with DD guard: none. Lift-both (no DD guard): none. Id 0 mean hold IS 10.00 OOS 10.00. stop_3 mean hold IS 5.68 OOS 5.08 (stopped IS 74 OOS 79). stop_12 mean hold IS 8.26 OOS 7.92 (stopped IS 37 OOS 39). 3% did not lift both slices versus id 0. 12% is not inert (stopped enough names to matter).
+
+VERDICT: SLATE — h10_4k (OOS MTM >= $200/day, IS MTM not red, peak live <= $100000).
+stop_3 IS MTM $66.65 OOS $3.10 mean hold IS 5.68. stop_12 IS MTM $177.88 OOS $85.12. Beat: none. 3% did not lift both slices versus id 0. 12% is not inert (stopped enough names to matter). No Arrow 82.
