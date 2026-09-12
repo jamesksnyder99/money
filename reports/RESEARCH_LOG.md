@@ -1249,3 +1249,10 @@ Id 0 h1029_n8 January $/day=268.33 vs Arrow 75 short_left_open +334.93 n=160 —
 
 VERDICT: SNIFF — two extra months is still a sniff for promotion. Did not use April to pick a hold. Did not treat this window as a $200 slate pass. Did not score May–August.
 h1029_n8 odd $125.39 n=336  even $199.23 n=319. h1129_n8 odd $46.48 even $175.37. h1559_n8 odd $67.84 even $1.03. Did not use April to pick a hold. No Arrow 77.
+
+## 2026-09-12T13:20:52-04:00 — Arrow 77
+
+Id 0 all odd $/day=125.39 vs Arrow 76 h1029_n8 125.39 n=336 — within ±15%. Mean overlap vs H10 (live at 09:30) /8: odd=0.429 even=0.516. Daily Pearson day-book vs H10 MTM: odd=0.239 n=42 even=0.523 n=40. Description: a second pulse. Weekdays that print on both slices: mon, tue, wed, thu, fri. Fired-day lift both vs id 0: wed.
+
+VERDICT: SNIFF — weekday rings on four months are still a sniff for promotion. Did not use April to pick a weekday. Did not treat this window as a $200 slate pass. Did not score May–August.
+all odd $125.39 n=336  even $199.23 n=319. overlap/8 odd=0.429 even=0.516. corr odd=0.239 even=0.523. a second pulse. Did not use April to pick a weekday. No Arrow 78.
