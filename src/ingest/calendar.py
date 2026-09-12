@@ -71,6 +71,11 @@ VIRGIN_STUDY_START = date(2026, 1, 2)
 VIRGIN_STUDY_END = date(2026, 5, 29)
 ARROW61_START = date(2025, 12, 1)
 ARROW61_END = date(2025, 12, 16)
+ARROW67_START = date(2025, 9, 2)
+ARROW67_END = date(2025, 11, 28)
+ARROW67_PRIOR_START = date(2025, 8, 29)
+ARROW67_LABOR_DAY = date(2025, 9, 1)
+ARROW67_THANKSGIVING = date(2025, 11, 27)
 ARROW61_EXPECTED: tuple[date, ...] = (
     date(2025, 12, 1),
     date(2025, 12, 2),
@@ -171,6 +176,27 @@ def arrow61_prior_calendar() -> list[date]:
 
 def december_2025_sessions() -> list[date]:
     return nyse_sessions(date(2025, 12, 1), date(2025, 12, 31))
+
+
+def arrow67_sessions() -> list[date]:
+    """NYSE sessions 2025-09-02 through 2025-11-28. Arrow 67 append; not scored."""
+    return nyse_sessions(ARROW67_START, ARROW67_END)
+
+
+def arrow67_prior_calendar() -> list[date]:
+    """Prior of 2025-09-02 (2025-08-29) through 2025-11-28."""
+    return nyse_sessions(ARROW67_PRIOR_START, ARROW67_END)
+
+
+def arrow67_non_sessions() -> list[date]:
+    """Weekdays in the Arrow 67 window that are not NYSE sessions."""
+    out: list[date] = []
+    d = ARROW67_START
+    while d <= ARROW67_END:
+        if d.weekday() < 5 and not is_nyse_session(d):
+            out.append(d)
+        d += timedelta(days=1)
+    return out
 
 
 def sessions_frame() -> pl.DataFrame:

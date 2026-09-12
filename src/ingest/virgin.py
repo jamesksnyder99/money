@@ -16,8 +16,16 @@ from ingest.calendar import (
     ARROW61_END,
     ARROW61_EXPECTED,
     ARROW61_START,
+    ARROW67_END,
+    ARROW67_LABOR_DAY,
+    ARROW67_START,
+    ARROW67_THANKSGIVING,
     arrow61_prior_calendar,
+    is_nyse_session,
     arrow61_sessions,
+    arrow67_non_sessions,
+    arrow67_prior_calendar,
+    arrow67_sessions,
     december_2025_sessions,
     virgin_prior_calendar,
     virgin_sessions,
@@ -70,6 +78,12 @@ ARROW61_EOD_CHUNKS: tuple[tuple[date, date, str], ...] = (
     (date(2025, 11, 28), date(2025, 11, 28), "2025-11"),
     (date(2025, 12, 1), date(2025, 12, 15), "2025-12-early"),
 )
+ARROW67_EOD_CHUNKS: tuple[tuple[date, date, str], ...] = (
+    (date(2025, 8, 29), date(2025, 8, 29), "2025-08"),
+    (date(2025, 9, 1), date(2025, 9, 30), "2025-09"),
+    (date(2025, 10, 1), date(2025, 10, 31), "2025-10"),
+    (date(2025, 11, 1), date(2025, 11, 26), "2025-11-early"),
+)
 
 
 def _assert_virgin_tree() -> None:
@@ -114,6 +128,8 @@ def ohlc_dates_to_pull(
     for d in target:
         if d < start or d > end:
             continue
+        if not is_nyse_session(d):
+            continue
         if not force and d in already:
             continue
         out.append(d)
@@ -122,6 +138,10 @@ def ohlc_dates_to_pull(
 
 def arrow61_output_roots():
     return (VIRGIN_BARS, VIRGIN_EOD, VIRGIN_IWM, VIRGIN_ELIGIBILITY, VIRGIN_MANIFEST)
+
+
+def arrow67_output_roots():
+    return arrow61_output_roots()
 
 
 def _empty_full_frame(symbol: str, is_warmup: bool) -> pl.DataFrame:
@@ -965,4 +985,277 @@ def run_arrow61(*, workers: int | None = None, theta_concurrency: int = 8, force
     prev = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
     log_path.write_text(prev.rstrip() + "\n\n" + "\n".join(bits), encoding="utf-8")
     return 0
+
+
+def _write_report_67(
+    *,
+    target: list[date],
+    pulled: list[date],
+    skipped_disk: list[date],
+    skipped_not_session: list[date],
+    elig: pl.DataFrame,
+    man: pl.DataFrame,
+    workers: int,
+    theta_n: int,
+    cpu: int,
+    wall_s: float,
+    failures: list[dict],
+    n_0400: int,
+    n_after: int,
+    first5_note: str,
+    iwm_ok: int,
+    iwm_fail: int,
+    holes: list[date],
+    cover_ok: bool,
+) -> None:
+    ok = elig.filter(pl.col("eligible"))
+    n_elig = ok.height
+    n_sess = ok["session_date"].n_unique() if n_elig else 0
+    n_rows = int(man["rows"].sum()) if man.height else 0
+    n_pulled = man.filter(pl.col("status") == "pulled").height if man.height else 0
+    n_empty = man.filter(pl.col("status") == "empty").height if man.height else 0
+    n_miss = man.filter(pl.col("status") == "missing").height if man.height else 0
+    mean_bars = n_rows / n_elig if n_elig else 0.0
+    n_10m = int(ok.filter(pl.col("pdv_ge_10m")).height) if n_elig and "pdv_ge_10m" in ok.columns else 0
+    iwm_disk = len([d for d in target if virgin_iwm_path(d).exists()])
+    pulled_s = ", ".join(d.isoformat() for d in pulled) if pulled else "none"
+    skip_disk_s = ", ".join(d.isoformat() for d in skipped_disk) if skipped_disk else "none"
+    skip_ns_s = ", ".join(d.isoformat() for d in skipped_not_session) if skipped_not_session else "none"
+    if holes:
+        cover_line = "Sep–Nov 2025 on virgin has holes: " + ", ".join(d.isoformat() for d in holes)
+    elif cover_ok:
+        cover_line = (
+            "virgin+full now cover 2025-09 through 2026-08 "
+            "(Sep–Nov 2025 + Dec 2025 + Jan–May 2026 on virgin; Jun–Aug 2026 on data/full)."
+        )
+    else:
+        cover_line = (
+            "Sep–Nov 2025 on virgin is complete; check Dec 2025 / 2026 study / full Jun–Aug for holes."
+        )
+    lines = [
+        "Arrow 67 — September–November 2025 into data/virgin/ (ingest, not a book)",
+        "No fills. No $200 verdict. Did not score engines. Did not touch data/full or Lab A data/bars. "
+        "Did not rebuild December 2025 or January–May 2026 already on virgin. No Arrow 68.",
+        f"venue={VENUE} interval={INTERVAL} window=04:00-16:00ET last_bar=15:59",
+        "eligibility: common stock + ETP denylist, prior_close [$1, $80], prior DV >= $1M, "
+        "$10M is a filter column not an ingest wall, no 400 cap",
+        f"window NYSE {ARROW67_START}..{ARROW67_END} sessions={len(target)} "
+        f"{target[0] if target else 'none'}..{target[-1] if target else 'none'} (not scored)",
+        f"dates_pulled={pulled_s}",
+        f"dates_skipped_already_on_disk={skip_disk_s}",
+        f"dates_skipped_not_a_session={skip_ns_s}",
+        f"labor_day={ARROW67_LABOR_DAY.isoformat()} thanksgiving={ARROW67_THANKSGIVING.isoformat()} "
+        "(not sessions; not pulled)",
+        f"workers={workers} theta_concurrency={theta_n} cpu_count={cpu}",
+        f"output bars={VIRGIN_BARS} eligibility={VIRGIN_ELIGIBILITY} manifest={VIRGIN_MANIFEST} iwm={VIRGIN_IWM}",
+        "",
+        f"sessions_attempted={n_sess}",
+        f"name_days_eligible={n_elig}",
+        f"unique_symbols={ok['symbol'].n_unique() if n_elig else 0}",
+        f"1m_rows={n_rows}",
+        f"mean_bars_per_name_day={mean_bars:.1f}",
+        f"name_days_pdv_ge_10m={n_10m}",
+        f"manifest pulled={n_pulled} empty={n_empty} missing={n_miss}",
+        f"failures={len(failures)}",
+        f"iwm_sessions={iwm_disk} iwm_ok={iwm_ok} iwm_fail={iwm_fail}",
+        f"wall_s={wall_s:.1f} wall_min={wall_s / 60:.1f}",
+        first5_note,
+        f"name_days_with_04:00_print={n_0400}",
+        f"name_days_first_print_after_07:30={n_after}",
+        cover_line,
+        "",
+    ]
+    if failures:
+        lines.append("failure sample (up to 20):")
+        for rec in failures[:20]:
+            lines.append(
+                f"  {rec.get('symbol')} {rec.get('error_class')} {rec.get('error_message', '')[:120]}"
+            )
+    text = "\n".join(lines) + "\n"
+    REPORTS.mkdir(parents=True, exist_ok=True)
+    out = REPORTS / "tape67_ingest.txt"
+    out.write_text(text, encoding="utf-8")
+    print(text, flush=True)
+    print(f"wrote {out}", flush=True)
+
+
+def _folder_has_bars(root, d: date) -> bool:
+    folder = root / d.isoformat()
+    return folder.exists() and any(folder.glob("*.parquet"))
+
+
+def run_arrow67(*, workers: int | None = None, theta_concurrency: int = 8, force: bool = False) -> int:
+    _assert_virgin_tree()
+    ensure_virgin_dirs()
+    cpu = os.cpu_count() or 1
+    workers = max(1, workers or min(8, cpu))
+    theta_n = max(1, min(8, int(theta_concurrency)))
+    t0 = time.monotonic()
+    target = arrow67_sessions()
+    skipped_not_session = list(arrow67_non_sessions())
+    already = manifest_session_dates()
+    pulled = ohlc_dates_to_pull(
+        target, already, force=force, start=ARROW67_START, end=ARROW67_END
+    )
+    skipped_disk = [d for d in target if d in already and d not in pulled]
+    print(
+        f"ingest start mode=arrow67 span={ARROW67_START}..{ARROW67_END} "
+        f"sessions={len(target)} to_pull={len(pulled)} skipped_disk={len(skipped_disk)} "
+        f"skipped_not_session={len(skipped_not_session)} "
+        f"endpoint=stock_history_ohlc interval={INTERVAL} venue={VENUE} "
+        f"window=04:00-16:00ET workers={workers} theta_concurrency={theta_n} "
+        f"cpu_count={cpu} output={VIRGIN_BARS} do_not_touch=data/full,data/bars "
+        f"do_not_rebuild=2025-12,2026-01..05 no_arrow_68",
+        flush=True,
+    )
+    if skipped_not_session:
+        print(
+            f"weekdays in window that are not NYSE sessions (skipped): {skipped_not_session}",
+            flush=True,
+        )
+    print(
+        f"not pulled: labor_day={ARROW67_LABOR_DAY} thanksgiving={ARROW67_THANKSGIVING} "
+        f"dec_or_later>={date(2025, 12, 1)} before_window<={date(2025, 8, 29)}",
+        flush=True,
+    )
+    if not SYMBOLS.exists():
+        raise FileNotFoundError(f"missing {SYMBOLS}; reuse Lab A common list, do not overwrite")
+    symbols = pl.read_parquet(SYMBOLS)["symbol"].to_list()
+    print(f"commons={len(symbols)} from {SYMBOLS} (read-only)", flush=True)
+    client = get_shared_client()
+    limiter = ThetaLimiter(theta_n)
+
+    eod, eod_fail = pull_eod(
+        client, limiter, symbols, workers, force, chunks=ARROW67_EOD_CHUNKS
+    )
+    eod_all = load_virgin_eod()
+    if eod_all.height == 0:
+        eod_all = eod
+    new_elig = with_pdv_10m_flag(
+        build_eligibility(
+            eod_all,
+            symbols,
+            target,
+            is_warmup=True,
+            max_close=MAX_CLOSE_VIRGIN,
+            sessions_for_prior=arrow67_prior_calendar(),
+        )
+    )
+    _append_eligibility(new_elig)
+    n_ok = new_elig.filter(pl.col("eligible")).height
+    print(
+        f"arrow67 eligibility name-days={new_elig.height} eligible={n_ok} "
+        f"sessions={len(target)} wrote={VIRGIN_ELIGIBILITY}",
+        flush=True,
+    )
+
+    print("pull IWM 04:00-16:00 for 2025-09-02..11-28 into data/virgin/bench", flush=True)
+    iwm_ok, iwm_fail = pull_iwm(
+        client=client,
+        limiter=limiter,
+        force=force,
+        sessions=target,
+        warmup=set(target),
+    )
+
+    first5 = pulled[:5]
+    rest = pulled[5:]
+    jobs5 = _jobs_for(new_elig, first5, warmup=set(target)) if first5 else []
+    print(
+        f"phase 1: first sessions {first5[0] if first5 else 'none'}.."
+        f"{first5[-1] if first5 else 'none'} jobs={len(jobs5)}",
+        flush=True,
+    )
+    t1 = time.monotonic()
+    rows5, ok5, fail5, fail_a = _run_jobs(
+        jobs5, client=client, limiter=limiter, workers=workers, force=force, job_name="arrow67_first"
+    )
+    elapsed5 = time.monotonic() - t1
+    n5 = new_elig.filter(pl.col("eligible") & pl.col("session_date").is_in(first5)).height if first5 else 0
+    remain_nd = new_elig.filter(pl.col("eligible") & pl.col("session_date").is_in(rest)).height if rest else 0
+    eta_s = (elapsed5 / n5 * remain_nd) if n5 else 0.0
+    first5_note = (
+        f"after_first_5_sessions elapsed_s={elapsed5:.1f} name_days={n5} rows={rows5} "
+        f"remaining_name_days={remain_nd} eta_min={eta_s / 60:.1f} (estimate)"
+    )
+    print(first5_note, flush=True)
+
+    jobs_rest = _jobs_for(new_elig, rest, warmup=set(target)) if rest else []
+    print(f"phase 2: remaining arrow67 jobs={len(jobs_rest)}", flush=True)
+    rows_r, ok_r, fail_r, fail_b = _run_jobs(
+        jobs_rest, client=client, limiter=limiter, workers=workers, force=force, job_name="arrow67_rest"
+    )
+    failures = eod_fail + fail_a + fail_b
+    print(
+        f"pull done rows={rows5 + rows_r} ok_jobs={ok5 + ok_r} fail_jobs={fail5 + fail_r} "
+        f"eod_fail={len(eod_fail)}",
+        flush=True,
+    )
+    print("append manifest + 04:00 stats for new dates only", flush=True)
+    man_new, n_0400, n_after = _append_manifest(new_elig, workers)
+    ok_new = new_elig.filter(pl.col("eligible"))
+    man_slice = man_new
+    if man_new.height and ok_new.height:
+        new_dates = list({_as_date(x) for x in ok_new["session_date"].to_list()})
+        man_slice = man_new.filter(pl.col("session_date").is_in(new_dates))
+    holes = []
+    for d in target:
+        if not _folder_has_bars(VIRGIN_BARS, d):
+            holes.append(d)
+    cover_ok = (
+        not holes
+        and _folder_has_bars(VIRGIN_BARS, date(2025, 12, 1))
+        and _folder_has_bars(VIRGIN_BARS, date(2025, 12, 31))
+        and _folder_has_bars(VIRGIN_BARS, date(2026, 1, 2))
+        and _folder_has_bars(VIRGIN_BARS, date(2026, 5, 29))
+        and _folder_has_bars(FULL_BARS, date(2026, 6, 1))
+        and _folder_has_bars(FULL_BARS, date(2026, 8, 31))
+    )
+    wall = time.monotonic() - t0
+    _write_report_67(
+        target=target,
+        pulled=pulled,
+        skipped_disk=skipped_disk,
+        skipped_not_session=skipped_not_session,
+        elig=new_elig,
+        man=man_slice,
+        workers=workers,
+        theta_n=limiter.concurrency,
+        cpu=cpu,
+        wall_s=wall,
+        failures=failures,
+        n_0400=n_0400,
+        n_after=n_after,
+        first5_note=first5_note,
+        iwm_ok=iwm_ok,
+        iwm_fail=iwm_fail,
+        holes=holes,
+        cover_ok=cover_ok,
+    )
+    log_path = REPORTS / "RESEARCH_LOG.md"
+    stamp = datetime.now(timezone.utc).astimezone(ET).isoformat(timespec="seconds")
+    bits = [
+        f"## {stamp} — Arrow 67",
+        "",
+        "Ingest only. September–November 2025 (2025-09-02..2025-11-28) into data/virgin/.",
+        f"Sessions={len(target)} pulled={len(pulled)} skipped_disk={len(skipped_disk)} "
+        f"skipped_not_session={len(skipped_not_session)}.",
+        "Did not score engines. Did not touch data/full or Lab A data/bars. "
+        "Did not rebuild December 2025 or January–May 2026. No Arrow 68.",
+        f"eligible name-days={n_ok} failures={len(failures)} wall_min={wall / 60:.1f}.",
+        (
+            "virgin+full now cover 2025-09 through 2026-08."
+            if cover_ok and not holes
+            else (
+                "Sep–Nov holes: " + ", ".join(d.isoformat() for d in holes)
+                if holes
+                else "Sep–Nov 2025 on virgin is complete."
+            )
+        ),
+        "",
+    ]
+    prev = log_path.read_text(encoding="utf-8") if log_path.exists() else ""
+    log_path.write_text(prev.rstrip() + "\n\n" + "\n".join(bits), encoding="utf-8")
+    return 0
+
 

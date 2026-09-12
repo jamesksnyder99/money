@@ -1171,3 +1171,11 @@ Wednesday hold path 5/10/15. Did not pick a hold from OOS. Did not retune leftov
 - h10_3k: entry IS $276.63 MTM $300.36 n=116  entry OOS $219.20 MTM $194.90 n=113 t=1.16  peak_live $68298  SEAT
 - h15_4k_keep: entry IS $492.51 MTM $395.12 n=126  entry OOS $122.76 MTM $222.58 n=134 t=0.71  peak_live $127753  SEAT
 - h5_4k_keep: entry IS $152.43 MTM $169.10 n=126  entry OOS $147.64 MTM $130.62 n=134 t=0.85  peak_live $64794  SEAT
+
+## 2026-09-12T07:46:04-04:00 — Arrow 67
+
+Ingest only. September–November 2025 (2025-09-02..2025-11-28) into data/virgin/.
+Sessions=63 pulled=63 skipped_disk=0 skipped_not_session=1.
+Did not score engines. Did not touch data/full or Lab A data/bars. Did not rebuild December 2025 or January–May 2026. No Arrow 68.
+eligible name-days=195355 failures=0 wall_min=87.7.
+virgin+full now cover 2025-09 through 2026-08.
