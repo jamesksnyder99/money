@@ -1203,3 +1203,11 @@ VERDICT: LOOK — not a $200 slate pass. This year is size-on-equity of the froz
 Start equity $100000 on 2025-09-02. Compound end equity $159567. Flat end equity $151856. Flat-year MTM $/day=206.60 vs compound-year MTM $/day=237.32 (total / 251 sessions 2025-09-02..2026-08-31). Max MTM DD flat $-20033.68 compound $-21670.68. Fall 2025 still has the September hole: yes (Sep -553.56/day, Oct 878.51/day). Id 0 Sep MTM $/day=-553.56 vs Arrow 68 -553.56 (hole=yes). Oct MTM $/day=878.51 vs Arrow 68 878.51 (fat=yes n=23).
 flat MTM $/day=206.60 n=376  compound MTM $/day=237.32 n=376  end_eq $159567  peak_live_f $102922 peak_live_c $123215  flat MTM CI includes 0 — not EV
 Frozen Wednesday H10 size-on-equity. No rings. No new IS/OOS. No new ingest. No Arrow 71.
+
+## 2026-09-12T10:56:40-04:00 — Arrow 71
+
+VERDICT: SLATE — h10_4k (OOS MTM >= $200/day, IS MTM not red, peak live <= $100000).
+
+Id 0 h10_4k IS MTM $/day=401.16/401.16 n=116/116 — within ±10% of Arrow 66 h10_4k. Beat id 0 on both slices with DD guard: none. Lift-both (no DD guard): none. Id 0 mean hold IS 10.00 OOS 10.00. ABC mean hold IS 2.28 OOS 1.95 (early-cash IS 122 OOS 125). ABC flattened winners (did not lift both slices).
+Seat $100: h10_4k, cash_A. Slate $200: h10_4k. Beat id 0: none. ABC flattened winners (did not lift both slices).
+Wednesday H10 keep/cash. Same entries as Arrow 66 h10_4k. Did not replace a cashed name. Did not use an OOS month to pick a threshold. No new ingest. No Arrow 72.

@@ -74,6 +74,7 @@ from research.arrow65 import run_arrow65  # noqa: E402
 from research.arrow66 import run_arrow66  # noqa: E402
 from research.arrow68 import run_arrow68  # noqa: E402
 from research.arrow70 import run_arrow70  # noqa: E402
+from research.arrow71 import run_arrow71  # noqa: E402
 from research.equity_curve import run_equity_curve  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
@@ -151,11 +152,12 @@ def main(argv: list[str] | None = None) -> int:
             "arrow68",
             "arrow69",
             "arrow70",
+            "arrow71",
             "equity",
             "rockets",
         ),
-        default="arrow70",
-        help="arrow70 compounded twelve-month Wednesday H10",
+        default="arrow71",
+        help="arrow71 Wednesday H10 keep/cash",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -293,6 +295,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow69(workers=args.workers)
     if args.mode == "arrow70":
         return run_arrow70(workers=args.workers)
+    if args.mode == "arrow71":
+        return run_arrow71(workers=args.workers)
     if args.mode == "equity":
         return run_equity_curve(workers=args.workers)
     if args.mode == "rockets":
