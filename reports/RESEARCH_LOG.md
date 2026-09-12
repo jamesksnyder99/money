@@ -1270,3 +1270,10 @@ Id 0 all_0931 odd $/day=122.61 vs Arrow 78 all_0931 122.61 n=336 — within ±15
 
 VERDICT: SNIFF — complement × gap and skip-Tuesday on four months is still a sniff for promotion. Did not use April to pick a cross. Did not treat this window as a $200 slate pass. Did not score May–August.
 all_0931 odd $122.61 n=336  even $186.25. comp odd $66.97 even $135.37. comp_gap_dn odd $13.09 even $73.00. Did not use April to pick a cross. No Arrow 80.
+
+## 2026-09-12T14:55:11-04:00 — Arrow 80
+
+Id 1 n8_1029 January $/day=268.33 vs Arrow 76 h1029_n8 268.33 n=160 — within ±20%. Id 0 n15_1029 January $/day=379.53 vs Arrow 76 h1029_n15 379.53 n=300 — within ±20%. Year $/day (total / n=251 sessions 2025-09-02..2026-08-31): n15_1029 $-45.96 n8_1029 $5.85 n8_1029_notue $12.28 n8_1129 $-28.15 comp_1029 $8.15. September 2025 day-book n8_1029 $-65.00 vs H10 MTM $-553.56 (H10 Arrow 70 -553.56); hole=yes. June 2026 day-book $-129.08 vs H10 MTM $942.32 (H10 Arrow 66/70 ~942.32); fat=no. Complement second pulse on new months (fall 2025 corr=0.046, May–Aug 2026 corr=0.074): yes. Id 1 vs H10 overlap/8 mean=0.511.
+
+VERDICT: LOOK — not a $200 slate pass. The year is one look of five frozen day books, not a new IS/OOS split. Jan–Apr 2026 already had a look; Sep–Dec 2025 and May–Aug 2026 are new for this hotel. Did not pick an id after seeing a month. Did not gap-filter. Did not retune Wednesday H10.
+n15_1029 $-45.96 n8_1029 $5.85 n8_1029_notue $12.28 n8_1129 $-28.15 comp_1029 $8.15. Sep hole=True Jun fat=False. comp corr fall=0.046 may-aug=0.074. Did not gap-filter. No Arrow 81.
