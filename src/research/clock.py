@@ -111,6 +111,19 @@ def arrow62_feature_sessions() -> list[date]:
     return out
 
 
+def arrow68_feature_sessions() -> list[date]:
+    """Aug 2025 through Jan 2026. Lookback + Sep–Dec signals + Dec exits.
+
+    Does not change leftover 2026 lookback.
+    """
+    return nyse_sessions(date(2025, 8, 1), date(2026, 1, 31))
+
+
+def arrow68_score_sessions() -> list[date]:
+    """NYSE sessions 2025-09-02 through 2025-12-31. One look, not IS/OOS."""
+    return nyse_sessions(date(2025, 9, 2), date(2025, 12, 31))
+
+
 def month_first_last(year: int, month: int, sessions: list[date]) -> tuple[date, date] | None:
     days = [d for d in sessions if d.year == year and d.month == month]
     if not days:

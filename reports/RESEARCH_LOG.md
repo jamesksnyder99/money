@@ -1187,3 +1187,11 @@ Sessions=21 pulled=21 skipped_disk=0 skipped_not_session=0.
 Did not score engines. Did not touch data/full or Lab A data/bars. Did not rebuild September 2025 or later. No Arrow 70.
 eligible name-days=63302 failures=0 wall_min=29.9.
 August 2025 warmup is on virgin so September 2025 leftover lookback is complete.
+
+## 2026-09-12T09:12:07-04:00 — Arrow 68
+
+VERDICT: LOOK — not a $200 slate pass. Sep–Dec 2025 is one slice, not IS/OOS for promotion.
+
+First signal 2025-09-03 n=139 MTM $/day=15.40 (total PnL / 95 sessions 2025-09-03..2026-01-16) and 17.21 (total PnL / 85 sessions 2025-09-02..2025-12-31). Entry-attributed $/day=17.21. Months: 2025-09 n=21 $/day=-553.56; 2025-10 n=23 $/day=878.51; 2025-11 n=19 $/day=277.60; 2025-12 n=22 $/day=-190.66. Peak live $99497. Looks like 2026 Wednesday H10 (IS MTM +401.16 / OOS MTM +260.36, both green): yes, same sign (both 2026 slices green). Last hold exits 2026-01-16 on January 2026 virgin (not a 2026 signal). Truncated Sep–Dec MTM daily mean $113.66 is not total PnL / 85 — January marks of the Dec 31 fill sit after 2025-12-31.
+entry $/day=17.21  MTM total/score_n=17.21  MTM total/span_n=15.40 n=139  t_span=0.09  peak_live $99497  span MTM CI includes 0 — not EV
+Frozen Wednesday H10. One look. No rings. No 2026 signals. Lookback may read August 2025. No new ingest. No Arrow 70.
