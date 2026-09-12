@@ -1156,3 +1156,18 @@ Wednesday leftover plumbing. Split on signal session. Did not retune leftover pa
 - nextrth_4k: entry IS $369.55 MTM $401.16 n=116  entry OOS $292.74 MTM $260.36 n=113 t=1.16  peak_live $91206  SLATE
 - open_4k_keep: entry IS $276.48 MTM $262.71 n=126  entry OOS $126.03 MTM $136.86 n=134 t=0.33  peak_live $96737  SEAT
 - nextrth_4k_keep: entry IS $359.39 MTM $371.17 n=126  entry OOS $259.27 MTM $247.26 n=134 t=1.03  peak_live $98066  SLATE
+
+## 2026-09-11T20:41:08-04:00 — Arrow 66
+
+VERDICT: SLATE — h10_4k (OOS MTM >= $200/day, IS MTM not red, peak live <= $100000).
+
+Id 0 h10_4k IS MTM $/day=401.16/401.16 n=116/116 — within ±10% of Arrow 65 nextrth_4k. IS path mean mark peaks at fill+15 ($361.01/name, n=116). Slate $200: h10_4k. Seat $100: h10_4k, h15_4k, h10_3k, h15_4k_keep, h5_4k_keep. Hold 15 fits $100k: NO (peak $127595). Hold 15 lifts both slices vs id 0: no.
+IS path mean mark peaks at fill+15 ($361.01/name, n=116).
+Seat $100 MTM: h10_4k, h15_4k, h10_3k, h15_4k_keep, h5_4k_keep. Slate $200: h10_4k. Lift-both vs id0: none.
+Wednesday hold path 5/10/15. Did not pick a hold from OOS. Did not retune leftover pair, SIC, MAX, or frozen B/flush. No new ingest. No Arrow 67.
+- h10_4k: entry IS $369.55 MTM $401.16 n=116  entry OOS $292.74 MTM $260.36 n=113 t=1.16  peak_live $91206  SLATE
+- h5_4k: entry IS $157.21 MTM $181.20 n=121  entry OOS $98.45 MTM $73.87 n=123 t=0.52  peak_live $64794  no seat
+- h15_4k: entry IS $462.57 MTM $368.06 n=111  entry OOS $96.09 MTM $192.89 n=103 t=0.65  peak_live $127595  SEAT
+- h10_3k: entry IS $276.63 MTM $300.36 n=116  entry OOS $219.20 MTM $194.90 n=113 t=1.16  peak_live $68298  SEAT
+- h15_4k_keep: entry IS $492.51 MTM $395.12 n=126  entry OOS $122.76 MTM $222.58 n=134 t=0.71  peak_live $127753  SEAT
+- h5_4k_keep: entry IS $152.43 MTM $169.10 n=126  entry OOS $147.64 MTM $130.62 n=134 t=0.85  peak_live $64794  SEAT
