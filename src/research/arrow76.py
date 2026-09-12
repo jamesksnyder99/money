@@ -42,6 +42,7 @@ A75_JAN_OPEN = 334.93
 REPRINT_TOL = 0.20
 EXIT_1029 = time(10, 29)
 EXIT_1129 = time(11, 29)
+FILL_0931 = time(9, 31)
 # name, n, exit_kind, notional, days
 EXPERIMENTS = (
     ("h1029_n8", N8, "1029", NOTIONAL, "all"),
@@ -87,6 +88,7 @@ def extract_open(session: date, symbol: str) -> dict | None:
         return None
     early = NYSE_EARLY_CLOSE.get(session)
     fill = None
+    fill0931 = None
     last_1029 = None
     last_1129 = None
     last_rth = None
@@ -106,6 +108,8 @@ def extract_open(session: date, symbol: str) -> dict | None:
             continue
         if fill is None:
             fill = (ts, px)
+        if fill0931 is None and t >= FILL_0931:
+            fill0931 = (ts, px)
         if t <= EXIT_1029:
             last_1029 = (ts, px)
         if t <= EXIT_1129:
@@ -117,6 +121,7 @@ def extract_open(session: date, symbol: str) -> dict | None:
         return None
     return {
         "fill": fill,
+        "fill0931": fill0931,
         "ex1029": last_1029,
         "ex1129": last_1129,
         "ex1559": px1559 if px1559 is not None else last_rth,

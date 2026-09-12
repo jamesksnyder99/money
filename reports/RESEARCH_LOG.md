@@ -1256,3 +1256,10 @@ Id 0 all odd $/day=125.39 vs Arrow 76 h1029_n8 125.39 n=336 — within ±15%. Me
 
 VERDICT: SNIFF — weekday rings on four months are still a sniff for promotion. Did not use April to pick a weekday. Did not treat this window as a $200 slate pass. Did not score May–August.
 all odd $125.39 n=336  even $199.23 n=319. overlap/8 odd=0.429 even=0.516. corr odd=0.239 even=0.523. a second pulse. Did not use April to pick a weekday. No Arrow 78.
+
+## 2026-09-12T13:37:32-04:00 — Arrow 78
+
+Id 0 all_0930 odd $/day=125.39 vs Arrow 76/77 parent 125.39 n=336 — within ±15%. 09:31 vs 09:30: odd $122.61 vs $125.39; even $186.25 vs $199.23. Complement is the second pulse (low corr, both slices green): yes (corr odd=0.113 even=0.236; odd $66.97 even $135.37). gap_up odd $43.64 even $63.97 vs gap_dn odd $39.63 even $128.65. Filters that lift both vs id 1: none.
+
+VERDICT: SNIFF — complement / overlap / gap on four months is still a sniff for promotion. Did not use April to pick a filter. Did not treat this window as a $200 slate pass. Did not score May–August.
+all_0930 odd $125.39 n=336  even $199.23. all_0931 odd $122.61 even $186.25. complement odd $66.97 even $135.37 corr odd=0.113 even=0.236. Did not use April to pick a filter. No Arrow 79.

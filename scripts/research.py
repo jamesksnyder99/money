@@ -81,6 +81,7 @@ from research.arrow74 import run_arrow74  # noqa: E402
 from research.arrow75 import run_arrow75  # noqa: E402
 from research.arrow76 import run_arrow76  # noqa: E402
 from research.arrow77 import run_arrow77  # noqa: E402
+from research.arrow78 import run_arrow78  # noqa: E402
 from research.equity_curve import run_equity_curve  # noqa: E402
 from research.rockets import run_rockets  # noqa: E402
 
@@ -165,11 +166,12 @@ def main(argv: list[str] | None = None) -> int:
             "arrow75",
             "arrow76",
             "arrow77",
+            "arrow78",
             "equity",
             "rockets",
         ),
-        default="arrow77",
-        help="arrow77 open leftover weekdays vs H10",
+        default="arrow78",
+        help="arrow78 open leftover complement overlap gap",
     )
     p.add_argument("--workers", type=int, default=min(8, cpu), help="default min(8, cpu_count)")
     args = p.parse_args(argv)
@@ -321,6 +323,8 @@ def main(argv: list[str] | None = None) -> int:
         return run_arrow76(workers=args.workers)
     if args.mode == "arrow77":
         return run_arrow77(workers=args.workers)
+    if args.mode == "arrow78":
+        return run_arrow78(workers=args.workers)
     if args.mode == "equity":
         return run_equity_curve(workers=args.workers)
     if args.mode == "rockets":
