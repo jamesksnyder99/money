@@ -1220,3 +1220,11 @@ Id 0 h10_4k IS MTM $/day=401.16/401.16 n=116/116 — within ±10% of Arrow 66 h1
 IS character on id 0 Wednesdays n=16. Description. Does not pick an id. median width=2.65990  median crowd=155.00  median ivol=0.01070  frac iwm_15>=0=0.562. Those three medians are frozen cutoffs for wide / uncrowded / lowvol. Did not use an OOS month to pick a cutoff.
 Seat $100: h10_4k, iwm_up, wide, uncrowded. Slate $200: h10_4k, iwm_up. Beat id 0: none.
 Wednesday H10 regime skips. Same fill/hold as Arrow 66 h10_4k. Cutoffs frozen from IS. Did not use an OOS month to pick a cutoff. No new ingest. No Arrow 73.
+
+## 2026-09-12T11:29:04-04:00 — Arrow 73
+
+VERDICT: LOOK — not a $200 slate pass. Sep–Dec 2025 is one slice, not IS/OOS for promotion.
+
+Id 1 sat out 3/18 Wednesdays (kept 15). September always -553.56 vs iwm_up -553.56 (less red=no). October always 878.51 vs iwm_up 878.51. December always -190.66 vs iwm_up -216.73 (less red=no). Total MTM$ always 1462.96 vs iwm_up 5996.38 (cut=no). Parametric follow-up is not on the table from this look: iwm_up did not cut September/December redness. Id 0 Sep MTM $/day=-553.56 vs Arrow 68 -553.56 (hole=yes). Oct MTM $/day=878.51 vs Arrow 68 878.51 (fat=yes n=23).
+always MTM span $/day=15.40 n=139  iwm_up MTM span $/day=65.89 n=117  sat_out=3/18  peak_a $99497 peak_u $99497
+IWM-up skip one-look Sep–Dec 2025. Two ids. No new cutoff. No 2026 signals. No new ingest. No Arrow 74.
