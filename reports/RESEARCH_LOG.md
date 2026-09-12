@@ -1242,3 +1242,10 @@ January home-hour distribution (name-days n=26343): 0930=26198, 1030=21, 1130=20
 
 VERDICT: SNIFF — two months is not a seat. February is one look, not a $200 slate pass. Did not treat January/February as the shop IS/OOS split. Did not score March–August.
 short_left Jan $319.39 n=176 hrs=22  Feb $31.08 n=151. long_left Jan $-81.66 Feb $-46.94. Did not use February to pick a bucket. No Arrow 76.
+
+## 2026-09-12T12:36:56-04:00 — Arrow 76
+
+Id 0 h1029_n8 January $/day=268.33 vs Arrow 75 short_left_open +334.93 n=160 — within ±20%. Holding past 10:29 lifts both odd and even: no. n=15 lifts both: no (odd $146.07 even $192.19 vs id0 odd $125.39 even $199.23). Wednesday lifts both: no (odd $37.19 even $66.55). $4k lifts both: yes (odd $167.68 even $266.06).
+
+VERDICT: SNIFF — two extra months is still a sniff for promotion. Did not use April to pick a hold. Did not treat this window as a $200 slate pass. Did not score May–August.
+h1029_n8 odd $125.39 n=336  even $199.23 n=319. h1129_n8 odd $46.48 even $175.37. h1559_n8 odd $67.84 even $1.03. Did not use April to pick a hold. No Arrow 77.
