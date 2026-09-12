@@ -1211,3 +1211,12 @@ VERDICT: SLATE — h10_4k (OOS MTM >= $200/day, IS MTM not red, peak live <= $10
 Id 0 h10_4k IS MTM $/day=401.16/401.16 n=116/116 — within ±10% of Arrow 66 h10_4k. Beat id 0 on both slices with DD guard: none. Lift-both (no DD guard): none. Id 0 mean hold IS 10.00 OOS 10.00. ABC mean hold IS 2.28 OOS 1.95 (early-cash IS 122 OOS 125). ABC flattened winners (did not lift both slices).
 Seat $100: h10_4k, cash_A. Slate $200: h10_4k. Beat id 0: none. ABC flattened winners (did not lift both slices).
 Wednesday H10 keep/cash. Same entries as Arrow 66 h10_4k. Did not replace a cashed name. Did not use an OOS month to pick a threshold. No new ingest. No Arrow 72.
+
+## 2026-09-12T11:12:01-04:00 — Arrow 72
+
+VERDICT: SLATE — h10_4k, iwm_up (OOS MTM >= $200/day, IS MTM not red, peak live <= $100000).
+
+Id 0 h10_4k IS MTM $/day=401.16/401.16 n=116/116 — within ±10% of Arrow 66 h10_4k. Frozen IS medians: width=2.65990 crowd=155.00 ivol=0.01070. Beat id 0 on both slices with DD guard: none. Lift-both (no DD guard): none. iwm_up sat out IS 7/16 OOS 5/17 (kept 9+12) iwm_dn sat out IS 9/16 OOS 12/17 (kept 7+5) wide sat out IS 8/16 OOS 10/17 (kept 8+7) uncrowded sat out IS 8/16 OOS 4/17 (kept 8+13) lowvol sat out IS 8/16 OOS 10/17 (kept 8+7).
+IS character on id 0 Wednesdays n=16. Description. Does not pick an id. median width=2.65990  median crowd=155.00  median ivol=0.01070  frac iwm_15>=0=0.562. Those three medians are frozen cutoffs for wide / uncrowded / lowvol. Did not use an OOS month to pick a cutoff.
+Seat $100: h10_4k, iwm_up, wide, uncrowded. Slate $200: h10_4k, iwm_up. Beat id 0: none.
+Wednesday H10 regime skips. Same fill/hold as Arrow 66 h10_4k. Cutoffs frozen from IS. Did not use an OOS month to pick a cutoff. No new ingest. No Arrow 73.
