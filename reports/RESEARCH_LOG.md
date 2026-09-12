@@ -1179,3 +1179,11 @@ Sessions=63 pulled=63 skipped_disk=0 skipped_not_session=1.
 Did not score engines. Did not touch data/full or Lab A data/bars. Did not rebuild December 2025 or January–May 2026. No Arrow 68.
 eligible name-days=195355 failures=0 wall_min=87.7.
 virgin+full now cover 2025-09 through 2026-08.
+
+## 2026-09-12T08:31:44-04:00 — Arrow 69
+
+Ingest only. August 2025 warmup (2025-08-01..2025-08-29) into data/virgin/.
+Sessions=21 pulled=21 skipped_disk=0 skipped_not_session=0.
+Did not score engines. Did not touch data/full or Lab A data/bars. Did not rebuild September 2025 or later. No Arrow 70.
+eligible name-days=63302 failures=0 wall_min=29.9.
+August 2025 warmup is on virgin so September 2025 leftover lookback is complete.

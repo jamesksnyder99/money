@@ -76,6 +76,9 @@ ARROW67_END = date(2025, 11, 28)
 ARROW67_PRIOR_START = date(2025, 8, 29)
 ARROW67_LABOR_DAY = date(2025, 9, 1)
 ARROW67_THANKSGIVING = date(2025, 11, 27)
+ARROW69_START = date(2025, 8, 1)
+ARROW69_END = date(2025, 8, 29)
+ARROW69_PRIOR_START = date(2025, 7, 31)
 ARROW61_EXPECTED: tuple[date, ...] = (
     date(2025, 12, 1),
     date(2025, 12, 2),
@@ -193,6 +196,27 @@ def arrow67_non_sessions() -> list[date]:
     out: list[date] = []
     d = ARROW67_START
     while d <= ARROW67_END:
+        if d.weekday() < 5 and not is_nyse_session(d):
+            out.append(d)
+        d += timedelta(days=1)
+    return out
+
+
+def arrow69_sessions() -> list[date]:
+    """NYSE sessions 2025-08-01 through 2025-08-29. Arrow 69 warmup; not scored."""
+    return nyse_sessions(ARROW69_START, ARROW69_END)
+
+
+def arrow69_prior_calendar() -> list[date]:
+    """Prior of 2025-08-01 (2025-07-31) through 2025-08-29."""
+    return nyse_sessions(ARROW69_PRIOR_START, ARROW69_END)
+
+
+def arrow69_non_sessions() -> list[date]:
+    """Weekdays in the Arrow 69 window that are not NYSE sessions."""
+    out: list[date] = []
+    d = ARROW69_START
+    while d <= ARROW69_END:
         if d.weekday() < 5 and not is_nyse_session(d):
             out.append(d)
         d += timedelta(days=1)
