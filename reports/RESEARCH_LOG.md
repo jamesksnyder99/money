@@ -1263,3 +1263,10 @@ Id 0 all_0930 odd $/day=125.39 vs Arrow 76/77 parent 125.39 n=336 — within ±1
 
 VERDICT: SNIFF — complement / overlap / gap on four months is still a sniff for promotion. Did not use April to pick a filter. Did not treat this window as a $200 slate pass. Did not score May–August.
 all_0930 odd $125.39 n=336  even $199.23. all_0931 odd $122.61 even $186.25. complement odd $66.97 even $135.37 corr odd=0.113 even=0.236. Did not use April to pick a filter. No Arrow 79.
+
+## 2026-09-12T13:58:14-04:00 — Arrow 79
+
+Id 0 all_0931 odd $/day=122.61 vs Arrow 78 all_0931 122.61 n=336 — within ±15%. Id 1 comp odd $66.97 even $135.37 (Arrow 78 complement reprint). comp×gap_dn lifts both vs complement: no (odd $13.09 even $73.00). Skipping Tuesday lifts both vs un-skipped parent: all_not_tue vs all_0931 no (odd $129.23 even $141.37); comp_not_tue vs comp no (odd $93.81 even $77.59). Crosses that lift both vs id 1: all_not_tue.
+
+VERDICT: SNIFF — complement × gap and skip-Tuesday on four months is still a sniff for promotion. Did not use April to pick a cross. Did not treat this window as a $200 slate pass. Did not score May–August.
+all_0931 odd $122.61 n=336  even $186.25. comp odd $66.97 even $135.37. comp_gap_dn odd $13.09 even $73.00. Did not use April to pick a cross. No Arrow 80.
