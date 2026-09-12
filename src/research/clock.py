@@ -137,6 +137,19 @@ def arrow70_score_sessions() -> list[date]:
     return nyse_sessions(date(2025, 9, 2), date(2026, 8, 31))
 
 
+def arrow74_sessions() -> list[date]:
+    """Jan–Feb 2026 on virgin. Not the shop IS/OOS year. Does not change leftover lookback."""
+    return nyse_sessions(date(2026, 1, 2), date(2026, 2, 28))
+
+
+def arrow74_january() -> list[date]:
+    return nyse_sessions(date(2026, 1, 2), date(2026, 1, 31))
+
+
+def arrow74_february() -> list[date]:
+    return nyse_sessions(date(2026, 2, 1), date(2026, 2, 28))
+
+
 def month_first_last(year: int, month: int, sessions: list[date]) -> tuple[date, date] | None:
     days = [d for d in sessions if d.year == year and d.month == month]
     if not days:

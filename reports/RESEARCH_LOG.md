@@ -1228,3 +1228,10 @@ VERDICT: LOOK — not a $200 slate pass. Sep–Dec 2025 is one slice, not IS/OOS
 Id 1 sat out 3/18 Wednesdays (kept 15). September always -553.56 vs iwm_up -553.56 (less red=no). October always 878.51 vs iwm_up 878.51. December always -190.66 vs iwm_up -216.73 (less red=no). Total MTM$ always 1462.96 vs iwm_up 5996.38 (cut=no). Parametric follow-up is not on the table from this look: iwm_up did not cut September/December redness. Id 0 Sep MTM $/day=-553.56 vs Arrow 68 -553.56 (hole=yes). Oct MTM $/day=878.51 vs Arrow 68 878.51 (fat=yes n=23).
 always MTM span $/day=15.40 n=139  iwm_up MTM span $/day=65.89 n=117  sat_out=3/18  peak_a $99497 peak_u $99497
 IWM-up skip one-look Sep–Dec 2025. Two ids. No new cutoff. No 2026 signals. No new ingest. No Arrow 74.
+
+## 2026-09-12T11:46:09-04:00 — Arrow 74
+
+VERDICT: SNIFF — two months is not a seat. February is one look, not a $200 slate pass. Did not treat January/February as the shop IS/OOS split. Did not score March–August.
+
+January character (11:01→15:59 of the eight morning winners / laggards). Description. Does not pick an id. winners n=160 mean=0.00488 hit=0.531  laggards n=160 mean=0.01787 hit=0.537. Afternoon fade of morning winners: no. 11:01 fill still prints: yes (id 0 Jan n=160; id 3 11:00-fill Jan n=160). Wednesday-only Jan $/day=-96.51 vs every-session -174.92. Long Jan $/day=363.53 vs short -174.92.
+short_all Jan $-174.92 n=160  Feb $-129.05 n=152  long_all Jan $363.53 Feb $-125.99. Did not use February to pick a threshold. No Arrow 75.
