@@ -1195,3 +1195,11 @@ VERDICT: LOOK — not a $200 slate pass. Sep–Dec 2025 is one slice, not IS/OOS
 First signal 2025-09-03 n=139 MTM $/day=15.40 (total PnL / 95 sessions 2025-09-03..2026-01-16) and 17.21 (total PnL / 85 sessions 2025-09-02..2025-12-31). Entry-attributed $/day=17.21. Months: 2025-09 n=21 $/day=-553.56; 2025-10 n=23 $/day=878.51; 2025-11 n=19 $/day=277.60; 2025-12 n=22 $/day=-190.66. Peak live $99497. Looks like 2026 Wednesday H10 (IS MTM +401.16 / OOS MTM +260.36, both green): yes, same sign (both 2026 slices green). Last hold exits 2026-01-16 on January 2026 virgin (not a 2026 signal). Truncated Sep–Dec MTM daily mean $113.66 is not total PnL / 85 — January marks of the Dec 31 fill sit after 2025-12-31.
 entry $/day=17.21  MTM total/score_n=17.21  MTM total/span_n=15.40 n=139  t_span=0.09  peak_live $99497  span MTM CI includes 0 — not EV
 Frozen Wednesday H10. One look. No rings. No 2026 signals. Lookback may read August 2025. No new ingest. No Arrow 70.
+
+## 2026-09-12T09:55:41-04:00 — Arrow 70
+
+VERDICT: LOOK — not a $200 slate pass. This year is size-on-equity of the frozen book, not a new IS/OOS split. Jan–Aug 2026 already had that look.
+
+Start equity $100000 on 2025-09-02. Compound end equity $159567. Flat end equity $151856. Flat-year MTM $/day=206.60 vs compound-year MTM $/day=237.32 (total / 251 sessions 2025-09-02..2026-08-31). Max MTM DD flat $-20033.68 compound $-21670.68. Fall 2025 still has the September hole: yes (Sep -553.56/day, Oct 878.51/day). Id 0 Sep MTM $/day=-553.56 vs Arrow 68 -553.56 (hole=yes). Oct MTM $/day=878.51 vs Arrow 68 878.51 (fat=yes n=23).
+flat MTM $/day=206.60 n=376  compound MTM $/day=237.32 n=376  end_eq $159567  peak_live_f $102922 peak_live_c $123215  flat MTM CI includes 0 — not EV
+Frozen Wednesday H10 size-on-equity. No rings. No new IS/OOS. No new ingest. No Arrow 71.
